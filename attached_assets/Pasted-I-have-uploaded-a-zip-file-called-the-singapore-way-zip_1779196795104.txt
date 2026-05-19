@@ -1,0 +1,96 @@
+I have uploaded a zip file called `the-singapore-way.zip`.
+
+Your task is to build a complete first version of the website from this uploaded package.
+
+Context:
+The original website was built on Wix. The zip contains scraped content, local assets/images, and screenshots of the main pages. Use the screenshots as the visual reference and the scraped content as the source of truth for copy.
+
+Important:
+This first version should be a clean foundational website, not a complex SaaS platform yet. Do not implement authentication, payments, email automations, databases, or course access logic in this first pass. Build the public-facing website end to end first, then leave the code structured so those features can be added later.
+
+First, inspect and unzip the uploaded package.
+
+You should find folders similar to:
+- `main pages/` — screenshots of the core pages
+- `assets/` — logos and page images
+- `Content and Copy/pages/` — markdown page copy
+- `Content and Copy/raw-text/` — raw text content
+- `Content and Copy/raw-html/` — scraped HTML references
+- `Content and Copy/link-map.md`
+- `Content and Copy/assets-discovered.md`
+
+Build a modern responsive website based on the supplied materials.
+
+Preferred stack:
+Use a Replit-friendly modern web stack. React + TypeScript + Tailwind is preferred. Use Next.js only if you think it is the best fit for this Replit project.
+
+Pages to build:
+Create routes/pages for:
+
+1. Home
+2. The Book
+3. Learn
+4. Apply
+5. Teach
+6. Ideate
+7. About
+8. Blog
+9. Online Course
+10. Podcast
+11. Localization Kits
+12. Examples / Possibilities
+13. Teaching Materials / Case Studies
+
+Use the screenshot files in `main pages/` to understand the intended layout, page sections, visual hierarchy, colors, and navigation.
+
+Use the markdown/text files in `Content and Copy/pages/` and `Content and Copy/raw-text/` for the actual copy. Do not invent major new website copy where scraped copy exists.
+
+Design direction:
+- Clean educational/editorial website
+- Red, white, and black brand feel
+- Strong hero sections
+- Simple navigation
+- Clear calls to action
+- Card-based sections for Learn, Apply, Teach, and Ideate
+- Use local image assets from the zip
+- Make the site mobile responsive
+- Include a clean footer
+- Avoid Wix-generated code or Wix dependencies
+
+Functional requirements:
+- Navigation should work across all pages.
+- Local assets should be copied into the proper public/static folder.
+- No broken images where provided assets exist.
+- Blog page should list the available blog posts from the provided content.
+- Online Course, Podcast, Localization Kits, Examples, and Teaching Materials pages can be simple but should use the provided copy and assets where available.
+- Add placeholder sections for future functionality where needed, but do not build complex backend features yet.
+
+Future-ready structure:
+Organize the app cleanly so we can later add:
+- user authentication
+- online course modules
+- gated course content
+- user dashboard
+- email capture
+- email automations
+- payments
+- admin/content editing
+
+Please also create a simple `replit.md` file in the root of the project summarizing:
+- project purpose
+- tech stack
+- folder structure
+- routes
+- design rules
+- future feature roadmap
+- instructions for future Replit Agent work
+
+Acceptance criteria:
+- The app runs successfully in Replit.
+- The preview works.
+- The main pages visually resemble the screenshots.
+- The site uses the provided copy and images.
+- The code is clean and extendable.
+- The first version is public-site focused, not overloaded with advanced features.
+
+Start by inspecting the uploaded zip, then build the website end to end.
