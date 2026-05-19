@@ -1,126 +1,171 @@
-import { Link } from 'react-router-dom'
+import { useState } from 'react'
 
 const caseStudies = [
-  { num: '01', domain: 'Housing', title: 'The HDB Story: Housing as Nation Building', pages: '18 pages' },
-  { num: '02', domain: 'Water', title: 'Four Taps: Singapore\'s Water Security Strategy', pages: '14 pages' },
-  { num: '03', domain: 'Education', title: 'Education for a Knowledge Economy', pages: '20 pages' },
-  { num: '04', domain: 'Governance', title: 'Anti-Corruption: Building a Culture of Integrity', pages: '16 pages' },
-  { num: '05', domain: 'Economics', title: 'From Third World to First: The Economic Journey', pages: '22 pages' },
-  { num: '06', domain: 'Urban', title: 'Planning the Unplannable: Urban Development at Scale', pages: '18 pages' },
-  { num: '07', domain: 'Meritocracy', title: 'Meritocracy in Practice: Opportunity and Accountability', pages: '15 pages' },
-  { num: '08', domain: 'Identity', title: 'Social Cohesion in a Multi-Ethnic Society', pages: '17 pages' },
-  { num: '09', domain: 'Healthcare', title: 'The 3M Healthcare Framework', pages: '14 pages' },
-  { num: '10', domain: 'Defence', title: 'Total Defence: A Small Nation\'s Security Strategy', pages: '12 pages' },
-  { num: '11', domain: 'Innovation', title: 'Building an Innovation Ecosystem', pages: '16 pages' },
-  { num: '12', domain: 'Governance', title: 'Long-Term Planning: The Singapore Concept Plan', pages: '13 pages' },
-  { num: '13', domain: 'Leadership', title: 'Leadership & Institutional Integrity', pages: '15 pages' },
-  { num: '14', domain: 'FDI', title: 'Strategic Foreign Direct Investment', pages: '17 pages' },
-  { num: '15', domain: 'Adaptation', title: 'Rwanda: Adapting the Singapore Model', pages: '20 pages' },
-  { num: '16', domain: 'Adaptation', title: 'Kazakhstan: Education Reform Inspired by Singapore', pages: '18 pages' },
-  { num: '17', domain: 'Roadmap', title: 'Building Your Transformation Roadmap', pages: '24 pages' },
+  {
+    icon: '🏛️',
+    title: 'Leadership and Governance',
+    desc: 'Foundations of Singapore\'s governance — from its founding crisis to the institutions that made it work.',
+  },
+  {
+    icon: '🏠',
+    title: 'Smart Housing',
+    desc: 'From makeshift settlements to one of the world\'s most successful public housing systems.',
+  },
+  {
+    icon: '📈',
+    title: 'Economic Transformation',
+    desc: 'How Singapore engineered rapid GDP growth through strategic FDI, meritocracy, and industrial policy.',
+  },
+  {
+    icon: '🎓',
+    title: 'Talent Development and Education',
+    desc: 'Education as national survival — Singapore\'s investment in human capital from the ground up.',
+  },
+  {
+    icon: '🏥',
+    title: 'Public Health and Healthcare System Development',
+    desc: 'Building for Singapore Country: The Singapore Healthcare System.',
+  },
+  {
+    icon: '🌐',
+    title: 'Smart Nation',
+    desc: 'Smart Nation Planning for the Digital Era: Smart Nation Support Singapore.',
+  },
+  {
+    icon: '🚌',
+    title: 'Urban Mobility and Sustainable Transport',
+    desc: 'Shaping to Design Transport: Singapore\'s Four-Year Sustainable Transport.',
+  },
+  {
+    icon: '💧',
+    title: 'Water and Resources Management',
+    desc: 'Four Taps: Water Singapore\'s Resource to Water Resilient Approach.',
+  },
+  {
+    icon: '🤝',
+    title: 'Singapore as a Business and Trade Hub',
+    desc: 'Open State, Free Port: How Singapore Became a Global Business Centre.',
+  },
+  {
+    icon: '⚖️',
+    title: 'Public Trust and Governance',
+    desc: 'Clean Government, Trusted State: Singapore\'s Anti-Corruption Journey in Policy.',
+  },
+  {
+    icon: '🏳️',
+    title: 'National Identity and Multiculturalism',
+    desc: 'Unity in Diversity: How Singapore Supports a Shared Identity.',
+  },
+  {
+    icon: '🌿',
+    title: "Singapore's Green Strategy",
+    desc: 'Garden City to Green Smart City: Singapore Balances Progress with Sustainability.',
+  },
+  {
+    icon: '💡',
+    title: 'Fostering Innovation and Entrepreneurship',
+    desc: 'From Follower to Innovation: How Singapore Embraced Ecosystem-Supported Entrepreneurship.',
+  },
+  {
+    icon: '🎨',
+    title: 'The Role of Culture and the Arts in Nation Building',
+    desc: "Building a Nation's Soul: The Role of Culture and Arts in Singapore.",
+  },
+  {
+    icon: '💻',
+    title: 'Harnessing Technology for the Future',
+    desc: "Smart, Safe, Sustainable: Singapore's Tech-Led Approach to Long-Term Resilience.",
+  },
+  {
+    icon: '👥',
+    title: 'Civic Engagement and Community Building',
+    desc: "Beyond Compliance, Towards Belonging: Singapore's Approach to Civic Engagement and Community Building.",
+  },
+  {
+    icon: '🔮',
+    title: 'The Future of Singapore',
+    desc: 'Charting Resilience: Singapore Confronts Tomorrow.',
+  },
 ]
 
 export default function TeachingMaterials() {
+  const [email, setEmail] = useState('')
+
   return (
-    <div>
-      {/* Hero */}
-      <section className="bg-[#111111] text-white py-20 md:py-28">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div>
-              <p className="text-[#C8102E] text-sm font-semibold tracking-widest uppercase mb-4">Teaching Materials</p>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6">
-                Case Studies | The Singapore Way
-              </h1>
-              <p className="text-[#AAAAAA] text-xl leading-relaxed mb-8">
-                Explore 17 detailed Singapore Way Case Studies showcasing practical lessons in housing, education, governance, water security, and national development.
-              </p>
-              <a
-                href="mailto:info@thesingaporeway.com"
-                className="inline-block bg-[#C8102E] text-white font-semibold px-8 py-4 text-sm tracking-wide hover:bg-[#a50d26] transition-colors"
-              >
-                Request Full Access
-              </a>
-            </div>
-            <div className="relative flex justify-center">
-              <img
-                src="/assets/teach/case-studies.png"
-                alt="Case Studies"
-                className="w-full max-w-md shadow-2xl rounded-lg"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
+    <div className="bg-white min-h-screen">
+      {/* Breadcrumb */}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+        <nav className="text-xs text-gray-400">
+          <span className="text-[#C8102E]">Case Studies</span>
+        </nav>
+      </div>
 
-      {/* Case Studies */}
-      <section className="py-20 md:py-28 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-12">
-            <p className="text-[#C8102E] text-sm font-semibold tracking-widest uppercase mb-4">The Library</p>
-            <h2 className="text-4xl font-bold text-[#111111]">17 Case Studies</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {caseStudies.map(({ num, domain, title, pages }) => (
-              <div key={num} className="flex items-start gap-5 p-6 border border-[#E5E5E5] hover:border-[#C8102E] hover:shadow-md transition-all group cursor-pointer">
-                <span className="text-[#C8102E] font-bold text-lg w-10 flex-shrink-0">{num}</span>
-                <div className="flex-1">
-                  <span className="inline-block text-xs font-bold text-[#C8102E] tracking-widest uppercase mb-2">{domain}</span>
-                  <h3 className="text-[#111111] font-bold text-base mb-1 group-hover:text-[#C8102E] transition-colors">{title}</h3>
-                  <p className="text-[#999999] text-xs">{pages}</p>
-                </div>
-                <div className="flex-shrink-0 text-[#CCCCCC] group-hover:text-[#C8102E] transition-colors">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
+        <h1 className="text-2xl md:text-3xl font-bold text-[#C8102E] mb-3">
+          Case Studies: Real Systems, Real Lessons
+        </h1>
+        <p className="text-sm text-gray-600 leading-relaxed mb-2 max-w-3xl">
+          Explore how Singapore's principles are applied across sectors—from housing to education, water to governance, innovation to culture—and see how each principle becomes a teachable, transferable lesson.
+        </p>
+        <p className="text-sm text-gray-600 leading-relaxed mb-6 max-w-3xl">
+          These 17 case studies bring the book to life in the classroom, in policy circles, and in national strategy discussions.
+        </p>
+
+        {/* Email CTA + button */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-6">
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Get a free Study by email"
+            className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#C8102E] w-64"
+          />
+          <button className="bg-[#C8102E] text-white text-sm font-semibold px-5 py-2 rounded-full hover:bg-[#a50d26] transition-colors whitespace-nowrap">
+            Get Free Study
+          </button>
+        </div>
+
+        {/* Filters */}
+        <div className="flex flex-col sm:flex-row gap-3 mb-8">
+          <select className="border border-gray-300 rounded px-3 py-2 text-sm text-gray-600 focus:outline-none focus:border-[#C8102E] bg-white">
+            <option>Free Chapter</option>
+            {caseStudies.map((c) => <option key={c.title}>{c.title}</option>)}
+          </select>
+          <select className="border border-gray-300 rounded px-3 py-2 text-sm text-gray-600 focus:outline-none focus:border-[#C8102E] bg-white">
+            <option>Country by Chapter</option>
+            <option>Singapore</option>
+            <option>Rwanda</option>
+            <option>South Africa</option>
+            <option>Kazakhstan</option>
+          </select>
+        </div>
+
+        {/* Case Studies Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          {caseStudies.map(({ icon, title, desc }) => (
+            <div key={title} className="border border-gray-200 rounded-lg p-5 hover:border-[#C8102E] hover:shadow-sm transition-all">
+              <div className="text-2xl mb-2">{icon}</div>
+              <h3 className="text-sm font-bold text-gray-900 mb-2">{title}</h3>
+              <p className="text-xs text-gray-500 leading-relaxed mb-4">{desc}</p>
+              <div className="flex flex-wrap gap-2">
+                <button className="flex items-center gap-1.5 border border-[#C8102E] text-[#C8102E] text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-[#C8102E] hover:text-white transition-colors">
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
-                </div>
+                  Teacher's Guide
+                </button>
+                <button className="flex items-center gap-1.5 border border-[#C8102E] text-[#C8102E] text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-[#C8102E] hover:text-white transition-colors">
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                  Student's Guide
+                </button>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
-      </section>
-
-      {/* How to Use */}
-      <section className="py-20 bg-[#F5F5F5]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-14">
-            <p className="text-[#C8102E] text-sm font-semibold tracking-widest uppercase mb-4">Pedagogy</p>
-            <h2 className="text-4xl font-bold text-[#111111]">How to Use These Case Studies</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            {[
-              { step: '01', title: 'Read', desc: 'Study the case study to understand Singapore\'s approach and the context in which it worked.' },
-              { step: '02', title: 'Analyse', desc: 'Use the discussion questions to critically examine what principles drove the outcome.' },
-              { step: '03', title: 'Compare', desc: 'Map the principles against your own context — where do they apply, and where must they be adapted?' },
-              { step: '04', title: 'Apply', desc: 'Design a locally-adapted approach using the principles, not the policies, as your foundation.' },
-            ].map(({ step, title, desc }) => (
-              <div key={step} className="text-center">
-                <div className="w-14 h-14 bg-[#C8102E] text-white font-bold text-xl flex items-center justify-center mx-auto mb-5">
-                  {step}
-                </div>
-                <h3 className="text-[#111111] font-bold text-lg mb-3">{title}</h3>
-                <p className="text-[#666666] text-sm leading-relaxed">{desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="bg-[#C8102E] py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-8">
-          <div>
-            <h2 className="text-3xl font-bold text-white mb-2">Use these in your classroom or program</h2>
-            <p className="text-white/80">Contact us for institutional access and licensing information.</p>
-          </div>
-          <a
-            href="mailto:info@thesingaporeway.com"
-            className="bg-white text-[#C8102E] font-bold px-8 py-4 text-sm tracking-wide hover:bg-[#F5F5F5] transition-colors flex-shrink-0"
-          >
-            Request Access
-          </a>
-        </div>
-      </section>
+      </div>
     </div>
   )
 }

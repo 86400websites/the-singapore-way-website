@@ -1,147 +1,156 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 const kits = [
   {
-    domain: 'Housing',
-    title: 'Housing Localization Kit',
-    desc: 'Adapt Singapore\'s HDB model principles for your context — from policy design to community planning.',
-    items: ['Land acquisition frameworks', 'Affordability mechanisms', 'Racial/ethnic integration policies', 'Resale market design'],
+    icon: '🏛️',
+    title: 'Leadership and Governance',
+    desc: 'This guide provides a structural reference for localising the guiding leadership and governance practices distilled from Singapore\'s journey.',
   },
   {
-    domain: 'Water',
-    title: 'Water Security Kit',
-    desc: 'Build a four-tap diversification strategy for your water security challenges.',
-    items: ['Source diversification audit', 'Water pricing policy templates', 'Conservation campaign frameworks', 'Infrastructure planning guides'],
+    icon: '🏠',
+    title: 'Smart Housing',
+    desc: 'This guide provides a detailed framework to help stakeholders adapt what Singapore\'s Smart Housing principles to their local context.',
   },
   {
-    domain: 'Education',
-    title: 'Education Transformation Kit',
-    desc: 'Redesign your education system for long-term national development and competitiveness.',
-    items: ['Curriculum alignment tools', 'Teacher development frameworks', 'Meritocracy implementation guides', 'Technical education pathway design'],
+    icon: '📈',
+    title: 'Economic Transformation',
+    desc: 'This guide provides a comprehensive framework for the detailed localisation of Singapore\'s economic transformation model into your local context.',
   },
   {
-    domain: 'Governance',
-    title: 'Governance Reform Kit',
-    desc: 'Build cleaner, more effective government institutions rooted in Singapore\'s governance principles.',
-    items: ['Anti-corruption frameworks', 'Civil service reform guides', 'Transparency mechanisms', 'Public trust-building strategies'],
+    icon: '🎓',
+    title: 'Talent Development and Education',
+    desc: 'This guide provides a comprehensive framework for localising Singapore\'s value development and education strategy into your national or regional context.',
   },
   {
-    domain: 'Economics',
-    title: 'Economic Strategy Kit',
-    desc: 'Design a long-term economic strategy using Singapore\'s proven FDI and industrial policy approaches.',
-    items: ['FDI attraction frameworks', 'Economic zone design', 'Industry ladder strategies', 'Labour market policy tools'],
+    icon: '🏥',
+    title: 'Public Health and Healthcare System',
+    desc: 'This guide provides a structured framework for adapting Singapore\'s public health and healthcare development compare to your local context.',
   },
   {
-    domain: 'Urban',
-    title: 'Urban Planning Kit',
-    desc: 'Adapt Singapore\'s integrated urban planning model for sustainable, liveable city development.',
-    items: ['Land use planning templates', 'Transport integration frameworks', 'Green space policies', 'Urban density models'],
+    icon: '🌐',
+    title: 'Smart Nation',
+    desc: 'This guide offers a step-by-step framework to adapt Singapore\'s Smart Nation strategy into a local, context-intuitive, innovation-driven digital transformation initiative.',
+  },
+  {
+    icon: '🚌',
+    title: 'Urban Mobility and Sustainable Transport',
+    desc: 'This guide provides a structured roadmap to adapt and localise Singapore\'s urban mobility strategy to your context.',
+  },
+  {
+    icon: '💧',
+    title: 'Water and Resources Management',
+    desc: 'This guide provides a strategic framework for Singapore\'s integrated approach to water and resource management into your national or subnational context.',
+  },
+  {
+    icon: '🤝',
+    title: 'Business and Trade Hub',
+    desc: "This guide provides a comprehensive roadmap to adapt Singapore's business and trade hub strategy into your national or regional context.",
+  },
+  {
+    icon: '⚖️',
+    title: 'Public Trust and Governance',
+    desc: "This guide equips government, educators, and civic leaders with tools to adapt Singapore's trust-building and governance strategies to boost contexts.",
+  },
+  {
+    icon: '🏳️',
+    title: 'National Identity',
+    desc: "This guide supports policymakers, educators, and urban planners to localise the Singapore model of multicultural nation-building.",
+  },
+  {
+    icon: '🌿',
+    title: 'Green Strategy',
+    desc: "This guide supports planners, developers, and environmental advocates to adapt Singapore's green strategy to local contexts.",
+  },
+  {
+    icon: '💡',
+    title: 'Fostering Innovation and Entrepreneurship',
+    desc: "This guide provides a comprehensive framework for localising Singapore's experience in fostering innovation and entrepreneurship.",
+  },
+  {
+    icon: '🎨',
+    title: 'Culture and Arts in Nation Building',
+    desc: "This guide offers a comprehensive framework to adapt Singapore's strategy of leveraging culture and the arts in nation building.",
+  },
+  {
+    icon: '💻',
+    title: 'Harnessing Technology for the Future',
+    desc: 'This guide provides a comprehensive roadmap to help localise Singapore\'s approach to national digital transformation.',
+  },
+  {
+    icon: '👥',
+    title: 'Civic Engagement and Community Building',
+    desc: "This guide supports stakeholders in localising Singapore's strategic approach to civic engagement and community building.",
   },
 ]
 
 export default function LocalizationKits() {
+  const [email, setEmail] = useState('')
+
   return (
-    <div>
-      {/* Hero */}
-      <section className="bg-[#111111] text-white py-20 md:py-28">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div>
-              <p className="text-[#C8102E] text-sm font-semibold tracking-widest uppercase mb-4">Localization Kits</p>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6">
-                The Singapore Way Localization Kits
-              </h1>
-              <p className="text-[#AAAAAA] text-xl leading-relaxed mb-8">
-                Easily adapt Singapore's proven principles to your local context using practical Localization Kits. Ideal for housing, education, governance reforms, and more.
-              </p>
-              <a
-                href="mailto:info@thesingaporeway.com"
-                className="inline-block bg-[#C8102E] text-white font-semibold px-8 py-4 text-sm tracking-wide hover:bg-[#a50d26] transition-colors"
-              >
-                Request Access
-              </a>
+    <div className="bg-white min-h-screen">
+      {/* Breadcrumb */}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+        <nav className="text-xs text-gray-400">
+          <span>Localization Kits</span>
+          <span className="mx-2">/</span>
+          <span className="text-[#C8102E]">Examples</span>
+        </nav>
+      </div>
+
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
+        <h1 className="text-2xl md:text-3xl font-bold text-[#C8102E] mb-3">
+          Localization Kits: Apply The Singapore Way Where You Are
+        </h1>
+        <p className="text-sm text-gray-600 leading-relaxed mb-2 max-w-3xl">
+          Each Localization Kit breaks down a key principle from The Singapore Way and retasks it for your local reality. Whether you're redesigning housing policy, education reform, or governance systems—these kits help you adapt, not copy.
+        </p>
+
+        {/* Email signup */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-8 mt-5">
+          <span className="text-sm text-gray-600">Get a curated list of Localization Kits by email</span>
+          <div className="flex gap-2">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              className="border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-[#C8102E] w-48"
+            />
+            <button className="bg-[#C8102E] text-white text-sm font-semibold px-4 py-1.5 rounded-full hover:bg-[#a50d26] transition-colors whitespace-nowrap">
+              Get the Localization Kits
+            </button>
+          </div>
+        </div>
+
+        {/* Filter row */}
+        <div className="flex flex-col sm:flex-row gap-3 mb-8">
+          <select className="border border-gray-300 rounded px-3 py-2 text-sm text-gray-600 focus:outline-none focus:border-[#C8102E] bg-white">
+            <option>Filter Kits</option>
+            <option>Governance</option>
+            <option>Economy</option>
+            <option>Education</option>
+            <option>Health</option>
+            <option>Urban</option>
+          </select>
+          <select className="border border-gray-300 rounded px-3 py-2 text-sm text-gray-600 focus:outline-none focus:border-[#C8102E] bg-white">
+            <option>Kits by Chapter</option>
+            {kits.map((k) => <option key={k.title}>{k.title}</option>)}
+          </select>
+        </div>
+
+        {/* Kits Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {kits.map(({ icon, title, desc }) => (
+            <div key={title} className="border border-gray-200 rounded-lg p-5 hover:border-[#C8102E] hover:shadow-sm transition-all">
+              <div className="text-2xl mb-3">{icon}</div>
+              <h3 className="text-sm font-bold text-gray-900 mb-2">{title}</h3>
+              <p className="text-xs text-gray-500 leading-relaxed">{desc}</p>
             </div>
-            <div className="relative flex justify-center">
-              <img
-                src="/assets/apply/localization-kits.png"
-                alt="Localization Kits"
-                className="w-full max-w-md shadow-2xl rounded-lg"
-              />
-            </div>
-          </div>
+          ))}
         </div>
-      </section>
-
-      {/* What Is a Kit */}
-      <section className="py-16 bg-[#F5F5F5] border-b border-[#E5E5E5]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              { title: 'Context Audit', desc: 'Map your local conditions, constraints, and opportunities to identify where adaptation is needed.' },
-              { title: 'Principle Mapping', desc: 'Match Singapore\'s relevant principles to your specific challenges and governance context.' },
-              { title: 'Implementation Roadmap', desc: 'Get a structured pathway for piloting and scaling adapted principles in your context.' },
-            ].map(({ title, desc }) => (
-              <div key={title} className="bg-white p-8 border border-[#E5E5E5]">
-                <div className="w-10 h-1 bg-[#C8102E] mb-5"></div>
-                <h3 className="text-lg font-bold text-[#111111] mb-3">{title}</h3>
-                <p className="text-[#666666] text-sm leading-relaxed">{desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Kits Grid */}
-      <section className="py-20 md:py-28 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-12 text-center">
-            <p className="text-[#C8102E] text-sm font-semibold tracking-widest uppercase mb-4">Available Kits</p>
-            <h2 className="text-4xl font-bold text-[#111111]">Sector-Specific Localization Kits</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {kits.map(({ domain, title, desc, items }) => (
-              <div key={title} className="border border-[#E5E5E5] overflow-hidden hover:shadow-lg hover:border-[#C8102E] transition-all group">
-                <div className="bg-[#111111] p-6">
-                  <span className="inline-block bg-[#C8102E] text-white text-xs font-bold px-3 py-1 tracking-widest uppercase mb-3">
-                    {domain}
-                  </span>
-                  <h3 className="text-white font-bold text-xl">{title}</h3>
-                </div>
-                <div className="p-6">
-                  <p className="text-[#666666] text-sm leading-relaxed mb-5">{desc}</p>
-                  <ul className="space-y-2">
-                    {items.map((item) => (
-                      <li key={item} className="flex gap-3 text-sm text-[#333333]">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#C8102E] mt-2 flex-shrink-0"></span>
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                  <button className="mt-6 w-full bg-[#F5F5F5] group-hover:bg-[#C8102E] text-[#111111] group-hover:text-white font-semibold py-3 text-sm tracking-wide transition-colors">
-                    Coming Soon
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="bg-[#C8102E] py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-8">
-          <div>
-            <h2 className="text-3xl font-bold text-white mb-2">Need a custom kit?</h2>
-            <p className="text-white/80">We work with governments, universities, and organizations to develop context-specific adaptation kits.</p>
-          </div>
-          <a
-            href="mailto:info@thesingaporeway.com"
-            className="bg-white text-[#C8102E] font-bold px-8 py-4 text-sm tracking-wide hover:bg-[#F5F5F5] transition-colors flex-shrink-0"
-          >
-            Contact Us
-          </a>
-        </div>
-      </section>
+      </div>
     </div>
   )
 }

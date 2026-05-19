@@ -1,114 +1,138 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
-const examples = [
+const useCases = [
   {
-    country: 'South Africa',
-    domain: 'Governance',
-    title: 'Rebuilding Public Trust Through Institutional Reform',
-    desc: 'How Singapore\'s anti-corruption and meritocracy principles are being studied by South African reform advocates to rebuild public sector legitimacy.',
+    icon: '🌱',
+    title: 'Climate by Design',
+    desc: "Embeds mandatory climate-positive urban-design studies at the University of Ghana so graduates can future-proof Accra.",
   },
   {
-    country: 'Rwanda',
-    domain: 'Urban Planning',
-    title: 'Vision 2050: Singapore Principles in Kigali',
-    desc: 'Rwanda\'s urban planners draw directly on Singapore\'s clean city, integrated planning, and long-term vision frameworks in developing Kigali.',
+    icon: '🔵',
+    title: 'Digital Twins for All',
+    desc: "CityTwin SaaS gives cash-strapped cities mobile digital-twin tools to test infrastructure scenarios before they build.",
   },
   {
-    country: 'Ethiopia',
-    domain: 'Economic Strategy',
-    title: 'Industrial Park Strategy Inspired by Singapore\'s FDI Model',
-    desc: 'Ethiopia\'s industrial zones programme borrows from Singapore\'s strategic FDI attraction and industrial upgrading ladder approach.',
+    icon: '💰',
+    title: 'From Informal to Investable',
+    desc: "Investable Bamako turns informal micro-enterprises into bankable industrial clusters through micro-parks and e-ID finance access.",
   },
   {
-    country: 'Kazakhstan',
-    domain: 'Education',
-    title: 'Reforming Higher Education for National Competitiveness',
-    desc: 'Kazakhstan\'s education reforms draw on Singapore\'s STEM emphasis, meritocracy in university admissions, and teaching quality frameworks.',
+    icon: '👥',
+    title: 'My City, My Chapter',
+    desc: "Neighborhood Chapters in Lalitpur let citizens co-design plans, budgets, and policies for their own streets.",
   },
   {
-    country: 'Jordan',
-    domain: 'Water Security',
-    title: 'Four Taps Strategy for a Water-Scarce Nation',
-    desc: 'Jordan\'s water security planners are adapting Singapore\'s diversified water sourcing strategy to their desert context.',
+    icon: '🏛️',
+    title: 'Redesigning the State',
+    desc: "Statecraft Studio Addis swaps rote policy study for live simulations that let students prototype real governance reforms.",
   },
   {
-    country: 'Vietnam',
-    domain: 'Economic Policy',
-    title: 'Long-Term Economic Transformation Planning',
-    desc: 'Vietnam\'s sustained economic development strategy shares structural similarities with Singapore\'s pragmatic, meritocratic industrial policy.',
+    icon: '🌳',
+    title: 'Roots in the Sky',
+    desc: "Skycool Nairobi converts unsafe rooftop shanties into modular green micro-villages with housing, farms, and services.",
+  },
+  {
+    icon: '🗺️',
+    title: 'Smart Streets, Safe Cities',
+    desc: "Port Louis Smart Street Grid links sensors, smart lights, and live dashboards to cut crime and smooth traffic.",
+  },
+  {
+    icon: '🌐',
+    title: 'Sovereignty as Strategy',
+    tag: 'Available via app',
+    desc: "Belmora 2040 equips Saint Calade to steer long-term development with a sovereign foresight framework and diaspora bonds.",
+  },
+  {
+    icon: '⚡',
+    title: 'City as a Service',
+    desc: "GridBlocks in Gulu delivers prepaid, high-uptake power via modular micro-grids that treat energy as a civic service.",
+  },
+  {
+    icon: '📚',
+    title: 'From Learning to Earning',
+    desc: "W-Connect in Asmara gives women micro-training credits and an app to translate new skills directly into higher income.",
+  },
+  {
+    icon: '🔬',
+    title: 'Scenario Labs for Clients',
+    desc: "Cobalt Strategies' Scenario Labs lets companies co-create modular simulations that bake long-term foresight into strategy.",
+  },
+  {
+    icon: '❤️',
+    title: 'Unity by Platform',
+    desc: "UbuntuConnect gamifies civic missions, tracks a Unity Index, and rewards diverse users to build social cohesion across Johannesburg.",
   },
 ]
 
 export default function Possibilities() {
+  const [email, setEmail] = useState('')
+
   return (
-    <div>
-      {/* Hero */}
-      <section className="bg-[#111111] text-white py-20 md:py-28">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div>
-              <p className="text-[#C8102E] text-sm font-semibold tracking-widest uppercase mb-4">Possibilities</p>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6">
-                Examples: Illustrative Use Cases
-              </h1>
-              <p className="text-[#AAAAAA] text-xl leading-relaxed mb-8">
-                This space is designed to help you explore how others have adapted Singapore's principles to address challenges in their own cities, ministries, and communities.
-              </p>
+    <div className="bg-white min-h-screen">
+      {/* Breadcrumb */}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+        <nav className="text-xs text-gray-400">
+          <Link to="/localization-kits" className="hover:text-gray-600 transition-colors">Localization Kits</Link>
+          <span className="mx-2">/</span>
+          <span className="text-[#C8102E]">Examples</span>
+        </nav>
+      </div>
+
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
+        <h1 className="text-2xl md:text-3xl font-bold text-[#C8102E] mb-3">
+          Examples: Explore Illustrative Use Cases of The Singapore Way
+        </h1>
+        <p className="text-sm text-gray-600 leading-relaxed mb-1 max-w-3xl">
+          Welcome to <strong>Illustrative Use Cases</strong>, where the principles of The Singapore Way meet complex challenges.
+        </p>
+        <p className="text-sm text-gray-600 leading-relaxed mb-6 max-w-3xl">
+          Explore how communities adapt these principles to address challenges across cities, ministries, and public systems.
+        </p>
+
+        {/* Email CTA */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-6">
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Get a curated list of Use Cases by email"
+            className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#C8102E] flex-1 max-w-xs"
+          />
+          <button className="bg-[#C8102E] text-white text-sm font-semibold px-5 py-2 rounded-full hover:bg-[#a50d26] transition-colors whitespace-nowrap">
+            Get the Use Cases
+          </button>
+        </div>
+
+        {/* Filter pills */}
+        <div className="flex gap-3 mb-8">
+          <button className="border border-[#C8102E] text-[#C8102E] text-sm font-semibold px-5 py-2 rounded-full hover:bg-[#C8102E] hover:text-white transition-colors">
+            What You'll Find Here
+          </button>
+          <button className="border border-[#C8102E] text-[#C8102E] text-sm font-semibold px-5 py-2 rounded-full hover:bg-[#C8102E] hover:text-white transition-colors">
+            Why Use Cases?
+          </button>
+        </div>
+
+        <h2 className="text-lg font-bold text-gray-900 mb-6">Explore the Cases</h2>
+
+        {/* Cases Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {useCases.map(({ icon, title, desc, tag }) => (
+            <div key={title} className="border border-gray-200 rounded-lg p-5 hover:border-[#C8102E] hover:shadow-sm transition-all relative">
+              {tag && (
+                <span className="absolute top-3 right-3 bg-[#C8102E] text-white text-[10px] font-bold px-2 py-0.5 rounded">
+                  {tag}
+                </span>
+              )}
+              <div className="text-2xl mb-3">{icon}</div>
+              <h3 className="text-sm font-bold text-gray-900 mb-2">{title}</h3>
+              <p className="text-xs text-gray-500 leading-relaxed">{desc}</p>
             </div>
-            <div className="relative flex justify-center">
-              <img
-                src="/assets/apply/examples.png"
-                alt="Examples and Possibilities"
-                className="w-full max-w-md shadow-2xl rounded-lg"
-              />
-            </div>
-          </div>
+          ))}
         </div>
-      </section>
-
-      {/* Intro */}
-      <section className="py-16 bg-[#F5F5F5] border-b border-[#E5E5E5]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl">
-          <h2 className="text-3xl font-bold text-[#111111] mb-4">What Are These Examples?</h2>
-          <p className="text-[#666666] text-lg leading-relaxed">
-            These are not Singapore replicas. They are illustrative demonstrations of how the <em>principles</em> of The Singapore Way have been — or could be — adapted to different national and local contexts. The goal is to spark ideas, not provide blueprints.
-          </p>
-        </div>
-      </section>
-
-      {/* Examples Grid */}
-      <section className="py-20 md:py-28 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {examples.map(({ country, domain, title, desc }) => (
-              <div key={title} className="border border-[#E5E5E5] p-8 hover:border-[#C8102E] hover:shadow-lg transition-all group">
-                <div className="flex items-center gap-3 mb-5">
-                  <span className="bg-[#C8102E] text-white text-xs font-bold px-3 py-1 tracking-wide">{domain}</span>
-                  <span className="text-[#999999] text-xs font-medium">{country}</span>
-                </div>
-                <h3 className="text-[#111111] font-bold text-lg mb-3 group-hover:text-[#C8102E] transition-colors leading-tight">{title}</h3>
-                <p className="text-[#666666] text-sm leading-relaxed">{desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Contribute */}
-      <section className="bg-[#111111] text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-8">
-          <div>
-            <h2 className="text-3xl font-bold mb-2">Know of a real example?</h2>
-            <p className="text-[#AAAAAA]">We're building a global library of adaptation examples. Contribute yours.</p>
-          </div>
-          <a
-            href="mailto:info@thesingaporeway.com"
-            className="bg-[#C8102E] text-white font-bold px-8 py-4 text-sm tracking-wide hover:bg-[#a50d26] transition-colors flex-shrink-0"
-          >
-            Share an Example
-          </a>
-        </div>
-      </section>
+      </div>
     </div>
   )
 }

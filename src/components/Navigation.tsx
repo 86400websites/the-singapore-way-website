@@ -2,13 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 
 const navItems = [
-  {
-    label: 'THE BOOK',
-    href: '/thebook',
-    children: [
-      { label: 'Buy Book', href: '/thebook' },
-    ],
-  },
+  { label: 'THE BOOK', href: '/thebook', children: [] },
   {
     label: 'LEARN',
     href: '/learn',
@@ -33,27 +27,15 @@ const navItems = [
       { label: 'Case Studies', href: '/teaching-materials' },
     ],
   },
-  {
-    label: 'IDEATE',
-    href: '/ideate',
-    children: [],
-  },
-  {
-    label: 'ABOUT',
-    href: '/about',
-    children: [
-      { label: 'Author', href: '/about' },
-      { label: 'Our Story', href: '/about' },
-      { label: 'What We Stand For', href: '/about' },
-    ],
-  },
+  { label: 'IDEATE', href: '/ideate', children: [] },
+  { label: 'ABOUT', href: '/about', children: [] },
 ]
 
 export default function Navigation() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
   const location = useLocation()
-  const dropdownRef = useRef<HTMLDivElement>(null)
+  const navRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     setMobileOpen(false)
@@ -61,99 +43,96 @@ export default function Navigation() {
   }, [location.pathname])
 
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+    const handleClick = (e: MouseEvent) => {
+      if (navRef.current && !navRef.current.contains(e.target as Node)) {
         setOpenDropdown(null)
       }
     }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
   }, [])
 
+  const isActive = (href: string) =>
+    location.pathname === href || location.pathname.startsWith(href + '/')
+
   return (
-    <header className="bg-white border-b border-[#E5E5E5] sticky top-0 z-50">
+    <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 md:h-20">
+        <div className="flex items-center justify-between h-16" ref={navRef}>
           {/* Logo */}
           <Link to="/" className="flex-shrink-0">
-            <img
-              src="/assets/logo/logo-red.png"
-              alt="The Singapore Way"
-              className="h-10 md:h-12 w-auto"
-            />
+            <img src="/assets/logo/logo-red.png" alt="The Singapore Way" className="h-10 w-auto" />
           </Link>
 
           {/* Desktop Nav */}
-          <nav className="hidden lg:flex items-center gap-1" ref={dropdownRef}>
+          <nav className="hidden lg:flex items-center gap-0.5">
             {navItems.map((item) => (
               <div key={item.label} className="relative">
                 {item.children.length > 0 ? (
-                  <button
-                    onClick={() => setOpenDropdown(openDropdown === item.label ? null : item.label)}
-                    className={`flex items-center gap-1 px-3 py-2 text-sm font-semibold tracking-wide transition-colors duration-150 ${
-                      location.pathname === item.href || location.pathname.startsWith(item.href + '/')
-                        ? 'text-[#C8102E]'
-                        : 'text-[#111111] hover:text-[#C8102E]'
-                    }`}
-                  >
-                    {item.label}
-                    <svg className={`w-3 h-3 transition-transform ${openDropdown === item.label ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </button>
+                  <>
+                    <button
+                      onClick={() => setOpenDropdown(openDropdown === item.label ? null : item.label)}
+                      className={`flex items-center gap-1 px-3 py-2 text-xs font-semibold tracking-widest transition-colors ${
+                        isActive(item.href) ? 'text-[#C8102E]' : 'text-gray-800 hover:text-[#C8102E]'
+                      }`}
+                    >
+                      {item.label}
+                      <svg className={`w-3 h-3 transition-transform ${openDropdown === item.label ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                    {openDropdown === item.label && (
+                      <div className="absolute top-full left-0 mt-1 w-52 bg-white border border-gray-200 shadow-lg z-50 py-1">
+                        {item.children.map((child) => (
+                          <Link
+                            key={child.label}
+                            to={child.href}
+                            className={`block px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors ${
+                              location.pathname === child.href ? 'text-[#C8102E]' : 'text-gray-700 hover:text-[#C8102E]'
+                            }`}
+                          >
+                            {child.label}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </>
                 ) : (
                   <NavLink
                     to={item.href}
-                    className={({ isActive }) =>
-                      `px-3 py-2 text-sm font-semibold tracking-wide transition-colors duration-150 ${
-                        isActive ? 'text-[#C8102E]' : 'text-[#111111] hover:text-[#C8102E]'
-                      }`
+                    className={({ isActive: a }) =>
+                      `px-3 py-2 text-xs font-semibold tracking-widest transition-colors ${a ? 'text-[#C8102E]' : 'text-gray-800 hover:text-[#C8102E]'}`
                     }
                   >
                     {item.label}
                   </NavLink>
                 )}
-
-                {item.children.length > 0 && openDropdown === item.label && (
-                  <div className="absolute top-full left-0 mt-1 w-56 bg-white border border-[#E5E5E5] shadow-lg z-50">
-                    {item.children.map((child) => (
-                      <Link
-                        key={child.label}
-                        to={child.href}
-                        className="block px-4 py-3 text-sm text-[#333333] hover:bg-[#F5F5F5] hover:text-[#C8102E] transition-colors border-b border-[#F0F0F0] last:border-0"
-                        onClick={() => setOpenDropdown(null)}
-                      >
-                        {child.label}
-                      </Link>
-                    ))}
-                  </div>
-                )}
               </div>
             ))}
           </nav>
 
-          {/* Right actions */}
-          <div className="hidden lg:flex items-center gap-3">
+          {/* Online Course CTA */}
+          <div className="hidden lg:block">
             <Link
-              to="/thebook"
-              className="bg-[#C8102E] text-white text-sm font-semibold px-5 py-2.5 hover:bg-[#a50d26] transition-colors"
+              to="/online-course"
+              className="bg-[#C8102E] text-white text-sm font-semibold px-5 py-2 rounded-full hover:bg-[#a50d26] transition-colors"
             >
-              Buy Book
+              Online Course
             </Link>
           </div>
 
-          {/* Mobile hamburger */}
+          {/* Mobile toggle */}
           <button
-            className="lg:hidden p-2 text-[#111111]"
+            className="lg:hidden p-2"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
           >
             {mobileOpen ? (
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             ) : (
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             )}
@@ -161,17 +140,15 @@ export default function Navigation() {
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile Menu */}
       {mobileOpen && (
-        <div className="lg:hidden border-t border-[#E5E5E5] bg-white">
-          <div className="px-4 py-4 space-y-1">
+        <div className="lg:hidden border-t border-gray-200 bg-white">
+          <div className="px-4 py-3 space-y-1">
             {navItems.map((item) => (
               <div key={item.label}>
                 <Link
                   to={item.href}
-                  className={`block py-2.5 text-sm font-semibold tracking-wide border-b border-[#F0F0F0] ${
-                    location.pathname === item.href ? 'text-[#C8102E]' : 'text-[#111111]'
-                  }`}
+                  className={`block py-2 text-xs font-semibold tracking-widest ${isActive(item.href) ? 'text-[#C8102E]' : 'text-gray-800'}`}
                   onClick={() => setMobileOpen(false)}
                 >
                   {item.label}
@@ -180,7 +157,7 @@ export default function Navigation() {
                   <Link
                     key={child.label}
                     to={child.href}
-                    className="block py-2 pl-4 text-sm text-[#666666] hover:text-[#C8102E]"
+                    className="block py-1.5 pl-4 text-sm text-gray-500 hover:text-[#C8102E]"
                     onClick={() => setMobileOpen(false)}
                   >
                     {child.label}
@@ -189,11 +166,11 @@ export default function Navigation() {
               </div>
             ))}
             <Link
-              to="/thebook"
-              className="block mt-4 bg-[#C8102E] text-white text-center text-sm font-semibold py-3 hover:bg-[#a50d26] transition-colors"
+              to="/online-course"
+              className="block mt-3 bg-[#C8102E] text-white text-sm font-semibold py-2.5 rounded-full text-center"
               onClick={() => setMobileOpen(false)}
             >
-              Buy Book
+              Online Course
             </Link>
           </div>
         </div>
