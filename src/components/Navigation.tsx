@@ -56,39 +56,39 @@ export default function Navigation() {
     location.pathname === href || location.pathname.startsWith(href + '/')
 
   return (
-    <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16" ref={navRef}>
+    <header className="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        <div className="flex items-center justify-between h-[70px]" ref={navRef}>
           {/* Logo */}
           <Link to="/" className="flex-shrink-0">
-            <img src="/assets/logo/logo-red.png" alt="The Singapore Way" className="h-10 w-auto" />
+            <img src="/assets/logo/logo-red.png" alt="The Singapore Way" className="h-11 w-auto" />
           </Link>
 
           {/* Desktop Nav */}
-          <nav className="hidden lg:flex items-center gap-0.5">
+          <nav className="hidden lg:flex items-center">
             {navItems.map((item) => (
               <div key={item.label} className="relative">
                 {item.children.length > 0 ? (
                   <>
                     <button
                       onClick={() => setOpenDropdown(openDropdown === item.label ? null : item.label)}
-                      className={`flex items-center gap-1 px-3 py-2 text-xs font-semibold tracking-widest transition-colors ${
-                        isActive(item.href) ? 'text-[#C8102E]' : 'text-gray-800 hover:text-[#C8102E]'
+                      className={`flex items-center gap-1 px-4 py-2 text-[11px] font-bold tracking-[0.12em] transition-colors ${
+                        isActive(item.href) ? 'text-[#C8102E]' : 'text-gray-700 hover:text-[#C8102E]'
                       }`}
                     >
                       {item.label}
-                      <svg className={`w-3 h-3 transition-transform ${openDropdown === item.label ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      <svg className={`w-3 h-3 transition-transform duration-200 ${openDropdown === item.label ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
                       </svg>
                     </button>
                     {openDropdown === item.label && (
-                      <div className="absolute top-full left-0 mt-1 w-52 bg-white border border-gray-200 shadow-lg z-50 py-1">
+                      <div className="absolute top-full left-0 mt-1 w-56 bg-white border border-gray-100 shadow-xl rounded-md z-50 py-1.5 overflow-hidden">
                         {item.children.map((child) => (
                           <Link
                             key={child.label}
                             to={child.href}
-                            className={`block px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors ${
-                              location.pathname === child.href ? 'text-[#C8102E]' : 'text-gray-700 hover:text-[#C8102E]'
+                            className={`block px-4 py-2.5 text-[13px] hover:bg-gray-50 transition-colors ${
+                              location.pathname === child.href ? 'text-[#C8102E] font-semibold' : 'text-gray-600 hover:text-[#C8102E]'
                             }`}
                           >
                             {child.label}
@@ -101,7 +101,7 @@ export default function Navigation() {
                   <NavLink
                     to={item.href}
                     className={({ isActive: a }) =>
-                      `px-3 py-2 text-xs font-semibold tracking-widest transition-colors ${a ? 'text-[#C8102E]' : 'text-gray-800 hover:text-[#C8102E]'}`
+                      `px-4 py-2 text-[11px] font-bold tracking-[0.12em] transition-colors ${a ? 'text-[#C8102E]' : 'text-gray-700 hover:text-[#C8102E]'}`
                     }
                   >
                     {item.label}
@@ -115,7 +115,7 @@ export default function Navigation() {
           <div className="hidden lg:block">
             <Link
               to="/online-course"
-              className="bg-[#C8102E] text-white text-sm font-semibold px-5 py-2 rounded-full hover:bg-[#a50d26] transition-colors"
+              className="bg-[#C8102E] text-white text-[13px] font-bold px-6 py-2.5 rounded-full hover:bg-[#a50d26] transition-all duration-200 shadow-sm hover:shadow-md"
             >
               Online Course
             </Link>
@@ -123,7 +123,7 @@ export default function Navigation() {
 
           {/* Mobile toggle */}
           <button
-            className="lg:hidden p-2"
+            className="lg:hidden p-2 text-gray-600"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
           >
@@ -142,13 +142,13 @@ export default function Navigation() {
 
       {/* Mobile Menu */}
       {mobileOpen && (
-        <div className="lg:hidden border-t border-gray-200 bg-white">
-          <div className="px-4 py-3 space-y-1">
+        <div className="lg:hidden border-t border-gray-100 bg-white">
+          <div className="px-6 py-4 space-y-1">
             {navItems.map((item) => (
               <div key={item.label}>
                 <Link
                   to={item.href}
-                  className={`block py-2 text-xs font-semibold tracking-widest ${isActive(item.href) ? 'text-[#C8102E]' : 'text-gray-800'}`}
+                  className={`block py-2.5 text-[11px] font-bold tracking-[0.12em] ${isActive(item.href) ? 'text-[#C8102E]' : 'text-gray-700'}`}
                   onClick={() => setMobileOpen(false)}
                 >
                   {item.label}
@@ -157,7 +157,7 @@ export default function Navigation() {
                   <Link
                     key={child.label}
                     to={child.href}
-                    className="block py-1.5 pl-4 text-sm text-gray-500 hover:text-[#C8102E]"
+                    className="block py-2 pl-4 text-[13px] text-gray-500 hover:text-[#C8102E] transition-colors"
                     onClick={() => setMobileOpen(false)}
                   >
                     {child.label}
@@ -167,7 +167,7 @@ export default function Navigation() {
             ))}
             <Link
               to="/online-course"
-              className="block mt-3 bg-[#C8102E] text-white text-sm font-semibold py-2.5 rounded-full text-center"
+              className="block mt-4 bg-[#C8102E] text-white text-[13px] font-bold py-3 rounded-full text-center hover:bg-[#a50d26] transition-colors"
               onClick={() => setMobileOpen(false)}
             >
               Online Course

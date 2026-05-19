@@ -28,7 +28,7 @@ const faqs = [
   },
   {
     q: 'Are there any free resources?',
-    a: 'Yes. The blog is free and regularly updated with articles applying Singapore\'s principles to real-world challenges. The podcast episodes are also freely available. We will also publish a free summary of the book.',
+    a: "Yes. The blog is free and regularly updated with articles applying Singapore's principles to real-world challenges. The podcast episodes are also freely available. We will also publish a free summary of the book.",
   },
   {
     q: "Can I teach The Singapore Way in my university or program?",
@@ -40,43 +40,53 @@ export default function QA() {
   const [open, setOpen] = useState<number | null>(null)
 
   return (
-    <div className="bg-white min-h-screen">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <h1 className="text-2xl font-bold text-[#C8102E] mb-2">Frequently Asked Questions</h1>
-        <p className="text-sm text-gray-500 mb-10">Everything you need to know about The Singapore Way platform.</p>
+    <div className="bg-gray-50 min-h-screen">
+      <div className="max-w-3xl mx-auto px-6 py-16">
 
-        <div className="space-y-2">
+        <div className="mb-10">
+          <h1 className="text-2xl md:text-3xl font-extrabold text-[#C8102E] tracking-tight mb-2">Frequently Asked Questions</h1>
+          <p className="text-[15px] text-gray-500">Everything you need to know about The Singapore Way platform.</p>
+        </div>
+
+        <div className="space-y-3">
           {faqs.map(({ q, a }, i) => (
-            <div key={i} className="border border-gray-200 rounded-lg overflow-hidden">
+            <div
+              key={i}
+              className={`bg-white rounded-2xl border shadow-sm overflow-hidden transition-all duration-200 ${
+                open === i ? 'border-[#C8102E]/20 shadow-md' : 'border-gray-100'
+              }`}
+            >
               <button
-                className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-gray-50 transition-colors"
+                className="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-gray-50 transition-colors"
                 onClick={() => setOpen(open === i ? null : i)}
               >
-                <span className="font-semibold text-gray-900 text-sm pr-4">{q}</span>
-                <span className={`text-gray-400 flex-shrink-0 transition-transform ${open === i ? 'rotate-180' : ''}`}>
+                <span className="font-bold text-gray-900 text-[14px] pr-6 leading-snug">{q}</span>
+                <span className={`text-gray-400 flex-shrink-0 transition-transform duration-200 ${open === i ? 'rotate-180 text-[#C8102E]' : ''}`}>
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
                   </svg>
                 </span>
               </button>
               {open === i && (
-                <div className="px-5 pb-5 border-t border-gray-100">
-                  <p className="text-sm text-gray-600 leading-relaxed pt-4">{a}</p>
+                <div className="px-6 pb-6 border-t border-gray-50">
+                  <p className="text-[14px] text-gray-600 leading-relaxed pt-4">{a}</p>
                 </div>
               )}
             </div>
           ))}
         </div>
 
-        <div className="mt-12 text-center">
-          <p className="text-sm text-gray-500 mb-3">Still have a question?</p>
+        <div className="mt-14 bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center">
+          <p className="text-[14px] font-semibold text-gray-700 mb-2">Still have a question?</p>
+          <p className="text-[13px] text-gray-400 mb-6">Our team is happy to help. Reach out anytime.</p>
           <a
             href="mailto:info@thesingaporeway.com"
-            className="inline-block bg-[#C8102E] text-white text-sm font-semibold px-7 py-2.5 rounded-full hover:bg-[#a50d26] transition-colors"
+            className="inline-block bg-[#C8102E] text-white text-[13px] font-bold px-8 py-3 rounded-full hover:bg-[#a50d26] transition-all duration-200 shadow-sm hover:shadow-md"
           >
             Contact Us
           </a>
         </div>
+
       </div>
     </div>
   )

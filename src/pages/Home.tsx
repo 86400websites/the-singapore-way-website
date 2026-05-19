@@ -30,23 +30,24 @@ const pillars = [
 export default function Home() {
   return (
     <div className="bg-white">
+
       {/* Hero */}
-      <section className="bg-white py-16 md:py-20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+      <section className="bg-white py-20 md:py-28">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             <div>
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight mb-3">
+              <h1 className="text-5xl md:text-6xl font-extrabold text-gray-900 leading-[1.1] tracking-tight mb-4">
                 The Singapore Way
               </h1>
-              <p className="text-base font-semibold text-gray-700 mb-4">
+              <p className="text-base md:text-lg font-semibold text-gray-600 mb-5 leading-snug">
                 More Than a Book, a Bridge from Singapore to the Global Majority
               </p>
-              <p className="text-sm text-gray-600 leading-relaxed mb-8">
+              <p className="text-[15px] text-gray-500 leading-relaxed mb-9 max-w-lg">
                 Singapore's success wasn't a miracle—it was a method. The Singapore Way turns that method into something practical and adaptable for leaders, educators, and change-makers across the Global Majority. It's not about copying Singapore, but learning how to think, plan, and execute with clarity—then applying it to your own context.
               </p>
               <Link
                 to="/learn"
-                className="inline-block bg-[#C8102E] text-white text-sm font-semibold px-7 py-2.5 rounded-full hover:bg-[#a50d26] transition-colors"
+                className="inline-block bg-[#C8102E] text-white text-[13px] font-bold px-8 py-3.5 rounded-full hover:bg-[#a50d26] transition-all duration-200 shadow-sm hover:shadow-md"
               >
                 Start Exploring
               </Link>
@@ -55,7 +56,7 @@ export default function Home() {
               <img
                 src="/assets/home/hero-illustration.png"
                 alt="Person reading The Singapore Way book with Singapore skyline"
-                className="w-full max-w-lg"
+                className="w-full max-w-[520px]"
               />
             </div>
           </div>
@@ -63,46 +64,46 @@ export default function Home() {
       </section>
 
       {/* Quote */}
-      <section className="py-10 bg-white">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <p className="text-[#C8102E] text-base md:text-lg italic font-medium">
-            "Don't borrow the fruit. Borrow the root." – <strong>Maher Kaddoura</strong>
+      <section className="py-12 bg-[#fef9f6]">
+        <div className="max-w-3xl mx-auto px-6 text-center">
+          <p className="text-[#C8102E] text-lg md:text-xl italic font-semibold leading-relaxed">
+            "Don't borrow the fruit. Borrow the root." – <strong className="not-italic font-bold">Maher Kaddoura</strong>
           </p>
         </div>
       </section>
 
       {/* Framework Section */}
-      <section className="py-12 md:py-16 bg-white">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <section className="py-20 md:py-24 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-20 items-center">
             <div className="flex justify-center">
               <img
                 src="/assets/home/framework.png"
                 alt="A Practical Framework for National and Local Transformation"
-                className="w-full max-w-md"
+                className="w-full max-w-lg"
               />
             </div>
             <div>
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-5 leading-tight">
-                <span className="bg-[#C8102E] text-white px-1">A Practical Framework for</span>
+              <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900 mb-6 leading-tight tracking-tight">
+                <span className="inline bg-[#C8102E] text-white px-1.5 py-0.5 leading-[1.5] box-decoration-clone">A Practical Framework for</span>
                 <br />
-                <span className="bg-[#C8102E] text-white px-1">National and Local Transformation</span>
+                <span className="inline bg-[#C8102E] text-white px-1.5 py-0.5 leading-[1.5] box-decoration-clone">National and Local Transformation</span>
               </h2>
-              <p className="text-sm text-gray-600 leading-relaxed mb-3">
+              <p className="text-[15px] text-gray-600 leading-relaxed mb-3">
                 Too many countries are asked to admire success stories…<br />
                 But they're rarely given the tools to build their own.
               </p>
-              <p className="text-sm text-gray-600 leading-relaxed mb-3">
+              <p className="text-[15px] text-gray-600 leading-relaxed mb-3">
                 Singapore's rise wasn't luck. It was systems thinking, designed for decades, not cycles.
               </p>
-              <p className="text-sm text-gray-600 leading-relaxed mb-8">
+              <p className="text-[15px] text-gray-600 leading-relaxed mb-9">
                 This book and platform share a framework and principles—not to copy them, but to understand them, teach them, and adapt them to build new, local futures.
               </p>
               <div className="flex flex-wrap gap-3">
-                <button className="bg-[#C8102E] text-white text-sm font-semibold px-6 py-2.5 rounded-full hover:bg-[#a50d26] transition-colors">
+                <button className="bg-[#C8102E] text-white text-[13px] font-bold px-7 py-3 rounded-full hover:bg-[#a50d26] transition-all duration-200 shadow-sm hover:shadow-md">
                   Watch Video
                 </button>
-                <button className="bg-[#C8102E] text-white text-sm font-semibold px-6 py-2.5 rounded-full hover:bg-[#a50d26] transition-colors">
+                <button className="bg-[#C8102E] text-white text-[13px] font-bold px-7 py-3 rounded-full hover:bg-[#a50d26] transition-all duration-200 shadow-sm hover:shadow-md">
                   Download Free Summary
                 </button>
               </div>
@@ -112,30 +113,30 @@ export default function Home() {
       </section>
 
       {/* Who Is It For */}
-      <section className="py-12 md:py-16 bg-white">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <section className="py-20 md:py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-20 items-center">
             <div>
-              <h2 className="text-2xl md:text-3xl font-bold mb-6">
-                <span className="bg-[#C8102E] text-white px-2 py-0.5">who is it for?</span>
+              <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight mb-7">
+                <span className="inline bg-[#C8102E] text-white px-2 py-1 box-decoration-clone">who is it for?</span>
               </h2>
-              <ul className="space-y-3 mb-8">
-                <li className="flex items-start gap-2 text-sm text-gray-700">
-                  <span className="text-gray-500 mt-0.5">–</span>
+              <ul className="space-y-4 mb-9">
+                <li className="flex items-start gap-3 text-[15px] text-gray-700">
+                  <span className="text-[#C8102E] font-bold mt-0.5 flex-shrink-0">—</span>
                   <span>Educators, who want to teach systems, not just policies.</span>
                 </li>
-                <li className="flex items-start gap-2 text-sm text-gray-700">
-                  <span className="text-gray-500 mt-0.5">–</span>
+                <li className="flex items-start gap-3 text-[15px] text-gray-700">
+                  <span className="text-[#C8102E] font-bold mt-0.5 flex-shrink-0">—</span>
                   <span>Government leaders, who want to pilot reforms with clarity.</span>
                 </li>
-                <li className="flex items-start gap-2 text-sm text-gray-700">
-                  <span className="text-gray-500 mt-0.5">–</span>
+                <li className="flex items-start gap-3 text-[15px] text-gray-700">
+                  <span className="text-[#C8102E] font-bold mt-0.5 flex-shrink-0">—</span>
                   <span>Social innovators, who want to design smart from the start.</span>
                 </li>
               </ul>
               <Link
                 to="/q-a"
-                className="inline-block bg-[#C8102E] text-white text-sm font-semibold px-6 py-2.5 rounded-full hover:bg-[#a50d26] transition-colors"
+                className="inline-block bg-[#C8102E] text-white text-[13px] font-bold px-7 py-3 rounded-full hover:bg-[#a50d26] transition-all duration-200 shadow-sm hover:shadow-md"
               >
                 Questions & answers
               </Link>
@@ -144,7 +145,7 @@ export default function Home() {
               <img
                 src="/assets/home/who-is-it-for.png"
                 alt="Who is The Singapore Way for"
-                className="w-full max-w-md"
+                className="w-full max-w-lg"
               />
             </div>
           </div>
@@ -152,24 +153,27 @@ export default function Home() {
       </section>
 
       {/* Four Pillars */}
-      <section className="py-12 md:py-16 bg-white">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-20 md:py-24 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {pillars.map((pillar) => (
-              <div key={pillar.title} className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-                <div className="h-48 overflow-hidden bg-[#f9f5ee]">
+              <div
+                key={pillar.title}
+                className="group bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
+              >
+                <div className="h-52 overflow-hidden bg-[#faf8f4]">
                   <img
                     src={pillar.image}
                     alt={pillar.title}
-                    className="w-full h-full object-contain p-4"
+                    className="w-full h-full object-contain p-5"
                   />
                 </div>
-                <div className="p-6">
-                  <h3 className="text-lg font-bold text-gray-900 mb-2">{pillar.title}</h3>
-                  <p className="text-sm text-gray-600 leading-relaxed mb-5">{pillar.description}</p>
+                <div className="p-7">
+                  <h3 className="text-lg font-extrabold text-gray-900 tracking-tight mb-2.5">{pillar.title}</h3>
+                  <p className="text-[14px] text-gray-500 leading-relaxed mb-6">{pillar.description}</p>
                   <Link
                     to={pillar.href}
-                    className="inline-flex items-center gap-1.5 bg-[#C8102E] text-white text-sm font-semibold px-5 py-2 rounded-full hover:bg-[#a50d26] transition-colors"
+                    className="inline-flex items-center gap-2 bg-[#C8102E] text-white text-[13px] font-bold px-6 py-2.5 rounded-full hover:bg-[#a50d26] transition-all duration-200 shadow-sm hover:shadow-md"
                   >
                     Explore
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -182,6 +186,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+
     </div>
   )
 }
