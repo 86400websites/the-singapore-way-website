@@ -55,7 +55,7 @@ export default function Home() {
             <div className="lg:col-span-6 order-1 lg:order-2">
               <div className="relative mx-auto w-full max-w-[560px] aspect-[16/9]">
                 <img
-                  src="/assets/home/hero-illustration.png"
+                  src="/assets/home/home-hero-singapore-way.png"
                   alt="Person reading The Singapore Way book with Singapore skyline"
                   className="absolute inset-0 w-full h-full object-contain"
                   loading="eager"
