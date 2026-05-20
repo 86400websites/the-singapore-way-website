@@ -1,3 +1,0 @@
-# The Singapore Way
-
-Initializing repository...
