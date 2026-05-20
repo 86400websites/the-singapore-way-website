@@ -32,7 +32,7 @@ export default function Home() {
     <div className="bg-white">
 
       {/* Hero */}
-      <section className="bg-white pt-16 pb-14 sm:pt-20 sm:pb-20 lg:pt-24 lg:pb-28">
+      <section className="bg-[#fbf5f2] pt-16 pb-14 sm:pt-20 sm:pb-20 lg:pt-24 lg:pb-28">
         <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
             <div className="lg:col-span-6 order-2 lg:order-1 text-center lg:text-left">
@@ -53,7 +53,7 @@ export default function Home() {
               </Link>
             </div>
             <div className="lg:col-span-6 order-1 lg:order-2">
-              <div className="relative mx-auto w-full max-w-[560px] aspect-[16/9]">
+              <div className="relative mx-auto w-full max-w-[480px] sm:max-w-[580px] lg:max-w-[640px] aspect-square">
                 <img
                   src="/assets/home/home-hero-singapore-way.png"
                   alt="Person reading The Singapore Way book with Singapore skyline"
