@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import PageHero from '../components/PageHero'
 
 const faqs = [
   {
@@ -40,54 +40,68 @@ export default function QA() {
   const [open, setOpen] = useState<number | null>(null)
 
   return (
-    <div className="bg-gray-50 min-h-screen">
-      <div className="max-w-3xl mx-auto px-6 py-16">
+    <div className="bg-white">
+      <PageHero
+        eyebrow="FAQ"
+        title="Frequently asked questions."
+        description="Everything you need to know about The Singapore Way platform — the framework, the audience, and how to get started."
+        align="left"
+        variant="light"
+      />
 
-        <div className="mb-10">
-          <h1 className="text-2xl md:text-3xl font-extrabold text-[#C8102E] tracking-tight mb-2">Frequently Asked Questions</h1>
-          <p className="text-[15px] text-gray-500">Everything you need to know about The Singapore Way platform.</p>
-        </div>
+      <section className="py-14 md:py-20 bg-[#F5F5F5] border-t border-[#ECECEC]">
+        <div className="max-w-3xl mx-auto px-5 sm:px-6 lg:px-8">
 
-        <div className="space-y-3">
-          {faqs.map(({ q, a }, i) => (
-            <div
-              key={i}
-              className={`bg-white rounded-2xl border shadow-sm overflow-hidden transition-all duration-200 ${
-                open === i ? 'border-[#C8102E]/20 shadow-md' : 'border-gray-100'
-              }`}
-            >
-              <button
-                className="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-gray-50 transition-colors"
-                onClick={() => setOpen(open === i ? null : i)}
-              >
-                <span className="font-bold text-gray-900 text-[14px] pr-6 leading-snug">{q}</span>
-                <span className={`text-gray-400 flex-shrink-0 transition-transform duration-200 ${open === i ? 'rotate-180 text-[#C8102E]' : ''}`}>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </span>
-              </button>
-              {open === i && (
-                <div className="px-6 pb-6 border-t border-gray-50">
-                  <p className="text-[14px] text-gray-600 leading-relaxed pt-4">{a}</p>
+          <div className="space-y-3">
+            {faqs.map(({ q, a }, i) => {
+              const isOpen = open === i
+              return (
+                <div
+                  key={i}
+                  className={`bg-white rounded-2xl border overflow-hidden transition-all duration-200 ${
+                    isOpen
+                      ? 'border-[#C8102E]/30 shadow-[0_8px_28px_-12px_rgba(200,16,46,0.18)]'
+                      : 'border-[#ECECEC] hover:border-[#DDDDDD]'
+                  }`}
+                >
+                  <button
+                    className="w-full flex items-center justify-between px-6 md:px-7 py-5 text-left transition-colors"
+                    onClick={() => setOpen(isOpen ? null : i)}
+                    aria-expanded={isOpen}
+                  >
+                    <span className="font-bold text-[#111111] text-[16px] md:text-[17px] pr-6 leading-[1.4]">{q}</span>
+                    <span className={`flex-shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180 text-[#C8102E]' : 'text-[#888888]'}`} aria-hidden="true">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </span>
+                  </button>
+                  {isOpen && (
+                    <div className="px-6 md:px-7 pb-6 border-t border-[#F0F0F0]">
+                      <p className="text-[15px] md:text-[16px] text-[#444444] leading-[1.7] pt-5">{a}</p>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          ))}
-        </div>
+              )
+            })}
+          </div>
 
-        <div className="mt-14 bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center">
-          <p className="text-[14px] font-semibold text-gray-700 mb-2">Still have a question?</p>
-          <p className="text-[13px] text-gray-400 mb-6">Our team is happy to help. Reach out anytime.</p>
-          <a
-            href="mailto:info@thesingaporeway.com"
-            className="inline-block bg-[#C8102E] text-white text-[13px] font-bold px-8 py-3 rounded-full hover:bg-[#a50d26] transition-all duration-200 shadow-sm hover:shadow-md"
-          >
-            Contact Us
-          </a>
-        </div>
+          {/* Contact CTA */}
+          <div className="mt-12 md:mt-16 card-editorial p-8 md:p-10 text-center">
+            <p className="eyebrow mb-4">Still curious?</p>
+            <h2 className="text-2xl md:text-3xl font-bold text-[#111111] leading-[1.2] mb-3">
+              We're happy to help.
+            </h2>
+            <p className="text-[15px] md:text-[16px] text-[#666666] leading-[1.65] mb-7 max-w-md mx-auto">
+              Reach out and our team will follow up — usually within a day or two.
+            </p>
+            <a href="mailto:info@thesingaporeway.com" className="btn-pill">
+              Contact Us
+            </a>
+          </div>
 
-      </div>
+        </div>
+      </section>
     </div>
   )
 }
