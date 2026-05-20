@@ -1,29 +1,33 @@
-import { Link } from 'react-router-dom'
-
 const testimonials = [
   {
     quote: "This book doesn't romanticise success — it explains it. The Singapore Way shows how disciplined leadership and long-term governance actually work.",
-    author: "Dr. Adrian Koh, Public Policy Advisor",
+    author: "Dr. Adrian Koh",
+    role: "Public Policy Advisor",
   },
   {
     quote: "Clear, grounded, and intellectually honest. A rare balance of research, storytelling, and real-world relevance.",
-    author: "Prof. Eleanor Matthews, Governance Lecturer",
+    author: "Prof. Eleanor Matthews",
+    role: "Governance Lecturer",
   },
   {
     quote: "This book reframes how you think about change. It's not about copying Singapore — it's about learning how to think long-term.",
-    author: "Aisha Ralamato, Social Impact Leader",
+    author: "Aisha Ralamato",
+    role: "Social Impact Leader",
   },
   {
     quote: "What stood out is the focus on execution, not ideology. It explains why trust, consistency, and pragmatism matter.",
-    author: "Marcus Lim, Former Civil Service Director",
+    author: "Marcus Lim",
+    role: "Former Civil Service Director",
   },
   {
     quote: "A powerful reminder that constraints don't limit progress — poor decisions do. Highly relevant for leaders everywhere.",
-    author: "Jonathan Reed, Development Strategy Consultant",
+    author: "Jonathan Reed",
+    role: "Development Strategy Consultant",
   },
   {
     quote: "Few books translate national success into practical principles. This one does — clearly, and without fluff.",
-    author: "Daniel Niema, Startup Founder",
+    author: "Daniel Niema",
+    role: "Startup Founder",
   },
 ]
 
@@ -32,29 +36,31 @@ export default function TheBook() {
     <div className="bg-white">
 
       {/* Hero */}
-      <section className="py-20 md:py-28 bg-white">
-        <div className="max-w-6xl mx-auto px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-20 items-center">
-            <div>
-              <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 leading-tight tracking-tight mb-5">
-                More Than a Theory, a Practical Toolkit Empowering You to Create…
+      <section className="bg-[#fbf5f2]">
+        <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-16 sm:py-20 md:py-24 lg:py-28">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+            <div className="lg:col-span-7 order-2 lg:order-1">
+              <p className="eyebrow mb-5">The Book</p>
+              <h1 className="text-3xl sm:text-4xl md:text-[44px] lg:text-5xl font-bold text-[#111111] leading-[1.12] tracking-[-0.01em] mb-6">
+                More than a theory — a practical toolkit for change.
               </h1>
-              <p className="text-[15px] text-gray-500 leading-relaxed mb-9">
-                The Singapore Way is not theory—it's a practical toolkit for change. In 17 focused chapters, it shows how scalable systems are built in areas like housing, water, education, and governance—using clear principles and real case studies.
+              <span className="editorial-rule mb-7" aria-hidden="true" />
+              <p className="lede mb-9 max-w-xl">
+                The Singapore Way is not theory. In 17 focused chapters, it shows how scalable systems are built in housing, water, education, and governance — using clear principles and real case studies.
               </p>
               <div className="flex flex-wrap gap-3">
                 <a
                   href="https://www.amazon.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 bg-[#C8102E] text-white text-[13px] font-bold px-7 py-3 rounded-full hover:bg-[#a50d26] transition-all duration-200 shadow-sm hover:shadow-md"
+                  className="btn-pill"
                 >
                   Buy Now
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                   </svg>
                 </a>
-                <button className="inline-flex items-center gap-2 bg-[#C8102E] text-white text-[13px] font-bold px-7 py-3 rounded-full hover:bg-[#a50d26] transition-all duration-200 shadow-sm hover:shadow-md">
+                <button className="btn-pill-outline">
                   Download Free Summary
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -62,13 +68,12 @@ export default function TheBook() {
                 </button>
               </div>
             </div>
-            <div className="flex justify-center lg:justify-end">
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-red-100 to-orange-50 rounded-2xl blur-3xl opacity-40 scale-95"></div>
+            <div className="lg:col-span-5 order-1 lg:order-2 flex justify-center lg:justify-end">
+              <div className="relative w-full max-w-[460px] sm:max-w-[520px] lg:max-w-[560px] bg-white rounded-3xl p-3 sm:p-4 shadow-[0_28px_60px_-32px_rgba(17,17,17,0.22)]">
                 <img
-                  src="/assets/book/book-cover.png"
+                  src="/assets/book/the-singapore-way-book.png"
                   alt="The Singapore Way by Maher Kaddoura"
-                  className="relative w-56 md:w-72 shadow-2xl rounded-sm"
+                  className="block w-full h-auto rounded-2xl"
                 />
               </div>
             </div>
@@ -77,21 +82,32 @@ export default function TheBook() {
       </section>
 
       {/* Testimonials */}
-      <section className="py-20 md:py-24 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-6 lg:px-8">
-          <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900 text-center tracking-tight mb-12">
-            Don't just take our word for it
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {testimonials.map(({ quote, author }) => (
-              <div
+      <section className="py-20 md:py-28 bg-white border-t border-[#ECECEC]">
+        <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
+          <div className="max-w-2xl mx-auto text-center mb-14">
+            <p className="eyebrow mb-4">What Readers Say</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-[#111111] leading-[1.15]">
+              Don't just take our word for it.
+            </h2>
+            <span className="editorial-rule mx-auto mt-6" aria-hidden="true" />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+            {testimonials.map(({ quote, author, role }) => (
+              <figure
                 key={author}
-                className="bg-white border border-gray-100 rounded-2xl p-7 shadow-sm hover:shadow-md transition-shadow duration-200"
+                className="card-editorial p-8 md:p-10 flex flex-col"
               >
-                <div className="text-[#C8102E] text-4xl font-serif leading-none mb-3 opacity-60">"</div>
-                <p className="text-[15px] text-gray-700 italic leading-relaxed mb-5">"{quote}"</p>
-                <p className="text-[13px] text-gray-400 font-medium text-right">— {author}</p>
-              </div>
+                <div className="text-[#C8102E] font-bold text-5xl leading-none mb-4 opacity-50 select-none" aria-hidden="true">
+                  &ldquo;
+                </div>
+                <blockquote className="text-[16px] md:text-[17px] text-[#222222] italic leading-[1.65] mb-6 flex-1">
+                  {quote}
+                </blockquote>
+                <figcaption>
+                  <p className="text-[14px] font-bold text-[#111111] not-italic">{author}</p>
+                  <p className="text-[13px] text-[#888888] mt-0.5">{role}</p>
+                </figcaption>
+              </figure>
             ))}
           </div>
         </div>
