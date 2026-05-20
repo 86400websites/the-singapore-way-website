@@ -18,7 +18,8 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        sans: ['Libre Baskerville', 'Georgia', 'Times New Roman', 'serif'],
+        serif: ['Libre Baskerville', 'Georgia', 'Times New Roman', 'serif'],
       },
     },
   },
