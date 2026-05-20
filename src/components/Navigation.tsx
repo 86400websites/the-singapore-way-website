@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 
 const navItems = [
@@ -33,24 +33,7 @@ const navItems = [
 
 export default function Navigation() {
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null)
   const location = useLocation()
-  const navRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    setMobileOpen(false)
-    setOpenDropdown(null)
-  }, [location.pathname])
-
-  useEffect(() => {
-    const handleClick = (e: MouseEvent) => {
-      if (navRef.current && !navRef.current.contains(e.target as Node)) {
-        setOpenDropdown(null)
-      }
-    }
-    document.addEventListener('mousedown', handleClick)
-    return () => document.removeEventListener('mousedown', handleClick)
-  }, [])
 
   const isActive = (href: string) =>
     location.pathname === href || location.pathname.startsWith(href + '/')
@@ -58,7 +41,7 @@ export default function Navigation() {
   return (
     <header className="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="flex items-center justify-between h-[70px]" ref={navRef}>
+        <div className="flex items-center justify-between h-[70px]">
           {/* Logo */}
           <Link to="/" className="flex-shrink-0">
             <img src="/assets/logo/logo-red.png" alt="The Singapore Way" className="h-11 w-auto" />
@@ -67,35 +50,46 @@ export default function Navigation() {
           {/* Desktop Nav */}
           <nav className="hidden lg:flex items-center">
             {navItems.map((item) => (
-              <div key={item.label} className="relative">
+              <div key={item.label} className="relative group">
                 {item.children.length > 0 ? (
                   <>
-                    <button
-                      onClick={() => setOpenDropdown(openDropdown === item.label ? null : item.label)}
+                    {/* Top-level link — navigates to the main page */}
+                    <Link
+                      to={item.href}
                       className={`flex items-center gap-1 px-4 py-2 text-[11px] font-bold tracking-[0.12em] transition-colors ${
                         isActive(item.href) ? 'text-[#C8102E]' : 'text-gray-700 hover:text-[#C8102E]'
                       }`}
                     >
                       {item.label}
-                      <svg className={`w-3 h-3 transition-transform duration-200 ${openDropdown === item.label ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg
+                        className="w-3 h-3 transition-transform duration-200 group-hover:rotate-180"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                      >
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
                       </svg>
-                    </button>
-                    {openDropdown === item.label && (
-                      <div className="absolute top-full left-0 mt-1 w-56 bg-white border border-gray-100 shadow-xl rounded-md z-50 py-1.5 overflow-hidden">
-                        {item.children.map((child) => (
-                          <Link
-                            key={child.label}
-                            to={child.href}
-                            className={`block px-4 py-2.5 text-[13px] hover:bg-gray-50 transition-colors ${
-                              location.pathname === child.href ? 'text-[#C8102E] font-semibold' : 'text-gray-600 hover:text-[#C8102E]'
-                            }`}
-                          >
-                            {child.label}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
+                    </Link>
+
+                    {/* Dropdown — visible on hover and keyboard focus-within */}
+                    <div className="absolute top-full left-0 mt-0 w-56 bg-white border border-gray-100 shadow-xl rounded-md z-50 py-1.5 overflow-hidden
+                      opacity-0 invisible pointer-events-none
+                      group-hover:opacity-100 group-hover:visible group-hover:pointer-events-auto
+                      group-focus-within:opacity-100 group-focus-within:visible group-focus-within:pointer-events-auto
+                      transition-all duration-150">
+                      {item.children.map((child) => (
+                        <Link
+                          key={child.label}
+                          to={child.href}
+                          className={`block px-4 py-2.5 text-[13px] hover:bg-gray-50 transition-colors ${
+                            location.pathname === child.href ? 'text-[#C8102E] font-semibold' : 'text-gray-600 hover:text-[#C8102E]'
+                          }`}
+                        >
+                          {child.label}
+                        </Link>
+                      ))}
+                    </div>
                   </>
                 ) : (
                   <NavLink
