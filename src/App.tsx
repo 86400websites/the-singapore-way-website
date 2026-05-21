@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { Suspense, lazy } from 'react'
 import Navigation from './components/Navigation'
 import Footer from './components/Footer'
+import { AuthProvider } from './lib/AuthContext'
+import ProtectedRoute from './lib/ProtectedRoute'
 
 const Home = lazy(() => import('./pages/Home'))
 const TheBook = lazy(() => import('./pages/TheBook'))
@@ -18,6 +20,8 @@ const LocalizationKits = lazy(() => import('./pages/LocalizationKits'))
 const Possibilities = lazy(() => import('./pages/Possibilities'))
 const TeachingMaterials = lazy(() => import('./pages/TeachingMaterials'))
 const QA = lazy(() => import('./pages/QA'))
+const Login = lazy(() => import('./pages/Login'))
+const Account = lazy(() => import('./pages/Account'))
 
 function LoadingFallback() {
   return (
@@ -30,31 +34,42 @@ function LoadingFallback() {
 export default function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen flex flex-col">
-        <Navigation />
-        <main className="flex-1">
-          <Suspense fallback={<LoadingFallback />}>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/thebook" element={<TheBook />} />
-              <Route path="/learn" element={<Learn />} />
-              <Route path="/apply" element={<Apply />} />
-              <Route path="/teach" element={<Teach />} />
-              <Route path="/ideate" element={<Ideate />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/blog/:slug" element={<BlogPost />} />
-              <Route path="/online-course" element={<OnlineCourse />} />
-              <Route path="/podcasts" element={<Podcast />} />
-              <Route path="/localization-kits" element={<LocalizationKits />} />
-              <Route path="/possibilities" element={<Possibilities />} />
-              <Route path="/teaching-materials" element={<TeachingMaterials />} />
-              <Route path="/q-a" element={<QA />} />
-            </Routes>
-          </Suspense>
-        </main>
-        <Footer />
-      </div>
+      <AuthProvider>
+        <div className="min-h-screen flex flex-col">
+          <Navigation />
+          <main className="flex-1">
+            <Suspense fallback={<LoadingFallback />}>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/thebook" element={<TheBook />} />
+                <Route path="/learn" element={<Learn />} />
+                <Route path="/apply" element={<Apply />} />
+                <Route path="/teach" element={<Teach />} />
+                <Route path="/ideate" element={<Ideate />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/blog" element={<Blog />} />
+                <Route path="/blog/:slug" element={<BlogPost />} />
+                <Route path="/online-course" element={<OnlineCourse />} />
+                <Route path="/podcasts" element={<Podcast />} />
+                <Route path="/localization-kits" element={<LocalizationKits />} />
+                <Route path="/possibilities" element={<Possibilities />} />
+                <Route path="/teaching-materials" element={<TeachingMaterials />} />
+                <Route path="/q-a" element={<QA />} />
+                <Route path="/login" element={<Login />} />
+                <Route
+                  path="/account"
+                  element={
+                    <ProtectedRoute>
+                      <Account />
+                    </ProtectedRoute>
+                  }
+                />
+              </Routes>
+            </Suspense>
+          </main>
+          <Footer />
+        </div>
+      </AuthProvider>
     </BrowserRouter>
   )
 }
