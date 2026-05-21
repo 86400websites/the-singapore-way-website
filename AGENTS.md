@@ -2,9 +2,9 @@
 
 ## Repository purpose
 
-This repository contains the Singapore Way website. The project was originally created in Replit and is now stored in GitHub.
+This repository contains the Singapore Way website. The project was originally created in Replit and has since been migrated to GitHub + Vercel.
 
-GitHub is the source of truth. Replit is used for running, previewing, testing, and publishing. Coding agents should make focused, reviewable changes.
+GitHub is the source of truth. Vercel is used for hosting and preview deployments. Coding agents should make focused, reviewable changes.
 
 ## Working agreements
 
@@ -24,7 +24,6 @@ While editing:
 - Do not change unrelated copy, layout, routing, configs, or dependencies.
 - Do not add new production dependencies unless necessary.
 - Do not hardcode secrets, credentials, API keys, tokens, or private URLs.
-- Preserve Replit compatibility.
 
 After editing:
 

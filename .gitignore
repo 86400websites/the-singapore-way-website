@@ -4,19 +4,15 @@ node_modules/
 # Build output
 dist/
 
+# Vite cache
+.vite/
+
 # Uploaded source archives (not needed to run the app)
 zip_extracted/
 zipFile.zip
 
 # Development reference screenshots
 attached_assets/
-
-# Replit internals
-.cache/
-.upm/
-.local/
-.agents/
-.config/
 
 # Environment variables
 .env

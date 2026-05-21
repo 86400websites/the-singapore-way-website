@@ -2,9 +2,9 @@
 
 ## Project context
 
-This repository contains the Singapore Way website originally built in Replit and now pushed to GitHub.
+This repository contains the Singapore Way website. It was originally built in Replit and has since been migrated to GitHub + Vercel.
 
-GitHub is the source of truth. Replit is used for previewing, running, testing, and publishing the website. Claude Code is used for focused code changes, debugging, cleanup, and improvements.
+GitHub is the source of truth. Vercel is used for hosting and preview deployments. Claude Code is used for focused code changes, debugging, cleanup, and improvements.
 
 ## Core workflow
 
@@ -65,13 +65,16 @@ Use commit messages like:
 - `Improve contact form validation`
 - `Fix production build error`
 
-## Replit compatibility
+## Hosting
 
-This project was originally built in Replit, so preserve Replit compatibility.
+The site is hosted on Vercel and configured via `vercel.json` at the repo root:
 
-Do not remove Replit-specific files or configuration unless they are clearly obsolete and you explain why.
+- Framework preset: Vite
+- Build command: `npm run build`
+- Output directory: `dist`
+- SPA fallback rewrite so React Router deep links work on refresh
 
-If changing run/build configuration, consider whether the app will still run in Replit.
+If you change build output, scripts, or routing, update `vercel.json` to match.
 
 ## Output format after each task
 
