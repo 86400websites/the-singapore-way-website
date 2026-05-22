@@ -1,5 +1,5 @@
-import { FormEvent, useState } from 'react'
-import { Link, Navigate } from 'react-router-dom'
+import { FormEvent, useEffect, useState } from 'react'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from '../lib/AuthContext'
 import PageHero from '../components/PageHero'
 
@@ -8,6 +8,7 @@ const MIN_PASSWORD = 8
 
 export default function SignUp() {
   const { session, loading, signUp } = useAuth()
+  const navigate = useNavigate()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -16,6 +17,19 @@ export default function SignUp() {
   const [submitting, setSubmitting] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  // sessionCreated mirrors Supabase's response: when "Confirm email" is OFF
+  // we get a session immediately and treat signup as a completed sign-in;
+  // when ON we get no session and show the confirm-your-inbox state.
+  const [sessionCreated, setSessionCreated] = useState(false)
+
+  // After a signup that returned a session, redirect into the app shortly so
+  // the success message is visible but the user is not stranded on this page.
+  useEffect(() => {
+    if (success && sessionCreated) {
+      const t = window.setTimeout(() => navigate('/account', { replace: true }), 1200)
+      return () => window.clearTimeout(t)
+    }
+  }, [success, sessionCreated, navigate])
 
   if (!loading && session && !success) {
     return <Navigate to="/account" replace />
@@ -41,13 +55,14 @@ export default function SignUp() {
     }
 
     setSubmitting(true)
-    const { error } = await signUp(cleanEmail, password)
+    const { error, sessionCreated: created } = await signUp(cleanEmail, password)
     setSubmitting(false)
 
     if (error) {
       setErrorMsg(error)
       return
     }
+    setSessionCreated(created)
     setSuccess(true)
   }
 
@@ -62,24 +77,42 @@ export default function SignUp() {
       <section className="bg-white">
         <div className="max-w-md mx-auto px-5 sm:px-6 lg:px-8 py-12">
           {success ? (
-            <div className="space-y-5">
-              <div
-                role="status"
-                className="rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800"
-              >
-                <p className="font-semibold mb-1">Check your inbox</p>
-                <p>
-                  We've sent a confirmation link to <span className="font-semibold break-all">{email.trim()}</span>.
-                  Click the link to verify your email, then sign in.
-                </p>
+            sessionCreated ? (
+              <div className="space-y-5">
+                <div
+                  role="status"
+                  className="rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800"
+                >
+                  <p className="font-semibold mb-1">Account created successfully</p>
+                  <p>You're signed in. Taking you to your account…</p>
+                </div>
+                <Link
+                  to="/account"
+                  className="block w-full text-center bg-[#C8102E] text-white text-[14px] font-bold py-3 rounded-full hover:bg-[#a50d26] transition-colors"
+                >
+                  Go to your account
+                </Link>
               </div>
-              <Link
-                to="/login"
-                className="block w-full text-center bg-[#C8102E] text-white text-[14px] font-bold py-3 rounded-full hover:bg-[#a50d26] transition-colors"
-              >
-                Go to sign in
-              </Link>
-            </div>
+            ) : (
+              <div className="space-y-5">
+                <div
+                  role="status"
+                  className="rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800"
+                >
+                  <p className="font-semibold mb-1">Check your inbox</p>
+                  <p>
+                    We've sent a confirmation link to <span className="font-semibold break-all">{email.trim()}</span>.
+                    Click the link to verify your email, then sign in.
+                  </p>
+                </div>
+                <Link
+                  to="/login"
+                  className="block w-full text-center bg-[#C8102E] text-white text-[14px] font-bold py-3 rounded-full hover:bg-[#a50d26] transition-colors"
+                >
+                  Go to sign in
+                </Link>
+              </div>
+            )
           ) : (
             <form onSubmit={onSubmit} className="space-y-5" noValidate>
               <div>

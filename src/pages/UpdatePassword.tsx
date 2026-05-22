@@ -6,11 +6,15 @@ import PageHero from '../components/PageHero'
 
 const MIN_PASSWORD = 8
 
-// User can be on this page in one of two ways:
-//  1. They followed a password-reset email link — Supabase parses the URL
-//     and emits a PASSWORD_RECOVERY auth event, creating a temporary session.
-//  2. They are already signed in and want to change their password.
-// Either case lets us call supabase.auth.updateUser({ password }).
+// This route intentionally serves two entry points:
+//  1. Recovery flow — user followed a password-reset email link. Supabase
+//     parses the URL fragment and emits a PASSWORD_RECOVERY auth event,
+//     creating a temporary session scoped to changing the password.
+//  2. Signed-in change — an already-authenticated user navigates here to
+//     change their password. This is allowed by design.
+// Both paths funnel through supabase.auth.updateUser({ password }), which
+// requires a valid session. Anyone without one sees the "invalid or expired"
+// state below.
 export default function UpdatePassword() {
   const { session, loading } = useAuth()
   const navigate = useNavigate()

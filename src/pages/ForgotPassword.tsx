@@ -25,10 +25,18 @@ export default function ForgotPassword() {
     }
 
     setSubmitting(true)
-    // Intentionally show the same success state regardless of whether the
-    // account exists, so we don't reveal which emails are registered.
-    await resetPassword(cleanEmail)
+    // Supabase's resetPasswordForEmail does NOT return an error when the email
+    // is unregistered (anti-enumeration is enforced server-side). Errors here
+    // only signal real operational failures — network, rate limit, or a
+    // misconfigured redirect URL — so we can safely surface a generic retry
+    // message without revealing whether the account exists.
+    const { error } = await resetPassword(cleanEmail)
     setSubmitting(false)
+
+    if (error) {
+      setErrorMsg('Something went wrong. Please wait a moment and try again.')
+      return
+    }
     setSubmitted(true)
   }
 

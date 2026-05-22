@@ -1,6 +1,7 @@
 import { FormEvent, useState } from 'react'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../lib/AuthContext'
+import type { AuthErrorCode } from '../lib/AuthContext'
 import PageHero from '../components/PageHero'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -19,6 +20,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
+  const [errorCode, setErrorCode] = useState<AuthErrorCode | null>(null)
 
   if (!loading && session) {
     return <Navigate to={redirectTo} replace />
@@ -28,6 +30,7 @@ export default function Login() {
     e.preventDefault()
     if (submitting) return
     setErrorMsg(null)
+    setErrorCode(null)
 
     const cleanEmail = email.trim()
     if (!EMAIL_RE.test(cleanEmail)) {
@@ -40,11 +43,12 @@ export default function Login() {
     }
 
     setSubmitting(true)
-    const { error } = await signIn(cleanEmail, password)
+    const { error, code } = await signIn(cleanEmail, password)
     setSubmitting(false)
 
     if (error) {
       setErrorMsg(error)
+      setErrorCode(code ?? null)
       return
     }
     navigate(redirectTo, { replace: true })
@@ -103,6 +107,16 @@ export default function Login() {
             {errorMsg && (
               <p role="alert" className="text-sm text-[#C8102E]">
                 {errorMsg}
+                {errorCode === 'invalid_credentials' && (
+                  <>
+                    {' '}
+                    Need an account?{' '}
+                    <Link to="/signup" className="font-semibold underline hover:no-underline">
+                      Create one
+                    </Link>
+                    .
+                  </>
+                )}
               </p>
             )}
 

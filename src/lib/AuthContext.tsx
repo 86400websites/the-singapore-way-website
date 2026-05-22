@@ -1,15 +1,31 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
-import type { Session, User } from '@supabase/supabase-js'
+import type { AuthError, Session, User } from '@supabase/supabase-js'
 import { supabase } from './supabase'
 
-type AuthResult = { error: string | null }
+export type AuthErrorCode =
+  | 'invalid_credentials'
+  | 'email_not_confirmed'
+  | 'email_taken'
+  | 'weak_password'
+  | 'rate_limited'
+  | 'network'
+  | 'other'
+
+type AuthResult = { error: string | null; code?: AuthErrorCode }
+
+// signUp also reports whether Supabase returned an active session. This is the
+// authoritative signal for which mode the project is in:
+//   sessionCreated === true  → "Confirm email" is OFF; user is signed in.
+//   sessionCreated === false → "Confirm email" is ON; user must verify via email.
+// We let the UI branch on this rather than guessing from copy/config.
+type SignUpResult = AuthResult & { sessionCreated: boolean }
 
 type AuthContextValue = {
   session: Session | null
   user: User | null
   loading: boolean
   signIn: (email: string, password: string) => Promise<AuthResult>
-  signUp: (email: string, password: string) => Promise<AuthResult>
+  signUp: (email: string, password: string) => Promise<SignUpResult>
   resetPassword: (email: string) => Promise<AuthResult>
   updatePassword: (newPassword: string) => Promise<AuthResult>
   signOut: () => Promise<void>
@@ -17,17 +33,36 @@ type AuthContextValue = {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 
-// Map Supabase error messages to user-friendly text without leaking technical details.
-function friendlyError(message: string | undefined): string {
-  if (!message) return 'Something went wrong. Please try again.'
-  const m = message.toLowerCase()
-  if (m.includes('invalid login')) return 'Email or password is incorrect.'
-  if (m.includes('email not confirmed')) return 'Please confirm your email before signing in.'
-  if (m.includes('user already registered')) return 'An account with this email already exists.'
-  if (m.includes('password should be')) return 'Password must be at least 8 characters.'
-  if (m.includes('rate limit')) return 'Too many attempts. Please wait a moment and try again.'
-  if (m.includes('network')) return 'Network error. Check your connection and try again.'
-  return 'Something went wrong. Please try again.'
+// Map a Supabase AuthError to user-friendly text + a stable code the UI can
+// branch on. Rate-limit detection prefers status/code over substring matching
+// because real 429s don't always contain the literal text "rate limit"
+// (e.g. "For security purposes, you can only request this after X seconds").
+function classifyAuthError(error: AuthError | null | undefined): AuthResult {
+  if (!error) return { error: null }
+
+  const status = (error as { status?: number }).status
+  const code = (error as { code?: string }).code ?? ''
+  const msg = (error.message ?? '').toLowerCase()
+
+  if (status === 429 || code.startsWith('over_') || msg.includes('rate limit') || msg.includes('for security purposes')) {
+    return { error: 'Too many attempts. Please wait a moment and try again.', code: 'rate_limited' }
+  }
+  if (msg.includes('invalid login')) {
+    return { error: 'Email or password is incorrect.', code: 'invalid_credentials' }
+  }
+  if (msg.includes('email not confirmed')) {
+    return { error: 'Please confirm your email before signing in.', code: 'email_not_confirmed' }
+  }
+  if (msg.includes('user already registered')) {
+    return { error: 'An account with this email already exists.', code: 'email_taken' }
+  }
+  if (msg.includes('password should be')) {
+    return { error: 'Password must be at least 8 characters.', code: 'weak_password' }
+  }
+  if (msg.includes('network') || msg.includes('failed to fetch')) {
+    return { error: 'Network error. Check your connection and try again.', code: 'network' }
+  }
+  return { error: 'Something went wrong. Please try again.', code: 'other' }
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -55,30 +90,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn: AuthContextValue['signIn'] = async (email, password) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password })
-    return { error: error ? friendlyError(error.message) : null }
+    return classifyAuthError(error)
   }
 
   const signUp: AuthContextValue['signUp'] = async (email, password) => {
-    const { error } = await supabase.auth.signUp({
+    // emailRedirectTo is kept pointing at /login so that if "Confirm email"
+    // is enabled in Supabase later, the confirmation link lands users on the
+    // sign-in page.
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: `${window.location.origin}/login`,
       },
     })
-    return { error: error ? friendlyError(error.message) : null }
+    return { ...classifyAuthError(error), sessionCreated: !!data.session }
   }
 
   const resetPassword: AuthContextValue['resetPassword'] = async (email) => {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/update-password`,
     })
-    return { error: error ? friendlyError(error.message) : null }
+    return classifyAuthError(error)
   }
 
   const updatePassword: AuthContextValue['updatePassword'] = async (newPassword) => {
     const { error } = await supabase.auth.updateUser({ password: newPassword })
-    return { error: error ? friendlyError(error.message) : null }
+    return classifyAuthError(error)
   }
 
   const signOut = async () => {
