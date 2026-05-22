@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { Suspense, lazy } from 'react'
 import Navigation from './components/Navigation'
 import Footer from './components/Footer'
+import ScrollToTop from './components/ScrollToTop'
 import { AuthProvider } from './lib/AuthContext'
 import ProtectedRoute from './lib/ProtectedRoute'
 
@@ -21,6 +22,9 @@ const Possibilities = lazy(() => import('./pages/Possibilities'))
 const TeachingMaterials = lazy(() => import('./pages/TeachingMaterials'))
 const QA = lazy(() => import('./pages/QA'))
 const Login = lazy(() => import('./pages/Login'))
+const SignUp = lazy(() => import('./pages/SignUp'))
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'))
+const UpdatePassword = lazy(() => import('./pages/UpdatePassword'))
 const Account = lazy(() => import('./pages/Account'))
 
 function LoadingFallback() {
@@ -35,6 +39,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <ScrollToTop />
         <div className="min-h-screen flex flex-col">
           <Navigation />
           <main className="flex-1">
@@ -56,6 +61,9 @@ export default function App() {
                 <Route path="/teaching-materials" element={<TeachingMaterials />} />
                 <Route path="/q-a" element={<QA />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<SignUp />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/update-password" element={<UpdatePassword />} />
                 <Route
                   path="/account"
                   element={

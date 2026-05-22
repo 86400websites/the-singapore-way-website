@@ -1,16 +1,22 @@
 import { FormEvent, useState } from 'react'
-import { Navigate, useLocation, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../lib/AuthContext'
 import PageHero from '../components/PageHero'
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export default function Login() {
   const { session, loading, signIn } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
-  const redirectTo = (location.state as { from?: string } | null)?.from ?? '/account'
+
+  // Only honor redirect targets that are same-origin relative paths.
+  const rawFrom = (location.state as { from?: string } | null)?.from
+  const redirectTo = rawFrom && rawFrom.startsWith('/') && !rawFrom.startsWith('//') ? rawFrom : '/account'
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
@@ -20,15 +26,21 @@ export default function Login() {
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault()
+    if (submitting) return
     setErrorMsg(null)
 
-    if (!email.trim() || !password) {
-      setErrorMsg('Please enter your email and password.')
+    const cleanEmail = email.trim()
+    if (!EMAIL_RE.test(cleanEmail)) {
+      setErrorMsg('Please enter a valid email address.')
+      return
+    }
+    if (!password) {
+      setErrorMsg('Please enter your password.')
       return
     }
 
     setSubmitting(true)
-    const { error } = await signIn(email.trim(), password)
+    const { error } = await signIn(cleanEmail, password)
     setSubmitting(false)
 
     if (error) {
@@ -65,12 +77,21 @@ export default function Login() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-semibold text-[#111111] mb-2">
-                Password
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <label htmlFor="password" className="block text-sm font-semibold text-[#111111]">
+                  Password
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((s) => !s)}
+                  className="text-xs font-semibold text-gray-500 hover:text-[#C8102E] transition-colors"
+                >
+                  {showPassword ? 'Hide' : 'Show'}
+                </button>
+              </div>
               <input
                 id="password"
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -92,6 +113,18 @@ export default function Login() {
             >
               {submitting ? 'Signing in…' : 'Sign in'}
             </button>
+
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pt-2 text-sm">
+              <Link to="/forgot-password" className="text-gray-600 hover:text-[#C8102E] transition-colors">
+                Forgot your password?
+              </Link>
+              <span className="text-gray-600">
+                New here?{' '}
+                <Link to="/signup" className="font-semibold text-[#C8102E] hover:underline">
+                  Create an account
+                </Link>
+              </span>
+            </div>
           </form>
         </div>
       </section>

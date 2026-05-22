@@ -111,9 +111,14 @@ export default function Home() {
                 This book and platform share a framework and principles—not to copy them, but to understand them, teach them, and adapt them to build new, local futures.
               </p>
               <div className="flex flex-wrap gap-3">
-                <button className="bg-[#C8102E] text-white text-[13px] font-bold px-7 py-3 rounded-full hover:bg-[#a50d26] transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#C8102E] focus:ring-offset-2">
+                <a
+                  href="https://video.wixstatic.com/video/d1daaa_61e6acec091e46d7a2748275fa8f72d5/1080p/mp4/file.mp4"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block bg-[#C8102E] text-white text-[13px] font-bold px-7 py-3 rounded-full hover:bg-[#a50d26] transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#C8102E] focus:ring-offset-2"
+                >
                   Watch Video
-                </button>
+                </a>
                 <button className="bg-white text-[#C8102E] border-2 border-[#C8102E] text-[13px] font-bold px-7 py-[10px] rounded-full hover:bg-[#C8102E] hover:text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#C8102E] focus:ring-offset-2">
                   Download Free Summary
                 </button>
