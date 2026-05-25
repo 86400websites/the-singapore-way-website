@@ -1,4 +1,14 @@
-import { useEffect, useState } from 'react'
+'use client'
+
+import { useCallback, useEffect, useState } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+
+import TurnstileWidget from '@/components/TurnstileWidget'
+import {
+  resourceRequestSchema,
+  type ResourceRequestValues,
+} from '@/lib/validation/forms'
 
 interface RequestModalProps {
   onClose: () => void
@@ -6,12 +16,25 @@ interface RequestModalProps {
   description?: string
 }
 
+const turnstileRequired = !!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
+
 export default function RequestModal({ onClose, kind, description }: RequestModalProps) {
-  const [firstName, setFirstName] = useState('')
-  const [lastName, setLastName] = useState('')
-  const [email, setEmail] = useState('')
-  const [consent, setConsent] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [submittedEmail, setSubmittedEmail] = useState('')
+  const [submitError, setSubmitError] = useState<string | null>(null)
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
+  const handleTurnstileToken = useCallback((token: string | null) => {
+    setTurnstileToken(token)
+  }, [])
+  const form = useForm<ResourceRequestValues>({
+    resolver: zodResolver(resourceRequestSchema),
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      consent: false,
+    },
+  })
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -26,9 +49,26 @@ export default function RequestModal({ onClose, kind, description }: RequestModa
     }
   }, [onClose])
 
-  const onSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!firstName || !email || !consent) return
+  const onSubmit = async (values: ResourceRequestValues) => {
+    setSubmitError(null)
+    const response = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...values,
+        kind,
+        description,
+        turnstileToken,
+      }),
+    })
+    const result = (await response.json().catch(() => null)) as { message?: string } | null
+
+    if (!response.ok) {
+      setSubmitError(result?.message ?? 'Unable to send this request right now. Please try again later.')
+      return
+    }
+
+    setSubmittedEmail(values.email)
     setSubmitted(true)
   }
 
@@ -64,11 +104,11 @@ export default function RequestModal({ onClose, kind, description }: RequestModa
                 </svg>
               </div>
               <h2 id="request-modal-title" className="text-2xl font-bold text-[#111111] mb-3 leading-[1.2]">
-                Thanks — we've got your request.
+                Thanks - we've got your request.
               </h2>
               <p className="text-[15px] text-[#666666] leading-[1.65] mb-6">
-                This request form is being connected soon. We'll follow up at{' '}
-                <span className="text-[#111111] font-bold">{email}</span> as soon as email delivery is live.
+                We'll follow up at{' '}
+                <span className="text-[#111111] font-bold">{submittedEmail}</span> soon.
               </p>
               <button onClick={onClose} className="btn-pill" type="button">Close</button>
             </div>
@@ -81,7 +121,7 @@ export default function RequestModal({ onClose, kind, description }: RequestModa
               <p className="text-[15px] text-[#666666] leading-[1.65] mb-6">
                 {description || `Share your details and we'll email you the full set as soon as delivery is live.`}
               </p>
-              <form onSubmit={onSubmit} className="space-y-4">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4" noValidate>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label htmlFor="req-fn" className="block text-[12px] font-bold tracking-[0.08em] uppercase text-[#666666] mb-1.5">
@@ -90,12 +130,16 @@ export default function RequestModal({ onClose, kind, description }: RequestModa
                     <input
                       id="req-fn"
                       type="text"
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
+                      {...form.register('firstName')}
                       required
                       autoFocus
                       className="w-full border border-[#E5E5E5] rounded-xl px-4 py-3 text-[15px] text-[#111111] focus:outline-none focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/20 bg-[#FAFAFA] transition-colors"
                     />
+                    {form.formState.errors.firstName && (
+                      <p className="mt-1.5 text-[12px] text-[#C8102E]" role="alert">
+                        {form.formState.errors.firstName.message}
+                      </p>
+                    )}
                   </div>
                   <div>
                     <label htmlFor="req-ln" className="block text-[12px] font-bold tracking-[0.08em] uppercase text-[#666666] mb-1.5">
@@ -104,8 +148,7 @@ export default function RequestModal({ onClose, kind, description }: RequestModa
                     <input
                       id="req-ln"
                       type="text"
-                      value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
+                      {...form.register('lastName')}
                       className="w-full border border-[#E5E5E5] rounded-xl px-4 py-3 text-[15px] text-[#111111] focus:outline-none focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/20 bg-[#FAFAFA] transition-colors"
                     />
                   </div>
@@ -117,17 +160,20 @@ export default function RequestModal({ onClose, kind, description }: RequestModa
                   <input
                     id="req-email"
                     type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    {...form.register('email')}
                     required
                     className="w-full border border-[#E5E5E5] rounded-xl px-4 py-3 text-[15px] text-[#111111] focus:outline-none focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/20 bg-[#FAFAFA] transition-colors"
                   />
+                  {form.formState.errors.email && (
+                    <p className="mt-1.5 text-[12px] text-[#C8102E]" role="alert">
+                      {form.formState.errors.email.message}
+                    </p>
+                  )}
                 </div>
                 <label className="flex items-start gap-3 cursor-pointer">
                   <input
                     type="checkbox"
-                    checked={consent}
-                    onChange={(e) => setConsent(e.target.checked)}
+                    {...form.register('consent')}
                     required
                     className="mt-1 accent-[#C8102E]"
                   />
@@ -135,13 +181,33 @@ export default function RequestModal({ onClose, kind, description }: RequestModa
                     I agree to receive emails from <span className="font-bold text-[#111111]">The Singapore Way</span>.
                   </span>
                 </label>
+                {form.formState.errors.consent && (
+                  <p className="text-[12px] text-[#C8102E]" role="alert">
+                    {form.formState.errors.consent.message}
+                  </p>
+                )}
+                {turnstileRequired && (
+                  <TurnstileWidget onToken={handleTurnstileToken} theme="light" />
+                )}
                 <div className="pt-2">
-                  <button type="submit" className="btn-pill w-full sm:w-auto">
-                    Send my request
+                  {submitError && (
+                    <p className="mb-4 text-[12px] text-[#C8102E]" role="alert">
+                      {submitError}
+                    </p>
+                  )}
+                  <button
+                    type="submit"
+                    disabled={
+                      form.formState.isSubmitting ||
+                      (turnstileRequired && !turnstileToken)
+                    }
+                    className="btn-pill w-full sm:w-auto disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    {form.formState.isSubmitting ? 'Sending...' : 'Send my request'}
                   </button>
                 </div>
                 <p className="text-[12px] text-[#888888] leading-snug">
-                  Note: email delivery is being connected soon — your details will be queued for follow-up.
+                  Your details will be sent securely to The Singapore Way team.
                 </p>
               </form>
             </>
