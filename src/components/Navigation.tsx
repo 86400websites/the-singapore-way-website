@@ -1,8 +1,12 @@
+'use client'
+
 import { useState } from 'react'
-import { Link, NavLink, useLocation } from 'react-router-dom'
+import Image from 'next/image'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 const navItems = [
-  { label: 'THE BOOK', href: '/thebook', children: [] },
+  { label: 'THE BOOK', href: '/thebook', children: [] as { label: string; href: string }[] },
   {
     label: 'LEARN',
     href: '/learn',
@@ -27,24 +31,31 @@ const navItems = [
       { label: 'Case Studies', href: '/teaching-materials' },
     ],
   },
-  { label: 'IDEATE', href: '/ideate', children: [] },
-  { label: 'ABOUT', href: '/about', children: [] },
+  { label: 'IDEATE', href: '/ideate', children: [] as { label: string; href: string }[] },
+  { label: 'ABOUT', href: '/about', children: [] as { label: string; href: string }[] },
 ]
 
 export default function Navigation() {
   const [mobileOpen, setMobileOpen] = useState(false)
-  const location = useLocation()
+  const pathname = usePathname() ?? '/'
 
   const isActive = (href: string) =>
-    location.pathname === href || location.pathname.startsWith(href + '/')
+    pathname === href || pathname.startsWith(href + '/')
 
   return (
     <header className="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="flex items-center justify-between h-[70px]">
           {/* Logo */}
-          <Link to="/" className="flex-shrink-0">
-            <img src="/assets/logo/logo-red.png" alt="The Singapore Way" className="h-11 w-auto" />
+          <Link href="/" className="flex-shrink-0">
+            <Image
+              src="/assets/logo/logo-red.png"
+              alt="The Singapore Way"
+              width={144}
+              height={88}
+              className="h-11 w-auto"
+              priority
+            />
           </Link>
 
           {/* Desktop Nav */}
@@ -55,7 +66,7 @@ export default function Navigation() {
                   <>
                     {/* Top-level link — navigates to the main page */}
                     <Link
-                      to={item.href}
+                      href={item.href}
                       className={`flex items-center gap-1 px-4 py-2 text-[11px] font-bold tracking-[0.12em] transition-colors ${
                         isActive(item.href) ? 'text-[#C8102E]' : 'text-gray-700 hover:text-[#C8102E]'
                       }`}
@@ -81,9 +92,9 @@ export default function Navigation() {
                       {item.children.map((child) => (
                         <Link
                           key={child.label}
-                          to={child.href}
+                          href={child.href}
                           className={`block px-4 py-2.5 text-[13px] hover:bg-gray-50 transition-colors ${
-                            location.pathname === child.href ? 'text-[#C8102E] font-semibold' : 'text-gray-600 hover:text-[#C8102E]'
+                            pathname === child.href ? 'text-[#C8102E] font-semibold' : 'text-gray-600 hover:text-[#C8102E]'
                           }`}
                         >
                           {child.label}
@@ -92,14 +103,14 @@ export default function Navigation() {
                     </div>
                   </>
                 ) : (
-                  <NavLink
-                    to={item.href}
-                    className={({ isActive: a }) =>
-                      `px-4 py-2 text-[11px] font-bold tracking-[0.12em] transition-colors ${a ? 'text-[#C8102E]' : 'text-gray-700 hover:text-[#C8102E]'}`
-                    }
+                  <Link
+                    href={item.href}
+                    className={`px-4 py-2 text-[11px] font-bold tracking-[0.12em] transition-colors ${
+                      isActive(item.href) ? 'text-[#C8102E]' : 'text-gray-700 hover:text-[#C8102E]'
+                    }`}
                   >
                     {item.label}
-                  </NavLink>
+                  </Link>
                 )}
               </div>
             ))}
@@ -108,7 +119,7 @@ export default function Navigation() {
           {/* Online Course CTA */}
           <div className="hidden lg:block">
             <Link
-              to="/online-course"
+              href="/online-course"
               className="bg-[#C8102E] text-white text-[13px] font-bold px-6 py-2.5 rounded-full hover:bg-[#a50d26] transition-all duration-200 shadow-sm hover:shadow-md"
             >
               Online Course
@@ -141,8 +152,10 @@ export default function Navigation() {
             {navItems.map((item) => (
               <div key={item.label}>
                 <Link
-                  to={item.href}
-                  className={`block py-2.5 text-[11px] font-bold tracking-[0.12em] ${isActive(item.href) ? 'text-[#C8102E]' : 'text-gray-700'}`}
+                  href={item.href}
+                  className={`block py-2.5 text-[11px] font-bold tracking-[0.12em] ${
+                    isActive(item.href) ? 'text-[#C8102E]' : 'text-gray-700'
+                  }`}
                   onClick={() => setMobileOpen(false)}
                 >
                   {item.label}
@@ -150,7 +163,7 @@ export default function Navigation() {
                 {item.children.map((child) => (
                   <Link
                     key={child.label}
-                    to={child.href}
+                    href={child.href}
                     className="block py-2 pl-4 text-[13px] text-gray-500 hover:text-[#C8102E] transition-colors"
                     onClick={() => setMobileOpen(false)}
                   >
@@ -160,7 +173,7 @@ export default function Navigation() {
               </div>
             ))}
             <Link
-              to="/online-course"
+              href="/online-course"
               className="block mt-4 bg-[#C8102E] text-white text-[13px] font-bold py-3 rounded-full text-center hover:bg-[#a50d26] transition-colors"
               onClick={() => setMobileOpen(false)}
             >
