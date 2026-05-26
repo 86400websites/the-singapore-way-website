@@ -1,6 +1,6 @@
 # The Singapore Way — Design System
 
-> **Reference companion to `tech-architecture.md`.** This document defines the visual language; the tech architecture defines the stack. AI tools, designers, and contributors should read both before adding features.
+> **Reference companion to `TECH-ARCHITECTURE.md`.** This document defines the visual language; the tech architecture defines the stack. AI tools, designers, and contributors should read both before adding features.
 
 ---
 
@@ -14,7 +14,7 @@ The site must feel **modern, alive, and captivating** — but in an editorial re
 
 ## Stack Alignment
 
-This design system is implemented on the stack defined in `tech-architecture.md`:
+This design system is implemented on the stack defined in `TECH-ARCHITECTURE.md`:
 
 - **Tailwind CSS v4** — all tokens below are exposed as CSS variables in `globals.css`
 - **shadcn/ui** — all components inherit brand colors/typography via the variables below
@@ -106,8 +106,8 @@ export default function RootLayout({ children }) {
 }
 ```
 
-Then in `tailwind.config.ts`:
-```ts
+Then in `tailwind.config.js`:
+```js
 fontFamily: {
   serif: ["var(--font-libre-baskerville)", "Georgia", "Times New Roman", "serif"],
 }
@@ -115,7 +115,7 @@ fontFamily: {
 
 Fallback stack: `Georgia, 'Times New Roman', serif`
 
-**Do not** load Libre Baskerville via `<link>` to Google Fonts — `next/font` is required for performance and CLS prevention (see Core Web Vitals in `tech-architecture.md`).
+**Do not** load Libre Baskerville via `<link>` to Google Fonts — `next/font` is required for performance and CLS prevention (see Core Web Vitals in `TECH-ARCHITECTURE.md`).
 
 ### Weights in Use
 
@@ -151,7 +151,7 @@ All-caps is **only** used for small section category labels (e.g., blog post tag
 
 ### Heading Hierarchy (SEO requirement)
 
-One `<h1>` per page, matching search intent. Headings in order: h1 → h2 → h3. Never skip levels. See SEO checklist in `tech-architecture.md`.
+One `<h1>` per page, matching search intent. Headings in order: h1 → h2 → h3. Never skip levels. See SEO checklist in `TECH-ARCHITECTURE.md`.
 
 ---
 
@@ -168,7 +168,7 @@ One `<h1>` per page, matching search intent. Headings in order: h1 → h2 → h3
 ## 4. Imagery
 
 - **All images via `next/image`.** Never use raw `<img>` tags. `priority` on above-the-fold images.
-- **All images live in `/public/images/`** with descriptive filenames (`hero.jpg`, `book-cover.jpg`, `author-portrait.jpg`, `blog-thumb-1.jpg`).
+- **All images live under `/public/assets/`** (referenced from code as `/assets/...`) organized by feature subfolder (`/assets/home/`, `/assets/about/`, `/assets/book/`, `/assets/blog/`, `/assets/logo/`, etc.).
 - **To update an image, replace the file in place** with the same filename — no code changes needed.
 
 ### Image Roles
@@ -210,7 +210,7 @@ Recommended: keep `--radius: 0.5rem` for cards/inputs and apply `rounded-full` d
 ## 6. Navigation
 
 - Font: Libre Baskerville, 14px, weight 400 for links, 700 for active/highlighted item
-- Logo: SVG/PNG mark at top-left (lives in `/public/images/logo.svg`)
+- Logo: PNG/SVG mark at top-left (lives in `/public/assets/logo/` — e.g. `/assets/logo/logo-red.png`)
 - Desktop: horizontal link row with dropdown menus; red pill CTA at far right ("Online Course")
 - Mobile: hamburger menu using shadcn/ui `Sheet` component
 - Active state: bold weight + red underline or red dot indicator
@@ -258,7 +258,7 @@ Create these in `src/components/motion/` and reuse everywhere:
 ### Accessibility
 
 - **Always respect `prefers-reduced-motion`.** Use Framer Motion's `useReducedMotion` hook. When reduced motion is requested, disable transforms and reduce to a simple opacity fade or no animation at all.
-- Use `LazyMotion` with `domAnimation` to keep bundle size small (see `tech-architecture.md` performance checklist).
+- Use `LazyMotion` with `domAnimation` to keep bundle size small (see `TECH-ARCHITECTURE.md` performance checklist).
 
 ---
 
@@ -311,5 +311,5 @@ All forms use **react-hook-form + zod** (per tech architecture) with shadcn/ui f
 - Don't introduce new typefaces or icon fonts without updating this document.
 - Don't add a dark mode toggle — this site is light-only.
 - Don't use bouncy/spring animations — they break the editorial register.
-- Don't use raw `<img>`, `<link>` to Google Fonts, or any pattern that violates `tech-architecture.md`.
+- Don't use raw `<img>`, `<link>` to Google Fonts, or any pattern that violates `TECH-ARCHITECTURE.md`.
 - Don't introduce a second primary color — brand red is the only accent.

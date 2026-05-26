@@ -68,7 +68,7 @@ my-nextjs-app/
 │   │   └── validation/               # zod schemas
 │   └── styles/globals.css
 ├── instrumentation.ts                # Sentry + PostHog server init
-├── sentry.client.config.ts
+├── instrumentation-client.ts         # Sentry browser SDK init (replaces sentry.client.config.ts in @sentry/nextjs 9+)
 ├── sentry.server.config.ts
 ├── sentry.edge.config.ts
 ├── .env.example
@@ -77,7 +77,7 @@ my-nextjs-app/
 ├── eslint.config.mjs
 ├── components.json                   # shadcn config
 ├── next.config.ts                    # security headers, Sentry wrap
-├── tailwind.config.ts
+├── tailwind.config.js
 ├── tsconfig.json                     # "strict": true
 ├── package.json
 └── README.md
@@ -345,9 +345,9 @@ Add the schema types that match the content:
 - Photography and imagery are 50% of the impression. Generic stock photos kill modern sites instantly (more on this below).
 
 ### Images — You provide them, easy to update
-- All images live in `/public/images/` with descriptive filenames (`hero.jpg`, `about-us.jpg`, `feature-1.jpg`, etc.).
-- Code references them by path (`/images/hero.jpg`) — never imported as modules.
-- **To update an image, you just drop a new file in `/public/images/` with the same filename.** No code changes, no deploys to figure out — replace the file, commit, push, done.
+- All images live under `/public/assets/` with descriptive filenames, organized by feature subfolder (`/public/assets/home/hero.jpg`, `/public/assets/about/about.jpg`, `/public/assets/blog/...`, `/public/assets/logo/...`, etc.).
+- Code references them by path (`/assets/home/hero.jpg`) — never imported as modules.
+- **To update an image, you just drop a new file under `/public/assets/` with the same filename.** No code changes, no deploys to figure out — replace the file, commit, push, done.
 - Recommended sizes:
   - Hero: 1920×1080 (or larger for retina)
   - Feature/content: 1200×800
