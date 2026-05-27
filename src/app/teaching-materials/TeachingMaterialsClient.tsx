@@ -4,6 +4,12 @@ import { useMemo, useRef, useState, type ReactNode } from 'react'
 import Link from 'next/link'
 import PageHero from '@/components/PageHero'
 import RequestModal from '@/components/RequestModal'
+import RevealStagger from '@/components/motion/RevealStagger'
+
+function chapterNumber(chapter: string) {
+  const match = chapter.match(/(\d+)/)
+  return match ? match[1] : ''
+}
 
 type Section = 'synopsis' | 'dilemma' | 'themes' | 'audience'
 
@@ -581,7 +587,7 @@ export default function TeachingMaterialsClient() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-6">
+            <RevealStagger className="grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-6">
               {filtered.map((study) => (
                 <CaseStudyCard
                   key={study.chapter}
@@ -589,7 +595,7 @@ export default function TeachingMaterialsClient() {
                   onRequest={openRequest}
                 />
               ))}
-            </div>
+            </RevealStagger>
           )}
 
         </div>
@@ -605,6 +611,8 @@ function CaseStudyCard({ study, onRequest }: { study: CaseStudy; onRequest: () =
 
   const toggle = (s: Section) => setActiveSection((curr) => (curr === s ? null : s))
 
+  const chapterNum = chapterNumber(study.chapter)
+
   return (
     <article className="card-editorial p-6 md:p-7 lg:p-8 flex flex-col group relative hover:border-[#C8102E]/30">
       {/* Hover badge */}
@@ -612,20 +620,28 @@ function CaseStudyCard({ study, onRequest }: { study: CaseStudy; onRequest: () =
         Available via email
       </span>
 
-      {/* Icon block */}
-      <div className="icon-block mb-5">
-        <span aria-hidden="true">{study.icon}</span>
+      {/* Icon + chapter eyebrow */}
+      <div className="flex items-center gap-4 mb-5">
+        <div className="icon-block">
+          <span aria-hidden="true">{study.icon}</span>
+        </div>
+        {chapterNum && (
+          <div className="flex flex-col">
+            <p className="eyebrow-muted">Chapter {chapterNum}</p>
+            <p className="text-[11px] tracking-[0.14em] uppercase text-[#C8102E] font-bold mt-1">Case Study</p>
+          </div>
+        )}
       </div>
 
       {/* Title + subtitle */}
-      <h3 className="text-[19px] md:text-[20px] font-bold text-[#111111] leading-[1.25] mb-2 pr-24">
+      <h3 className="text-[20px] md:text-[22px] font-bold text-[#111111] leading-[1.22] tracking-[-0.005em] mb-2 pr-24">
         {study.title}
       </h3>
       <p className="text-[15px] text-[#666666] leading-[1.55] mb-5 italic">
         {study.subtitle}
       </p>
       {/* Hairline rule */}
-      <span className="block w-10 h-[3px] bg-[#C8102E] rounded-full mb-5" aria-hidden="true" />
+      <span className="block w-10 h-[3px] bg-[#C8102E] rounded-full mb-6" aria-hidden="true" />
 
       {/* Info buttons */}
       <div className="flex flex-wrap gap-2 mb-5">
@@ -638,7 +654,7 @@ function CaseStudyCard({ study, onRequest }: { study: CaseStudy; onRequest: () =
               type="button"
               aria-expanded={isActive}
               aria-controls={`${study.chapter}-${s}`}
-              className={`inline-flex items-center gap-1.5 text-[12px] font-bold tracking-[0.04em] uppercase px-3.5 py-2 sm:py-1.5 rounded-full border transition-all duration-200 ${
+              className={`inline-flex items-center gap-1.5 text-[11.5px] font-bold tracking-[0.06em] uppercase px-3.5 py-2 sm:py-1.5 rounded-full border transition-all duration-200 ${
                 isActive
                   ? 'bg-[#C8102E] text-white border-[#C8102E] shadow-sm'
                   : 'bg-white text-[#666666] border-[#E5E5E5] hover:border-[#C8102E] hover:text-[#C8102E]'
@@ -655,7 +671,7 @@ function CaseStudyCard({ study, onRequest }: { study: CaseStudy; onRequest: () =
       {activeSection && (
         <div
           id={`${study.chapter}-${activeSection}`}
-          className="bg-[#fbf5f2] border border-[#F0E5DF] rounded-xl p-5 md:p-6 mb-5 relative"
+          className="bg-[#FAFAFA] border border-[#ECECEC] rounded-xl p-5 md:p-6 mb-5 relative"
         >
           <div className="flex items-start justify-between gap-4 mb-3">
             <p className="eyebrow">{sectionLabels[activeSection]}</p>
@@ -675,11 +691,11 @@ function CaseStudyCard({ study, onRequest }: { study: CaseStudy; onRequest: () =
       )}
 
       {/* CTAs */}
-      <div className="mt-auto pt-4 border-t border-[#F0F0F0] flex flex-wrap gap-2">
+      <div className="mt-auto pt-5 border-t border-[#ECECEC] flex flex-wrap gap-2.5">
         <button
           onClick={onRequest}
           type="button"
-          className="flex-1 min-w-[140px] flex items-center justify-center gap-1.5 border border-[#C8102E] text-[#C8102E] text-[12px] font-bold tracking-[0.04em] uppercase px-4 py-2.5 rounded-full hover:bg-[#C8102E] hover:text-white transition-all duration-200"
+          className="flex-1 min-w-[140px] inline-flex items-center justify-center gap-1.5 bg-[#C8102E] text-white text-[11.5px] font-bold tracking-[0.06em] uppercase px-4 py-2.5 rounded-full hover:bg-[#a50d26] shadow-sm hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#C8102E] focus:ring-offset-2"
         >
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
@@ -689,7 +705,7 @@ function CaseStudyCard({ study, onRequest }: { study: CaseStudy; onRequest: () =
         <button
           onClick={onRequest}
           type="button"
-          className="flex-1 min-w-[140px] flex items-center justify-center gap-1.5 border border-[#C8102E] text-[#C8102E] text-[12px] font-bold tracking-[0.04em] uppercase px-4 py-2.5 rounded-full hover:bg-[#C8102E] hover:text-white transition-all duration-200"
+          className="flex-1 min-w-[140px] inline-flex items-center justify-center gap-1.5 bg-white text-[#C8102E] border border-[#C8102E] text-[11.5px] font-bold tracking-[0.06em] uppercase px-4 py-2.5 rounded-full hover:bg-[#C8102E] hover:text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#C8102E] focus:ring-offset-2"
         >
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
