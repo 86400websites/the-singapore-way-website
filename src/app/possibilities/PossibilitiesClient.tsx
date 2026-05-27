@@ -50,10 +50,6 @@ export default function PossibilitiesClient() {
             <svg className="w-3 h-3 text-[#CCCCCC]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-            <Link href="/localization-kits" className="hover:text-[#111111] transition-colors">Localization Kits</Link>
-            <svg className="w-3 h-3 text-[#CCCCCC]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
             <span className="text-[#C8102E] font-bold">Examples</span>
           </nav>
 
@@ -84,7 +80,8 @@ export default function PossibilitiesClient() {
                 key={title}
                 onClick={scrollToCta}
                 type="button"
-                className="card-editorial p-6 sm:p-7 md:p-8 flex flex-col text-left group hover:border-[#C8102E]/30 relative"
+                aria-label={`${title} — request by email`}
+                className="card-editorial p-6 sm:p-7 md:p-8 flex flex-col text-left group hover:border-[#C8102E]/30 relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C8102E] focus-visible:ring-offset-2"
               >
                 <span className="absolute top-4 right-4 bg-[#C8102E] text-white text-[10px] font-bold px-2.5 py-1 rounded-full tracking-[0.06em] uppercase opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-200 pointer-events-none">
                   Available via email
@@ -92,8 +89,15 @@ export default function PossibilitiesClient() {
                 <div className="icon-block mb-5">
                   <span aria-hidden="true">{icon}</span>
                 </div>
-                <h3 className="text-[17px] md:text-[18px] font-bold text-[#111111] leading-[1.3] mb-3 pr-24">{title}</h3>
-                <p className="text-[15px] text-[#666666] leading-[1.6]">{desc}</p>
+                <h3 className="text-[18px] md:text-[20px] font-bold text-[#111111] leading-[1.25] tracking-[-0.005em] mb-3 pr-16 md:pr-24">{title}</h3>
+                <span className="block w-8 h-[3px] bg-[#C8102E] rounded-full mb-4" aria-hidden="true" />
+                <p className="text-[15px] text-[#666666] leading-[1.6] mb-6">{desc}</p>
+                <span className="link-arrow mt-auto pt-2 group-hover:gap-2.5">
+                  Request example
+                  <svg className="w-3.5 h-3.5 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </span>
               </button>
             ))}
           </div>

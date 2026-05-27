@@ -48,7 +48,7 @@ export default function TheBookPage() {
     <div className="bg-white">
 
       {/* Hero */}
-      <section className="bg-[#fbf5f2]">
+      <section className="bg-white">
         <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-16 sm:py-20 md:py-24 lg:py-28">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             <div className="lg:col-span-7 order-2 lg:order-1">

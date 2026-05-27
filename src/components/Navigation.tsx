@@ -153,7 +153,7 @@ export default function Navigation() {
               <div key={item.label}>
                 <Link
                   href={item.href}
-                  className={`block py-2.5 text-[11px] font-bold tracking-[0.12em] ${
+                  className={`block py-3 text-[11px] font-bold tracking-[0.12em] ${
                     isActive(item.href) ? 'text-[#C8102E]' : 'text-gray-700'
                   }`}
                   onClick={() => setMobileOpen(false)}
@@ -164,7 +164,7 @@ export default function Navigation() {
                   <Link
                     key={child.label}
                     href={child.href}
-                    className="block py-2 pl-4 text-[13px] text-gray-500 hover:text-[#C8102E] transition-colors"
+                    className="block py-2.5 pl-4 text-[13px] text-gray-500 hover:text-[#C8102E] transition-colors"
                     onClick={() => setMobileOpen(false)}
                   >
                     {child.label}

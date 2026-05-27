@@ -69,7 +69,7 @@ export default function Footer() {
                   type="text"
                   {...form.register('firstName')}
                   placeholder="Aisha"
-                  className="w-full bg-[#2a2a2a] border border-white/10 rounded-lg px-3.5 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-[#C8102E] transition-colors"
+                  className="w-full bg-[#2a2a2a] border border-white/10 rounded-lg px-3.5 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-[#C8102E] transition-colors"
                 />
                 {form.formState.errors.firstName && (
                   <p className="mt-1.5 text-[11px] text-[#ff8da0]" role="alert">
@@ -84,7 +84,7 @@ export default function Footer() {
                   type="text"
                   {...form.register('lastName')}
                   placeholder="Khan"
-                  className="w-full bg-[#2a2a2a] border border-white/10 rounded-lg px-3.5 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-[#C8102E] transition-colors"
+                  className="w-full bg-[#2a2a2a] border border-white/10 rounded-lg px-3.5 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-[#C8102E] transition-colors"
                 />
               </div>
             </div>
@@ -97,7 +97,7 @@ export default function Footer() {
                 type="email"
                 {...form.register('email')}
                 placeholder="you@example.com"
-                className="w-full bg-[#2a2a2a] border border-white/10 rounded-lg px-3.5 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-[#C8102E] transition-colors"
+                className="w-full bg-[#2a2a2a] border border-white/10 rounded-lg px-3.5 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-[#C8102E] transition-colors"
               />
               {form.formState.errors.email && (
                 <p className="mt-1.5 text-[11px] text-[#ff8da0]" role="alert">
@@ -142,18 +142,18 @@ export default function Footer() {
         <div className="border-t border-white/5 mb-8"></div>
 
         {/* Links Grid */}
-        <div className="grid grid-cols-3 gap-4 text-center mb-10">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-3 text-center mb-10">
           <div className="space-y-3">
-            <Link href="/thebook" className="block text-gray-400 text-[13px] hover:text-white transition-colors">The Book</Link>
-            <Link href="/possibilities" className="block text-gray-400 text-[13px] hover:text-white transition-colors">Use Cases</Link>
+            <Link href="/thebook" className="block text-gray-400 text-[13px] py-1 hover:text-white transition-colors">The Book</Link>
+            <Link href="/possibilities" className="block text-gray-400 text-[13px] py-1 hover:text-white transition-colors">Use Cases</Link>
           </div>
           <div className="space-y-3">
-            <Link href="/online-course" className="block text-gray-400 text-[13px] hover:text-white transition-colors">Online Course</Link>
-            <Link href="/teaching-materials" className="block text-gray-400 text-[13px] hover:text-white transition-colors">Case Studies</Link>
+            <Link href="/online-course" className="block text-gray-400 text-[13px] py-1 hover:text-white transition-colors">Online Course</Link>
+            <Link href="/teaching-materials" className="block text-gray-400 text-[13px] py-1 hover:text-white transition-colors">Case Studies</Link>
           </div>
-          <div className="space-y-3">
-            <Link href="/localization-kits" className="block text-gray-400 text-[13px] hover:text-white transition-colors">Localisation Kits</Link>
-            <Link href="/podcasts" className="block text-gray-400 text-[13px] hover:text-white transition-colors">Podcast</Link>
+          <div className="space-y-3 col-span-2 sm:col-span-1">
+            <Link href="/localization-kits" className="block text-gray-400 text-[13px] py-1 hover:text-white transition-colors">Localisation Kits</Link>
+            <Link href="/podcasts" className="block text-gray-400 text-[13px] py-1 hover:text-white transition-colors">Podcast</Link>
           </div>
         </div>
 

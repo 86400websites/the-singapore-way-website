@@ -96,13 +96,13 @@ export default function AboutPage() {
               </div>
             </div>
             <div className="lg:col-span-5 order-1 lg:order-2 flex justify-center lg:justify-end">
-              <div className="relative overflow-hidden rounded-2xl shadow-[0_24px_48px_-24px_rgba(17,17,17,0.18)] w-full max-w-[420px] aspect-[4/5]">
+              <div className="relative w-full max-w-[460px] aspect-square">
                 <Image
                   src="/assets/about/our-story.png"
-                  alt="Our Story"
+                  alt="An illustration of Singapore's skyline along the waterfront, with a red path tracing the city's transformation"
                   fill
-                  sizes="(min-width: 1024px) 420px, 100vw"
-                  className="object-cover"
+                  sizes="(min-width: 1024px) 460px, 100vw"
+                  className="object-contain"
                 />
               </div>
             </div>

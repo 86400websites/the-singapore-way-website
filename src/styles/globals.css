@@ -145,11 +145,27 @@
   }
 
   .card-editorial {
-    @apply bg-white border border-[#ECECEC] rounded-2xl overflow-hidden transition-all duration-200 shadow-[0_1px_2px_0_rgba(17,17,17,0.03)] hover:shadow-[0_18px_36px_-18px_rgba(17,17,17,0.18)] hover:border-[#DDDDDD] hover:-translate-y-[1px] focus-within:shadow-[0_18px_36px_-18px_rgba(17,17,17,0.18)];
+    @apply bg-white border border-[#ECECEC] rounded-2xl overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] shadow-[0_1px_2px_0_rgba(17,17,17,0.03)] hover:shadow-[0_22px_44px_-22px_rgba(17,17,17,0.20)] hover:border-[#DADADA] hover:-translate-y-[2px] focus-within:shadow-[0_22px_44px_-22px_rgba(17,17,17,0.20)] focus-within:border-[#DADADA];
+  }
+
+  .card-link {
+    @apply bg-white border border-[#ECECEC] rounded-2xl overflow-hidden relative transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] shadow-[0_1px_2px_0_rgba(17,17,17,0.03)] hover:shadow-[0_22px_44px_-22px_rgba(17,17,17,0.20)] hover:border-[#DADADA] hover:-translate-y-[2px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C8102E] focus-visible:ring-offset-2 focus-visible:ring-offset-white focus-visible:shadow-[0_22px_44px_-22px_rgba(17,17,17,0.20)] focus-visible:border-[#DADADA];
+  }
+
+  .card-thumb {
+    @apply relative overflow-hidden bg-[#faf8f4] border-b border-[#ECECEC];
+  }
+
+  .card-accent-top {
+    @apply relative before:content-[''] before:absolute before:inset-x-0 before:top-0 before:h-[3px] before:bg-[#C8102E];
   }
 
   .icon-block {
     @apply w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-[#fbf5f2] border border-[#F0E5DF] flex items-center justify-center text-2xl sm:text-3xl leading-none flex-shrink-0;
+  }
+
+  .link-arrow {
+    @apply inline-flex items-center gap-1.5 text-[12px] font-bold tracking-[0.08em] uppercase text-[#C8102E] transition-all duration-200;
   }
 
   .btn-pill {
