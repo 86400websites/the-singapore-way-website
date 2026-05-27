@@ -54,7 +54,11 @@ export default function PossibilitiesClient() {
           </nav>
 
           {/* CTA card */}
-          <div ref={ctaRef} className="card-editorial p-6 md:p-8 mb-8 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+          <div
+            ref={ctaRef}
+            id="request-cta"
+            className="card-editorial p-6 md:p-8 mb-8 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 scroll-mt-[90px]"
+          >
             <div className="flex-1">
               <p className="eyebrow mb-2">Get the Use Cases</p>
               <p className="text-[16px] md:text-[17px] text-[#111111] font-bold leading-snug">
@@ -70,7 +74,7 @@ export default function PossibilitiesClient() {
             Explore the Cases
           </h2>
           <p className="text-[15px] text-[#666666] mb-8 max-w-2xl">
-            Each card is an illustrative scenario. Hover or tap to reveal availability — every case is sent by email on request.
+            Each card is an illustrative scenario. Tap any card to jump to the request form above — every case is sent by email on request.
           </p>
 
           {/* Cases Grid */}
@@ -80,24 +84,21 @@ export default function PossibilitiesClient() {
                 key={title}
                 onClick={scrollToCta}
                 type="button"
-                aria-label={`${title} — request by email`}
-                className="card-editorial p-6 sm:p-7 md:p-8 flex flex-col text-left group hover:border-[#C8102E]/30 relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C8102E] focus-visible:ring-offset-2"
+                aria-label={`${title} — request by email above`}
+                className="group relative bg-[#f9f9f9] rounded-[15px] p-6 sm:p-7 flex flex-col items-start text-left cursor-pointer shadow-[0_4px_12px_rgba(0,0,0,0.10)] hover:shadow-[0_8px_20px_rgba(0,0,0,0.15)] hover:-translate-y-[5px] transition-all duration-300 overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C8102E] focus-visible:ring-offset-2"
               >
-                <span className="absolute top-4 right-4 bg-[#C8102E] text-white text-[10px] font-bold px-2.5 py-1 rounded-full tracking-[0.06em] uppercase opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-200 pointer-events-none">
-                  Available via email
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute top-3 -right-3 rotate-6 bg-[#C8102E] text-white text-[11px] font-bold px-3 py-1 rounded-full shadow-[0_10px_24px_rgba(200,16,46,0.25)] opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-200"
+                >
+                  Request above
                 </span>
-                <div className="icon-block mb-5">
+                <div className="mb-5 w-[60px] h-[60px] sm:w-[68px] sm:h-[68px] rounded-[15px] bg-[#FBF1E7] text-[#C8102E] flex items-center justify-center text-2xl sm:text-[26px] leading-none transition-transform duration-300 group-hover:scale-[1.08]">
                   <span aria-hidden="true">{icon}</span>
                 </div>
-                <h3 className="text-[18px] md:text-[20px] font-bold text-[#111111] leading-[1.25] tracking-[-0.005em] mb-3 pr-16 md:pr-24">{title}</h3>
-                <span className="block w-8 h-[3px] bg-[#C8102E] rounded-full mb-4" aria-hidden="true" />
-                <p className="text-[15px] text-[#666666] leading-[1.6] mb-6">{desc}</p>
-                <span className="link-arrow mt-auto pt-2 group-hover:gap-2.5">
-                  Request example
-                  <svg className="w-3.5 h-3.5 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                  </svg>
-                </span>
+                <h3 className="text-[18px] md:text-[20px] font-bold text-[#181C14] leading-[1.25] tracking-[-0.005em] mb-3 pr-10">{title}</h3>
+                <span className="block w-10 h-1 bg-[#C8102E] rounded-full mb-4" aria-hidden="true" />
+                <p className="text-[15px] text-[#555555] leading-[1.6]">{desc}</p>
               </button>
             ))}
           </div>

@@ -84,7 +84,11 @@ export default function LocalizationKitsClient() {
           </nav>
 
           {/* CTA card */}
-          <div ref={ctaRef} className="card-editorial p-6 md:p-8 mb-8 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+          <div
+            ref={ctaRef}
+            id="request-cta"
+            className="card-editorial p-6 md:p-8 mb-8 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 scroll-mt-[90px]"
+          >
             <div className="flex-1">
               <p className="eyebrow mb-2">Get the Kits</p>
               <p className="text-[16px] md:text-[17px] text-[#111111] font-bold leading-snug">
@@ -164,16 +168,21 @@ export default function LocalizationKitsClient() {
                   key={tag}
                   onClick={scrollToCta}
                   type="button"
-                  className="card-editorial p-6 sm:p-7 md:p-8 flex flex-col text-left group hover:border-[#C8102E]/30 relative"
+                  aria-label={`${title} — request by email`}
+                  className="group relative bg-[#f9f9f9] rounded-[15px] p-6 sm:p-7 flex flex-col items-start text-left shadow-[0_4px_12px_rgba(0,0,0,0.10)] hover:shadow-[0_8px_20px_rgba(0,0,0,0.15)] hover:-translate-y-[5px] transition-all duration-300 overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C8102E] focus-visible:ring-offset-2"
                 >
-                  <span className="absolute top-4 right-4 bg-[#C8102E] text-white text-[10px] font-bold px-2.5 py-1 rounded-full tracking-[0.06em] uppercase opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-200 pointer-events-none">
+                  <span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute top-3 -right-3 rotate-6 bg-[#C8102E] text-white text-[11px] font-bold px-3 py-1 rounded-full shadow-[0_10px_24px_rgba(200,16,46,0.25)] opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-200"
+                  >
                     Available via email
                   </span>
-                  <div className="icon-block mb-5">
+                  <div className="mb-5 w-[60px] h-[60px] sm:w-[68px] sm:h-[68px] rounded-[15px] bg-[#FBF1E7] text-[#C8102E] flex items-center justify-center text-2xl sm:text-[26px] leading-none transition-transform duration-300 group-hover:scale-[1.08]">
                     <span aria-hidden="true">{icon}</span>
                   </div>
-                  <h3 className="text-[17px] md:text-[18px] font-bold text-[#111111] leading-[1.3] mb-3 pr-24">{title}</h3>
-                  <p className="text-[15px] text-[#666666] leading-[1.6]">{desc}</p>
+                  <h3 className="text-[17px] md:text-[18px] font-bold text-[#181C14] leading-[1.3] mb-3 pr-12">{title}</h3>
+                  <span className="block w-10 h-1 bg-[#C8102E] rounded-full mb-4" aria-hidden="true" />
+                  <p className="text-[15px] text-[#555555] leading-[1.6]">{desc}</p>
                 </button>
               ))}
             </div>
