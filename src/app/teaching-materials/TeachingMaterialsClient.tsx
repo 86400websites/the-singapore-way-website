@@ -1,15 +1,10 @@
 'use client'
 
-import { useMemo, useRef, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import Link from 'next/link'
 import PageHero from '@/components/PageHero'
 import RequestModal from '@/components/RequestModal'
 import RevealStagger from '@/components/motion/RevealStagger'
-
-function chapterNumber(chapter: string) {
-  const match = chapter.match(/(\d+)/)
-  return match ? match[1] : ''
-}
 
 type Section = 'synopsis' | 'dilemma' | 'themes' | 'audience'
 
@@ -22,6 +17,66 @@ interface CaseStudy {
   dilemma: string
   themes: string[]
   audience: string[]
+}
+
+const iconStroke = (path: ReactNode) => (
+  <svg className="w-8 h-8 sm:w-9 sm:h-9" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24" aria-hidden="true">
+    {path}
+  </svg>
+)
+
+const studyIcons: Record<string, ReactNode> = {
+  'chapter-1': iconStroke(
+    <path strokeLinecap="round" strokeLinejoin="round" d="M5 21h14M6 21V10l6-5 6 5v11M10 21v-6h4v6" />
+  ),
+  'chapter-2': iconStroke(
+    <path strokeLinecap="round" strokeLinejoin="round" d="M3 11.5 12 4l9 7.5V21a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1v-9.5Z" />
+  ),
+  'chapter-3': iconStroke(
+    <path strokeLinecap="round" strokeLinejoin="round" d="M3 17l5-5 4 4 8-8M14 8h6v6" />
+  ),
+  'chapter-4': iconStroke(
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4 2 9l10 5 10-5-10-5Zm-6 7v4c0 1.7 2.7 3 6 3s6-1.3 6-3v-4M22 9v6" />
+  ),
+  'chapter-5': iconStroke(
+    <path strokeLinecap="round" strokeLinejoin="round" d="M4 21V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v14M12 9v6M9 12h6M3 21h18" />
+  ),
+  'chapter-6': iconStroke(
+    <path strokeLinecap="round" strokeLinejoin="round" d="M6 3v6m12-6v6M6 15v6m12-6v6M3 6h6M3 18h6m6-12h6m-6 12h6M9 9h6v6H9z" />
+  ),
+  'chapter-7': iconStroke(
+    <path strokeLinecap="round" strokeLinejoin="round" d="M8 6h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Zm-2 4h12M9 19l-1 2m8-2 1 2M9 15h.01M15 15h.01" />
+  ),
+  'chapter-8': iconStroke(
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11Z" />
+  ),
+  'chapter-9': iconStroke(
+    <path strokeLinecap="round" strokeLinejoin="round" d="M3 7h18v12H3V7Zm6 0V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 12h18" />
+  ),
+  'chapter-10': iconStroke(
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 3a4 4 0 0 0-4 4v3H6a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-2V7a4 4 0 0 0-4-4Zm0 8v4" />
+  ),
+  'chapter-11': iconStroke(
+    <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v17M4 4h13l-2 4 2 4H4" />
+  ),
+  'chapter-12': iconStroke(
+    <path strokeLinecap="round" strokeLinejoin="round" d="M5 20c0-7 5-13 14-13-1 9-7 14-14 13Zm0 0c2-4 5-7 9-9" />
+  ),
+  'chapter-13': iconStroke(
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 18h6m-5 3h4M12 3a6 6 0 0 0-4 10.5c1 1 1.5 2 1.5 3.5h5c0-1.5.5-2.5 1.5-3.5A6 6 0 0 0 12 3Z" />
+  ),
+  'chapter-14': iconStroke(
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 3a9 9 0 0 0 0 18c1.5 0 2-1 2-2s-.5-1.5-.5-2.5.5-1.5 2-1.5h2A4.5 4.5 0 0 0 22 10C21.5 6 17 3 12 3Z" />
+  ),
+  'chapter-15': iconStroke(
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 7h6a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2Zm1-3h4v3h-4V4Zm-1 11h.01M15 15h.01M5 11v4m14-4v4" />
+  ),
+  'chapter-16': iconStroke(
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm6 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3 20c0-2.5 2.5-5 6-5s6 2.5 6 5M14 15c2.5 0 6 1.5 7 5" />
+  ),
+  'chapter-17': iconStroke(
+    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 16.5 6 19l3-1 1-3-2.5-1.5L4.5 16.5Zm10-10 5 5M9 15l6-6 5 5-6 6-5-5Zm10-9a3 3 0 0 1-2 4l-2-2a3 3 0 0 1 4-2Z" />
+  ),
 }
 
 const caseStudies: CaseStudy[] = [
@@ -467,27 +522,34 @@ const sectionLabels: Record<Section, string> = {
 
 const sectionIcons: Record<Section, ReactNode> = {
   synopsis: (
-    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
     </svg>
   ),
   dilemma: (
-    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093M12 17h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
     </svg>
   ),
   themes: (
-    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="12" cy="12" r="3" strokeWidth={2} />
+      <circle cx="12" cy="12" r="7" strokeWidth={2} />
+      <circle cx="12" cy="12" r="10.5" strokeWidth={1.5} strokeDasharray="2 3" />
     </svg>
   ),
   audience: (
-    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
     </svg>
   ),
 }
+
+const downloadIcon = (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3" />
+  </svg>
+)
 
 const selectChevron =
   'url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'%23888\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M19 9l-7 7-7-7\'/></svg>")'
@@ -505,7 +567,6 @@ export default function TeachingMaterialsClient() {
   const scrollToCta = () => ctaRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 
   const openRequest = () => {
-    scrollToCta()
     setModalOpen(true)
   }
 
@@ -519,27 +580,35 @@ export default function TeachingMaterialsClient() {
         variant="light"
       />
 
-      <section className="py-14 md:py-20 bg-[#F5F5F5] border-t border-[#ECECEC]">
-        <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
+      <section className="py-12 md:py-16 bg-[#F5F5F5] border-t border-[#ECECEC]">
+        <div className="max-w-[1040px] mx-auto px-5 sm:px-6 lg:px-8">
 
           {/* Breadcrumb */}
-          <nav className="text-[12px] text-[#888888] mb-8 flex items-center gap-2 tracking-[0.04em]" aria-label="Breadcrumb">
+          <nav className="text-[12px] text-[#888888] mb-6 flex items-center gap-2 tracking-[0.04em]" aria-label="Breadcrumb">
             <Link href="/teach" className="hover:text-[#111111] transition-colors">Teach</Link>
-            <svg className="w-3 h-3 text-[#CCCCCC]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-3 h-3 text-[#CCCCCC]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
             <span className="text-[#C8102E] font-bold">Case Studies</span>
           </nav>
 
-          {/* CTA card */}
-          <div ref={ctaRef} className="card-editorial p-6 md:p-8 mb-8 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+          {/* CTA card (also the scroll target) */}
+          <div
+            ref={ctaRef}
+            id="request-cta"
+            className="card-editorial p-6 md:p-8 mb-8 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 scroll-mt-[90px]"
+          >
             <div className="flex-1">
               <p className="eyebrow mb-2">Get the Case Studies</p>
               <p className="text-[16px] md:text-[17px] text-[#111111] font-bold leading-snug">
-                Receive a free case study and the full set by email.
+                Receive a curated list of Case Studies by email.
               </p>
             </div>
-            <button onClick={() => setModalOpen(true)} className="btn-pill self-start sm:self-auto whitespace-nowrap" type="button">
+            <button
+              onClick={openRequest}
+              type="button"
+              className="btn-pill self-start sm:self-auto whitespace-nowrap"
+            >
               Request Case Studies
             </button>
           </div>
@@ -579,20 +648,29 @@ export default function TeachingMaterialsClient() {
 
           {/* Grid / Empty */}
           {filtered.length === 0 ? (
-            <div className="card-editorial p-12 text-center">
-              <p className="eyebrow-muted mb-3">No matches</p>
+            <div className="bg-[#f9f9f9] border border-black/5 rounded-[15px] p-10 text-center">
               <h3 className="text-xl font-bold text-[#111111] mb-3">No case studies match that filter.</h3>
-              <button onClick={() => setChapter('all')} className="btn-pill" type="button">
+              <button
+                onClick={() => setChapter('all')}
+                type="button"
+                className="btn-pill"
+              >
                 Reset filter
               </button>
             </div>
           ) : (
-            <RevealStagger className="grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-6">
+            <RevealStagger
+              className="grid grid-cols-1 lg:grid-cols-2 gap-5 lg:gap-[30px]"
+              stagger={0.05}
+            >
               {filtered.map((study) => (
                 <CaseStudyCard
                   key={study.chapter}
                   study={study}
-                  onRequest={openRequest}
+                  onRequest={() => {
+                    scrollToCta()
+                    openRequest()
+                  }}
                 />
               ))}
             </RevealStagger>
@@ -608,111 +686,141 @@ export default function TeachingMaterialsClient() {
 
 function CaseStudyCard({ study, onRequest }: { study: CaseStudy; onRequest: () => void }) {
   const [activeSection, setActiveSection] = useState<Section | null>(null)
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null)
+  const triggerToRestoreRef = useRef<HTMLButtonElement | null>(null)
 
-  const toggle = (s: Section) => setActiveSection((curr) => (curr === s ? null : s))
+  const restoreTriggerFocus = useCallback(() => {
+    window.requestAnimationFrame(() => {
+      triggerToRestoreRef.current?.focus()
+    })
+  }, [])
 
-  const chapterNum = chapterNumber(study.chapter)
+  const close = useCallback(() => {
+    setActiveSection(null)
+    restoreTriggerFocus()
+  }, [restoreTriggerFocus])
+
+  useEffect(() => {
+    if (!activeSection) return
+
+    closeButtonRef.current?.focus()
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        close()
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [activeSection, close])
 
   return (
-    <article className="card-editorial p-6 md:p-7 lg:p-8 flex flex-col group relative hover:border-[#C8102E]/30">
-      {/* Hover badge */}
-      <span className="absolute top-5 right-5 bg-[#C8102E] text-white text-[10px] font-bold px-2.5 py-1 rounded-full tracking-[0.06em] uppercase opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-200 pointer-events-none">
+    <article className="group relative bg-[#f9f9f9] rounded-[15px] p-5 sm:p-6 lg:px-6 lg:py-[28px] flex flex-col items-center text-center shadow-[0_4px_12px_rgba(0,0,0,0.10)] hover:shadow-[0_8px_20px_rgba(0,0,0,0.15)] hover:-translate-y-[5px] transition-all duration-300 min-h-[260px] overflow-hidden">
+      {/* Available via email — diagonal hover badge */}
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute top-3 -right-3 rotate-6 bg-[#C8102E] text-white text-[11px] font-bold px-3 py-1 rounded-full shadow-[0_10px_24px_rgba(200,16,46,0.25)] opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-200"
+      >
         Available via email
       </span>
 
-      {/* Icon + chapter eyebrow */}
-      <div className="flex items-center gap-4 mb-5">
-        <div className="icon-block">
-          <span aria-hidden="true">{study.icon}</span>
-        </div>
-        {chapterNum && (
-          <div className="flex flex-col">
-            <p className="eyebrow-muted">Chapter {chapterNum}</p>
-            <p className="text-[11px] tracking-[0.14em] uppercase text-[#C8102E] font-bold mt-1">Case Study</p>
-          </div>
+      {/* Cream icon block, upper-left */}
+      <div className="self-start mb-5 w-[60px] h-[60px] sm:w-[80px] sm:h-[80px] rounded-[15px] bg-[#FBF1E7] text-[#C8102E] flex items-center justify-center transition-transform duration-300 group-hover:scale-[1.08]">
+        {studyIcons[study.chapter] ?? (
+          <svg className="w-8 h-8 sm:w-9 sm:h-9" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" />
+          </svg>
         )}
       </div>
 
-      {/* Title + subtitle */}
-      <h3 className="text-[20px] md:text-[22px] font-bold text-[#111111] leading-[1.22] tracking-[-0.005em] mb-2 pr-24">
+      {/* Title + red underline + subtitle */}
+      <h3 className="text-[18px] sm:text-[20px] font-bold text-[#181C14] leading-[1.25] tracking-[-0.005em] px-2">
         {study.title}
       </h3>
-      <p className="text-[15px] text-[#666666] leading-[1.55] mb-5 italic">
+      <span className="block w-12 h-1 bg-[#C8102E] rounded-full mt-3" aria-hidden="true" />
+      <p className="text-[15px] sm:text-[16px] text-[#555555] leading-[1.5] mt-4 mb-5 px-2">
         {study.subtitle}
       </p>
-      {/* Hairline rule */}
-      <span className="block w-10 h-[3px] bg-[#C8102E] rounded-full mb-6" aria-hidden="true" />
 
-      {/* Info buttons */}
-      <div className="flex flex-wrap gap-2 mb-5">
+      {/* Circular icon buttons */}
+      <div className="flex gap-3 sm:gap-4 mb-6" aria-hidden={activeSection ? true : undefined}>
         {(Object.keys(sectionLabels) as Section[]).map((s) => {
           const isActive = activeSection === s
           return (
             <button
               key={s}
-              onClick={() => toggle(s)}
+              onClick={(event) => {
+                triggerToRestoreRef.current = event.currentTarget
+                setActiveSection(s)
+              }}
               type="button"
               aria-expanded={isActive}
               aria-controls={`${study.chapter}-${s}`}
-              className={`inline-flex items-center gap-1.5 text-[11.5px] font-bold tracking-[0.06em] uppercase px-3.5 py-2 sm:py-1.5 rounded-full border transition-all duration-200 ${
+              aria-label={sectionLabels[s]}
+              title={sectionLabels[s]}
+              tabIndex={activeSection ? -1 : undefined}
+              className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#C8102E] focus:ring-offset-2 ${
                 isActive
-                  ? 'bg-[#C8102E] text-white border-[#C8102E] shadow-sm'
-                  : 'bg-white text-[#666666] border-[#E5E5E5] hover:border-[#C8102E] hover:text-[#C8102E]'
+                  ? 'bg-[#C8102E] text-white'
+                  : 'bg-[#FBF1E7] text-[#C8102E] hover:-translate-y-0.5 hover:shadow-sm'
               }`}
             >
               {sectionIcons[s]}
-              {sectionLabels[s]}
             </button>
           )
         })}
       </div>
 
-      {/* Expanded section panel */}
+      {/* Red pill buttons */}
+      <div className="w-full mt-auto flex flex-col sm:flex-row flex-nowrap gap-3 sm:gap-3 justify-center" aria-hidden={activeSection ? true : undefined}>
+        <button
+          onClick={onRequest}
+          type="button"
+          tabIndex={activeSection ? -1 : undefined}
+          className="flex-1 min-w-0 whitespace-nowrap inline-flex items-center justify-center gap-1.5 bg-[#C8102E] text-white text-[13px] sm:text-[14px] font-bold px-3 sm:px-4 py-2.5 rounded-full hover:bg-[#a50d26] hover:-translate-y-0.5 shadow-sm hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#C8102E] focus:ring-offset-2"
+        >
+          <span className="shrink-0">{downloadIcon}</span>
+          <span className="whitespace-nowrap">Teacher&rsquo;s Guide</span>
+        </button>
+        <button
+          onClick={onRequest}
+          type="button"
+          tabIndex={activeSection ? -1 : undefined}
+          className="flex-1 min-w-0 whitespace-nowrap inline-flex items-center justify-center gap-1.5 bg-[#C8102E] text-white text-[13px] sm:text-[14px] font-bold px-3 sm:px-4 py-2.5 rounded-full hover:bg-[#a50d26] hover:-translate-y-0.5 shadow-sm hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#C8102E] focus:ring-offset-2"
+        >
+          <span className="shrink-0">{downloadIcon}</span>
+          <span className="whitespace-nowrap">Student&rsquo;s Guide</span>
+        </button>
+      </div>
+
+      {/* Popover overlay inside the card */}
       {activeSection && (
         <div
           id={`${study.chapter}-${activeSection}`}
-          className="bg-[#FAFAFA] border border-[#ECECEC] rounded-xl p-5 md:p-6 mb-5 relative"
+          role="dialog"
+          aria-modal="false"
+          aria-label={sectionLabels[activeSection]}
+          className="absolute inset-0 z-10 bg-white/[0.97] rounded-[15px] shadow-[0_8px_20px_rgba(0,0,0,0.15)] p-6 sm:p-7 overflow-y-auto text-left"
         >
-          <div className="flex items-start justify-between gap-4 mb-3">
-            <p className="eyebrow">{sectionLabels[activeSection]}</p>
-            <button
-              onClick={() => setActiveSection(null)}
-              aria-label="Close section"
-              className="text-[#888888] hover:text-[#111111] transition-colors flex-shrink-0"
-              type="button"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
+          <button
+            ref={closeButtonRef}
+            onClick={close}
+            type="button"
+            aria-label="Close"
+            className="absolute top-3 right-3 w-9 h-9 rounded-full text-[#666666] hover:bg-[#F5F5F5] hover:text-[#111111] transition-colors flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-[#C8102E]"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          <h4 className="text-[#C8102E] text-[18px] sm:text-[20px] font-bold leading-tight mb-3 pr-10">
+            {sectionLabels[activeSection]}
+          </h4>
           <SectionContent study={study} section={activeSection} />
         </div>
       )}
-
-      {/* CTAs */}
-      <div className="mt-auto pt-5 border-t border-[#ECECEC] flex flex-wrap gap-2.5">
-        <button
-          onClick={onRequest}
-          type="button"
-          className="flex-1 min-w-[130px] inline-flex items-center justify-center gap-1.5 bg-[#C8102E] text-white text-[11.5px] font-bold tracking-[0.06em] uppercase px-4 py-2.5 rounded-full hover:bg-[#a50d26] shadow-sm hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#C8102E] focus:ring-offset-2"
-        >
-          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-          </svg>
-          Teacher's Guide
-        </button>
-        <button
-          onClick={onRequest}
-          type="button"
-          className="flex-1 min-w-[130px] inline-flex items-center justify-center gap-1.5 bg-white text-[#C8102E] border border-[#C8102E] text-[11.5px] font-bold tracking-[0.06em] uppercase px-4 py-2.5 rounded-full hover:bg-[#C8102E] hover:text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#C8102E] focus:ring-offset-2"
-        >
-          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-          Student's Guide
-        </button>
-      </div>
     </article>
   )
 }
@@ -722,36 +830,23 @@ function SectionContent({ study, section }: { study: CaseStudy; section: Section
     return (
       <div className="space-y-3">
         {study.synopsis.map((p, i) => (
-          <p key={i} className="text-[15px] text-[#444444] leading-[1.65]">{p}</p>
+          <p key={i} className="text-[14.5px] text-[#555555] leading-[1.55]">{p}</p>
         ))}
       </div>
     )
   }
   if (section === 'dilemma') {
-    return <p className="text-[15px] text-[#444444] leading-[1.65]">{study.dilemma}</p>
+    return <p className="text-[14.5px] text-[#555555] leading-[1.55]">{study.dilemma}</p>
   }
-  if (section === 'themes') {
-    return (
-      <ul className="space-y-2">
-        {study.themes.map((t, i) => (
-          <li key={i} className="text-[15px] text-[#444444] leading-[1.55] flex gap-2">
-            <span className="text-[#C8102E] flex-shrink-0 mt-1.5">
-              <svg className="w-1.5 h-1.5" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" /></svg>
-            </span>
-            {t}
-          </li>
-        ))}
-      </ul>
-    )
-  }
+  const items = section === 'themes' ? study.themes : study.audience
   return (
     <ul className="space-y-2">
-      {study.audience.map((a, i) => (
-        <li key={i} className="text-[15px] text-[#444444] leading-[1.55] flex gap-2">
-          <span className="text-[#C8102E] flex-shrink-0 mt-1.5">
-            <svg className="w-1.5 h-1.5" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" /></svg>
+      {items.map((t, i) => (
+        <li key={i} className="text-[14.5px] text-[#555555] leading-[1.5] flex gap-2">
+          <span className="text-[#C8102E] flex-shrink-0 mt-2">
+            <svg className="w-1.5 h-1.5" fill="currentColor" viewBox="0 0 8 8" aria-hidden="true"><circle cx="4" cy="4" r="4" /></svg>
           </span>
-          {a}
+          {t}
         </li>
       ))}
     </ul>
