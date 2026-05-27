@@ -43,7 +43,7 @@ export default function Page() {
     <div className="bg-white">
 
       {/* Hero */}
-      <section className="bg-[#fbf5f2] pt-16 pb-14 sm:pt-20 sm:pb-20 lg:pt-24 lg:pb-28">
+      <section className="bg-white pt-16 pb-14 sm:pt-20 sm:pb-20 lg:pt-24 lg:pb-28">
         <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
             <div className="lg:col-span-6 order-2 lg:order-1 text-center lg:text-left">
@@ -57,7 +57,7 @@ export default function Page() {
                 Singapore's success wasn't a miracle—it was a method. The Singapore Way turns that method into something practical and adaptable for leaders, educators, and change-makers across the Global Majority. It's not about copying Singapore, but learning how to think, plan, and execute with clarity—then applying it to your own context.
               </p>
               <Link
-                href="/learn"
+                href="/q-a"
                 className="inline-block bg-[#C8102E] text-white text-[13px] font-bold px-8 py-3.5 rounded-full hover:bg-[#a50d26] transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#C8102E] focus:ring-offset-2"
               >
                 Start Exploring
@@ -66,8 +66,8 @@ export default function Page() {
             <div className="lg:col-span-6 order-1 lg:order-2">
               <div className="relative mx-auto w-full max-w-[480px] sm:max-w-[580px] lg:max-w-[640px] aspect-square">
                 <Image
-                  src="/assets/home/home-hero-singapore-way.png"
-                  alt="Person reading The Singapore Way book with Singapore skyline"
+                  src="/assets/home/Hero%20-%20The%20Singapore%20Way.png"
+                  alt="The Singapore Way hero illustration"
                   fill
                   sizes="(min-width: 1024px) 640px, (min-width: 640px) 580px, 100vw"
                   className="object-contain"
@@ -80,7 +80,7 @@ export default function Page() {
       </section>
 
       {/* Quote */}
-      <section className="py-12 sm:py-14 bg-[#fef9f6] border-y border-[#f3e7dd]">
+      <section className="py-12 sm:py-14 bg-white border-y border-gray-100">
         <div className="max-w-3xl mx-auto px-6 text-center">
           <p className="text-[#C8102E] text-lg md:text-xl italic font-semibold leading-relaxed">
             <span aria-hidden="true" className="not-italic font-bold mr-1">“</span>
@@ -94,13 +94,13 @@ export default function Page() {
       </section>
 
       {/* Framework Section */}
-      <section className="py-16 sm:py-20 lg:py-24 bg-gray-50">
+      <section className="py-16 sm:py-20 lg:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
             <div className="lg:col-span-5 flex justify-center">
               <div className="relative w-full max-w-md aspect-square">
                 <Image
-                  src="/assets/home/framework.png"
+                  src="/assets/home/Home%20Page%20Image%202.png"
                   alt="A Practical Framework for National and Local Transformation"
                   fill
                   sizes="(min-width: 1024px) 448px, 100vw"
@@ -125,14 +125,6 @@ export default function Page() {
                 This book and platform share a framework and principles—not to copy them, but to understand them, teach them, and adapt them to build new, local futures.
               </p>
               <div className="flex flex-wrap gap-3">
-                <a
-                  href="https://video.wixstatic.com/video/d1daaa_61e6acec091e46d7a2748275fa8f72d5/1080p/mp4/file.mp4"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block bg-[#C8102E] text-white text-[13px] font-bold px-7 py-3 rounded-full hover:bg-[#a50d26] transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#C8102E] focus:ring-offset-2"
-                >
-                  Watch Video
-                </a>
                 <button className="bg-white text-[#C8102E] border-2 border-[#C8102E] text-[13px] font-bold px-7 py-[10px] rounded-full hover:bg-[#C8102E] hover:text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#C8102E] focus:ring-offset-2">
                   Download Free Summary
                 </button>
@@ -174,7 +166,7 @@ export default function Page() {
             <div className="lg:col-span-5 order-1 lg:order-2 flex justify-center">
               <div className="relative w-full max-w-md aspect-square">
                 <Image
-                  src="/assets/home/who-is-it-for.png"
+                  src="/assets/home/Home%20Page%20Image%203.png"
                   alt="Who is The Singapore Way for"
                   fill
                   sizes="(min-width: 1024px) 448px, 100vw"
@@ -187,7 +179,7 @@ export default function Page() {
       </section>
 
       {/* Four Pillars */}
-      <section className="py-16 sm:py-20 lg:py-24 bg-gray-50">
+      <section className="py-16 sm:py-20 lg:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-14">
             <p className="text-[11px] font-bold tracking-[0.18em] text-[#C8102E] uppercase mb-3">
