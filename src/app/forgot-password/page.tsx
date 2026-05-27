@@ -31,9 +31,11 @@ export default async function ForgotPasswordPage() {
         description="We'll email you a secure link to set a new password."
         variant="light"
       />
-      <section className="bg-white">
-        <div className="max-w-md mx-auto px-5 sm:px-6 lg:px-8 py-12">
-          <ForgotPasswordForm origin={origin} />
+      <section className="bg-[#F5F5F5] border-t border-[#ECECEC] py-14 md:py-20">
+        <div className="max-w-md mx-auto px-5 sm:px-6 lg:px-8">
+          <div className="card-editorial p-8 md:p-10">
+            <ForgotPasswordForm origin={origin} />
+          </div>
         </div>
       </section>
     </>

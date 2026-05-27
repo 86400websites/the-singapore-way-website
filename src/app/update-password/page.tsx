@@ -26,9 +26,11 @@ export default function UpdatePasswordPage() {
         description="Choose a new password for your account."
         variant="light"
       />
-      <section className="bg-white">
-        <div className="max-w-md mx-auto px-5 sm:px-6 lg:px-8 py-12">
-          <UpdatePasswordForm />
+      <section className="bg-[#F5F5F5] border-t border-[#ECECEC] py-14 md:py-20">
+        <div className="max-w-md mx-auto px-5 sm:px-6 lg:px-8">
+          <div className="card-editorial p-8 md:p-10">
+            <UpdatePasswordForm />
+          </div>
         </div>
       </section>
     </>

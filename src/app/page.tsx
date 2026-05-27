@@ -2,6 +2,9 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
 
+import Reveal from '@/components/motion/Reveal'
+import RevealStagger from '@/components/motion/RevealStagger'
+import { CardMedia } from '@/components/ui/card'
 import { pageMetadata } from '@/lib/seo/page-metadata'
 
 export const metadata: Metadata = pageMetadata({
@@ -47,20 +50,21 @@ export default function Page() {
         <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
             <div className="lg:col-span-6 order-2 lg:order-1 text-center lg:text-left">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 leading-[1.08] tracking-tight mb-5">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-[#111111] leading-[1.08] tracking-[-0.01em] mb-6">
                 The Singapore Way
               </h1>
-              <p className="text-base sm:text-lg font-semibold text-gray-600 mb-5 leading-snug">
+              <span className="editorial-rule mb-7 mx-auto lg:mx-0" aria-hidden="true" />
+              <p className="text-[17px] sm:text-[18px] text-[#444444] leading-[1.5] mb-6 max-w-xl mx-auto lg:mx-0 font-bold">
                 More Than a Book, a Bridge from Singapore to the Global Majority
               </p>
-              <p className="text-[15px] sm:text-base text-gray-500 leading-relaxed mb-9 max-w-xl mx-auto lg:mx-0">
+              <p className="text-[15px] sm:text-base text-[#666666] leading-[1.7] mb-9 max-w-xl mx-auto lg:mx-0">
                 Singapore's success wasn't a miracle—it was a method. The Singapore Way turns that method into something practical and adaptable for leaders, educators, and change-makers across the Global Majority. It's not about copying Singapore, but learning how to think, plan, and execute with clarity—then applying it to your own context.
               </p>
-              <Link
-                href="/q-a"
-                className="inline-block bg-[#C8102E] text-white text-[13px] font-bold px-8 py-3.5 rounded-full hover:bg-[#a50d26] transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#C8102E] focus:ring-offset-2"
-              >
+              <Link href="/q-a" className="btn-pill">
                 Start Exploring
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
               </Link>
             </div>
             <div className="lg:col-span-6 order-1 lg:order-2">
@@ -79,17 +83,16 @@ export default function Page() {
         </div>
       </section>
 
-      {/* Quote */}
-      <section className="py-12 sm:py-14 bg-white border-y border-gray-100">
+      {/* Editorial pull quote */}
+      <section className="py-14 sm:py-16 bg-white border-y border-[#ECECEC]">
         <div className="max-w-3xl mx-auto px-6 text-center">
-          <p className="text-[#C8102E] text-lg md:text-xl italic font-semibold leading-relaxed">
-            <span aria-hidden="true" className="not-italic font-bold mr-1">“</span>
-            Don't borrow the fruit. Borrow the root.
-            <span aria-hidden="true" className="not-italic font-bold ml-1">”</span>
-            <span className="block sm:inline mt-2 sm:mt-0 sm:ml-2 not-italic font-bold text-gray-800">
-              — Maher Kaddoura
-            </span>
-          </p>
+          <span className="editorial-rule mx-auto mb-7" aria-hidden="true" />
+          <blockquote className="text-[#111111] text-xl md:text-2xl italic leading-[1.45]">
+            “Don't borrow the fruit. Borrow the root.”
+          </blockquote>
+          <cite className="block text-[#C8102E] font-bold text-[12px] tracking-[0.14em] uppercase mt-5 not-italic">
+            — Maher Kaddoura
+          </cite>
         </div>
       </section>
 
@@ -108,66 +111,68 @@ export default function Page() {
                 />
               </div>
             </div>
-            <div className="lg:col-span-7">
-              <h2 className="text-2xl sm:text-3xl lg:text-[2rem] font-bold text-gray-900 mb-6 leading-tight tracking-tight">
-                <span className="inline bg-[#C8102E] text-white px-1.5 py-0.5 leading-[1.6] box-decoration-clone">A Practical Framework for</span>
-                <br />
-                <span className="inline bg-[#C8102E] text-white px-1.5 py-0.5 leading-[1.6] box-decoration-clone">National and Local Transformation</span>
+            <Reveal as="div" className="lg:col-span-7">
+              <p className="eyebrow mb-5">The Framework</p>
+              <h2 className="text-2xl sm:text-3xl lg:text-[2rem] font-bold text-[#111111] mb-6 leading-[1.18] tracking-[-0.01em]">
+                A Practical Framework for National and Local Transformation
               </h2>
-              <p className="text-[15px] sm:text-base text-gray-600 leading-relaxed mb-4">
+              <span className="editorial-rule mb-7" aria-hidden="true" />
+              <p className="text-[15px] sm:text-base text-[#444444] leading-[1.7] mb-4">
                 Too many countries are asked to admire success stories…<br />
                 But they're rarely given the tools to build their own.
               </p>
-              <p className="text-[15px] sm:text-base text-gray-600 leading-relaxed mb-4">
+              <p className="text-[15px] sm:text-base text-[#444444] leading-[1.7] mb-4">
                 Singapore's rise wasn't luck. It was systems thinking, designed for decades, not cycles.
               </p>
-              <p className="text-[15px] sm:text-base text-gray-600 leading-relaxed mb-8">
+              <p className="text-[15px] sm:text-base text-[#444444] leading-[1.7] mb-8">
                 This book and platform share a framework and principles—not to copy them, but to understand them, teach them, and adapt them to build new, local futures.
               </p>
               <div className="flex flex-wrap gap-3">
-                <button className="bg-white text-[#C8102E] border-2 border-[#C8102E] text-[13px] font-bold px-7 py-[10px] rounded-full hover:bg-[#C8102E] hover:text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#C8102E] focus:ring-offset-2">
+                <button type="button" className="btn-pill-outline">
                   Download Free Summary
                 </button>
               </div>
-            </div>
+            </Reveal>
           </div>
         </div>
       </section>
 
       {/* Who Is It For */}
-      <section className="py-16 sm:py-20 lg:py-24 bg-white">
+      <section className="py-16 sm:py-20 lg:py-24 bg-white border-t border-[#ECECEC]">
         <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
-            <div className="lg:col-span-7 order-2 lg:order-1">
-              <h2 className="text-2xl sm:text-3xl lg:text-[2rem] font-bold tracking-tight mb-7">
-                <span className="inline bg-[#C8102E] text-white px-2 py-1 leading-[1.6] box-decoration-clone">who is it for?</span>
+            <Reveal as="div" className="lg:col-span-7 order-2 lg:order-1">
+              <p className="eyebrow mb-5">Who Is It For</p>
+              <h2 className="text-2xl sm:text-3xl lg:text-[2rem] font-bold text-[#111111] mb-6 leading-[1.18] tracking-[-0.01em]">
+                Who is it for?
               </h2>
+              <span className="editorial-rule mb-7" aria-hidden="true" />
               <ul className="space-y-4 mb-9">
-                <li className="flex items-start gap-3 text-[15px] sm:text-base text-gray-700">
-                  <span className="text-[#C8102E] font-bold mt-0.5 flex-shrink-0">—</span>
-                  <span>Educators, who want to teach systems, not just policies.</span>
+                <li className="flex items-start gap-3 text-[15px] sm:text-base text-[#444444] leading-[1.6]">
+                  <span className="text-[#C8102E] font-bold mt-0.5 flex-shrink-0" aria-hidden="true">—</span>
+                  <span><span className="font-bold text-[#111111]">Educators</span>, who want to teach systems, not just policies.</span>
                 </li>
-                <li className="flex items-start gap-3 text-[15px] sm:text-base text-gray-700">
-                  <span className="text-[#C8102E] font-bold mt-0.5 flex-shrink-0">—</span>
-                  <span>Government leaders, who want to pilot reforms with clarity.</span>
+                <li className="flex items-start gap-3 text-[15px] sm:text-base text-[#444444] leading-[1.6]">
+                  <span className="text-[#C8102E] font-bold mt-0.5 flex-shrink-0" aria-hidden="true">—</span>
+                  <span><span className="font-bold text-[#111111]">Government leaders</span>, who want to pilot reforms with clarity.</span>
                 </li>
-                <li className="flex items-start gap-3 text-[15px] sm:text-base text-gray-700">
-                  <span className="text-[#C8102E] font-bold mt-0.5 flex-shrink-0">—</span>
-                  <span>Social innovators, who want to design smart from the start.</span>
+                <li className="flex items-start gap-3 text-[15px] sm:text-base text-[#444444] leading-[1.6]">
+                  <span className="text-[#C8102E] font-bold mt-0.5 flex-shrink-0" aria-hidden="true">—</span>
+                  <span><span className="font-bold text-[#111111]">Social innovators</span>, who want to design smart from the start.</span>
                 </li>
               </ul>
-              <Link
-                href="/q-a"
-                className="inline-block bg-[#C8102E] text-white text-[13px] font-bold px-7 py-3 rounded-full hover:bg-[#a50d26] transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#C8102E] focus:ring-offset-2"
-              >
-                Questions &amp; answers
+              <Link href="/q-a" className="btn-pill">
+                Questions &amp; Answers
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
               </Link>
-            </div>
+            </Reveal>
             <div className="lg:col-span-5 order-1 lg:order-2 flex justify-center">
               <div className="relative w-full max-w-md aspect-square">
                 <Image
                   src="/assets/home/Home%20Page%20Image%203.png"
-                  alt="Who is The Singapore Way for"
+                  alt="Who The Singapore Way is for"
                   fill
                   sizes="(min-width: 1024px) 448px, 100vw"
                   className="object-contain"
@@ -179,47 +184,49 @@ export default function Page() {
       </section>
 
       {/* Four Pillars */}
-      <section className="py-16 sm:py-20 lg:py-24 bg-white">
+      <section className="py-16 sm:py-20 lg:py-24 bg-white border-t border-[#ECECEC]">
         <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-14">
-            <p className="text-[11px] font-bold tracking-[0.18em] text-[#C8102E] uppercase mb-3">
-              Four ways to engage
-            </p>
-            <h2 className="text-2xl sm:text-3xl lg:text-[2rem] font-bold text-gray-900 tracking-tight leading-tight">
+          <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
+            <p className="eyebrow mb-4">Four ways to engage</p>
+            <h2 className="text-2xl sm:text-3xl lg:text-[2rem] font-bold text-[#111111] tracking-[-0.01em] leading-[1.18]">
               Choose your path into The Singapore Way
             </h2>
+            <span className="editorial-rule mx-auto mt-6" aria-hidden="true" />
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
+          <RevealStagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 lg:gap-7">
             {pillars.map((pillar) => (
-              <div
+              <Link
                 key={pillar.title}
-                className="group flex flex-col bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
+                href={pillar.href}
+                className="card-link group flex flex-col h-full"
+                aria-label={`${pillar.title} — Explore`}
               >
-                <div className="relative aspect-[4/3] bg-[#faf8f4] overflow-hidden">
+                <CardMedia aspect="aspect-[4/3]">
                   <Image
                     src={pillar.image}
                     alt={pillar.title}
                     fill
                     sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-                    className="object-contain p-6 transition-transform duration-300 group-hover:scale-[1.03]"
+                    className="object-contain p-6 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.03]"
                   />
-                </div>
+                </CardMedia>
                 <div className="flex flex-col flex-1 p-6 sm:p-7">
-                  <h3 className="text-lg font-bold text-gray-900 tracking-tight mb-2.5">{pillar.title}</h3>
-                  <p className="text-[14px] text-gray-500 leading-relaxed mb-6 flex-1">{pillar.description}</p>
-                  <Link
-                    href={pillar.href}
-                    className="inline-flex items-center gap-2 self-start bg-[#C8102E] text-white text-[13px] font-bold px-6 py-2.5 rounded-full hover:bg-[#a50d26] transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#C8102E] focus:ring-offset-2"
-                  >
+                  <h3 className="text-[19px] md:text-xl font-bold text-[#111111] leading-[1.25] tracking-[-0.005em] mb-3">
+                    {pillar.title}
+                  </h3>
+                  <p className="text-[14.5px] text-[#666666] leading-[1.65] mb-7 flex-1">
+                    {pillar.description}
+                  </p>
+                  <span className="link-arrow group-hover:gap-2.5">
                     Explore
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-3.5 h-3.5 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                     </svg>
-                  </Link>
+                  </span>
                 </div>
-              </div>
+              </Link>
             ))}
-          </div>
+          </RevealStagger>
         </div>
       </section>
 

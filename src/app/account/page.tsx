@@ -38,20 +38,22 @@ export default async function AccountPage() {
         description="You are signed in."
         variant="light"
       />
-      <section className="bg-white">
-        <div className="max-w-md mx-auto px-5 sm:px-6 lg:px-8 py-12">
-          <dl className="space-y-3 mb-8">
-            <div>
-              <dt className="text-xs font-bold tracking-[0.12em] text-gray-500 uppercase">Email</dt>
-              <dd className="text-[15px] text-[#111111] mt-1 break-all">{user.email ?? '-'}</dd>
-            </div>
-            <div>
-              <dt className="text-xs font-bold tracking-[0.12em] text-gray-500 uppercase">User ID</dt>
-              <dd className="text-[13px] text-gray-600 mt-1 break-all font-mono">{user.id}</dd>
-            </div>
-          </dl>
+      <section className="bg-[#F5F5F5] border-t border-[#ECECEC] py-14 md:py-20">
+        <div className="max-w-md mx-auto px-5 sm:px-6 lg:px-8">
+          <div className="card-editorial p-8 md:p-10">
+            <dl className="space-y-5 mb-8">
+              <div>
+                <dt className="text-[11px] font-bold tracking-[0.14em] text-[#666666] uppercase">Email</dt>
+                <dd className="text-[15px] text-[#111111] mt-1.5 break-all">{user.email ?? '-'}</dd>
+              </div>
+              <div>
+                <dt className="text-[11px] font-bold tracking-[0.14em] text-[#666666] uppercase">User ID</dt>
+                <dd className="text-[13px] text-[#666666] mt-1.5 break-all font-mono">{user.id}</dd>
+              </div>
+            </dl>
 
-          <AccountActions />
+            <AccountActions />
+          </div>
         </div>
       </section>
     </>

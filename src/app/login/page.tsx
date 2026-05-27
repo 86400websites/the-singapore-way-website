@@ -47,9 +47,11 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         description="Sign in to access your account."
         variant="light"
       />
-      <section className="bg-white">
-        <div className="max-w-md mx-auto px-5 sm:px-6 lg:px-8 py-12">
-          <LoginForm redirectTo={redirectTo} />
+      <section className="bg-[#F5F5F5] border-t border-[#ECECEC] py-14 md:py-20">
+        <div className="max-w-md mx-auto px-5 sm:px-6 lg:px-8">
+          <div className="card-editorial p-8 md:p-10">
+            <LoginForm redirectTo={redirectTo} />
+          </div>
         </div>
       </section>
     </>
