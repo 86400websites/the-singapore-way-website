@@ -8,6 +8,8 @@ import type {
   CourseLessonContentType,
   CourseLessonPreview,
   CourseModulePreview,
+  QuizPassedSummary,
+  QuizQuestionForClient,
 } from '@/lib/course/types'
 import { createClient, isSupabaseConfigured } from '@/lib/supabase/server'
 
@@ -258,6 +260,71 @@ export function computeProgress(course: Course, completed: Set<string>): CourseP
   const done = required.filter((l) => l.id && completed.has(l.id)).length
   const percent = total > 0 ? Math.round((done / total) * 100) : 0
   return { requiredTotal: total, requiredCompleted: done, percent }
+}
+
+// =============================================================================
+// Quizzes
+// =============================================================================
+
+/**
+ * Fetch the questions for a quiz lesson, projected for client rendering.
+ * The `correct_choice` column is deliberately NOT selected — the answer key
+ * never travels to the browser. RLS already blocks unenrolled reads.
+ */
+export async function getQuizQuestionsForLesson(
+  courseId: string | undefined,
+  lessonId: string | undefined,
+): Promise<QuizQuestionForClient[]> {
+  if (!isSupabaseConfigured() || !courseId || !lessonId) {
+    return []
+  }
+
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('quiz_questions')
+    .select('id, question, choices, position')
+    .eq('course_id', courseId)
+    .eq('lesson_id', lessonId)
+    .order('position', { ascending: true })
+
+  if (error || !data) return []
+
+  return data.map((row) => ({
+    id: row.id as string,
+    question: row.question as string,
+    choices: (row.choices as string[]) ?? [],
+    position: row.position as number,
+  }))
+}
+
+/**
+ * Returns the most recent passing attempt for a quiz lesson, or null when
+ * there is none. Used to render the "Quiz passed" banner.
+ */
+export async function getLatestPassedQuizAttempt(
+  courseId: string | undefined,
+  lessonId: string | undefined,
+  userId: string | undefined,
+): Promise<QuizPassedSummary | null> {
+  if (!isSupabaseConfigured() || !courseId || !lessonId || !userId) {
+    return null
+  }
+
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('quiz_attempts')
+    .select('score, created_at')
+    .eq('user_id', userId)
+    .eq('course_id', courseId)
+    .eq('lesson_id', lessonId)
+    .eq('passed', true)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  if (error || !data) return null
+
+  return { score: data.score as number, passedAt: data.created_at as string }
 }
 
 // =============================================================================

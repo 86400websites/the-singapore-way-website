@@ -74,6 +74,23 @@ export type CourseLandingCopy = {
   }
 }
 
+/**
+ * Client-safe quiz question shape. The `correct_choice` column from the DB is
+ * deliberately omitted so the answer key never reaches the browser bundle.
+ * Grading happens exclusively in the submitQuizAttempt Server Action.
+ */
+export type QuizQuestionForClient = {
+  id: string
+  question: string
+  choices: string[]
+  position: number
+}
+
+export type QuizPassedSummary = {
+  score: number
+  passedAt: string
+}
+
 export type Course = {
   id?: string
   slug: string

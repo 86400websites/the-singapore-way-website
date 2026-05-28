@@ -6,12 +6,15 @@ import LessonBody from '@/components/course/LessonBody'
 import LessonNav from '@/components/course/LessonNav'
 import LessonSidebar from '@/components/course/LessonSidebar'
 import MarkCompleteButton from '@/components/course/MarkCompleteButton'
+import QuizRunner from '@/components/course/QuizRunner'
 import {
   checkCourseAccess,
   computeProgress,
   findLessonContext,
   getCompletedLessonIds,
   getCourseForPlayer,
+  getLatestPassedQuizAttempt,
+  getQuizQuestionsForLesson,
 } from '@/lib/course/queries'
 import { pageMetadata } from '@/lib/seo/page-metadata'
 
@@ -81,6 +84,14 @@ export default async function LessonPage({ params }: LessonPageProps) {
   const canMarkComplete =
     !!access.courseId && !!context.lesson.id && context.lesson.contentType !== 'quiz'
 
+  const isQuizLesson = context.lesson.contentType === 'quiz'
+  const [quizQuestions, latestPassedAttempt] = isQuizLesson
+    ? await Promise.all([
+        getQuizQuestionsForLesson(access.courseId, context.lesson.id),
+        getLatestPassedQuizAttempt(access.courseId, context.lesson.id, access.user?.id),
+      ])
+    : [[], null]
+
   const prev = context.prev
     ? {
         title: context.prev.lesson.title,
@@ -124,7 +135,17 @@ export default async function LessonPage({ params }: LessonPageProps) {
               </p>
             </header>
 
-            <LessonBody lesson={context.lesson} />
+            {isQuizLesson && quizQuestions.length > 0 ? (
+              <QuizRunner
+                courseSlug={course.slug}
+                lessonSlug={context.lesson.slug}
+                questions={quizQuestions}
+                initialPassed={latestPassedAttempt}
+                nextHref={next?.href ?? null}
+              />
+            ) : (
+              <LessonBody lesson={context.lesson} />
+            )}
 
             {canMarkComplete && (
               <div className="mt-10">
