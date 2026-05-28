@@ -106,7 +106,13 @@ export default function PossibilitiesClient() {
         </div>
       </section>
 
-      {modalOpen && <RequestModal onClose={() => setModalOpen(false)} kind="Use Cases" />}
+      {modalOpen && (
+        <RequestModal
+          onClose={() => setModalOpen(false)}
+          kind="Use Cases"
+          formType="use-cases"
+        />
+      )}
     </div>
   )
 }

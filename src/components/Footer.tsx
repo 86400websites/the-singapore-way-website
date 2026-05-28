@@ -47,7 +47,9 @@ export default function Footer() {
 
     form.reset()
     setTurnstileToken(null)
-    setSubmitMessage('Thanks for subscribing.')
+    setSubmitMessage(
+      "Thank you for subscribing! You'll receive our newsletters and updates directly in your inbox.",
+    )
   }
 
   return (

@@ -2,16 +2,27 @@ import { NextResponse } from 'next/server'
 import { ZodError } from 'zod'
 
 import { checkRateLimit, clientIpFromRequest } from '@/lib/rate-limit'
+import { subscribeWithFormTag } from '@/lib/mailchimp/marketing'
 import { MissingServerEnvError } from '@/lib/server-env'
 import { verifyTurnstileToken } from '@/lib/turnstile/verify'
-import { newsletterSignupSchema } from '@/lib/validation/forms'
-import { subscribeWithFormTag } from '@/lib/mailchimp/marketing'
+import { mailchimpSubscribeSchema } from '@/lib/validation/forms'
 
+// Phase 2 Mailchimp tagging endpoint.
+//
+// This route intentionally supports exactly the five public formType keys
+// declared in MAILCHIMP_FORM_TYPES (free-book-summary, localization-kits,
+// use-cases, case-studies, newsletter). Each of those keys has a wired
+// front-end form. Zod rejects any other value with a 400 before the
+// Mailchimp SDK is ever called.
+//
+// The client never sends a raw Mailchimp tag string — only a formType
+// key. The tag mapping (FORM_TYPE_TAGS) is owned by the server-only
+// Mailchimp helper.
 export async function POST(request: Request) {
   try {
     const ip = clientIpFromRequest(request)
     const rate = await checkRateLimit(ip, {
-      prefix: 'newsletter',
+      prefix: 'mailchimp-subscribe',
       limit: 5,
       window: '1 m',
     })
@@ -41,11 +52,8 @@ export async function POST(request: Request) {
       )
     }
 
-    const payload = newsletterSignupSchema.parse(rest)
-    // Newsletter subscription: tag with TSW Newsletter via the server-owned
-    // FORM_TYPE_TAGS map. The formType key is set server-side, never accepted
-    // from the request body on this route.
-    await subscribeWithFormTag({ ...payload, formType: 'newsletter' })
+    const payload = mailchimpSubscribeSchema.parse(rest)
+    await subscribeWithFormTag(payload)
 
     return NextResponse.json({ ok: true })
   } catch (error) {
@@ -58,7 +66,7 @@ export async function POST(request: Request) {
 
     if (error instanceof MissingServerEnvError) {
       return NextResponse.json(
-        { ok: false, message: 'Newsletter delivery is not configured yet.' },
+        { ok: false, message: 'Subscription is not configured yet.' },
         { status: 503 },
       )
     }
