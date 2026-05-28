@@ -1,14 +1,23 @@
 import Link from 'next/link'
 
+import type { CourseProgress } from '@/lib/course/queries'
 import type { Course } from '@/lib/course/types'
 
 type LessonSidebarProps = {
   course: Course
   activeLessonSlug: string
+  completedLessonIds: Set<string>
+  progress: CourseProgress
 }
 
-export default function LessonSidebar({ course, activeLessonSlug }: LessonSidebarProps) {
+export default function LessonSidebar({
+  course,
+  activeLessonSlug,
+  completedLessonIds,
+  progress,
+}: LessonSidebarProps) {
   const totalLessons = course.modules.reduce((sum, m) => sum + m.lessons.length, 0)
+  const showProgress = progress.requiredTotal > 0
 
   return (
     <aside aria-label="Course curriculum" className="lg:sticky lg:top-[88px] lg:self-start">
@@ -41,9 +50,39 @@ export default function LessonSidebar({ course, activeLessonSlug }: LessonSideba
         <p className="text-[13px] text-[#666666] mt-2">
           {course.modules.length} modules · {totalLessons} lessons
         </p>
+
+        {showProgress && (
+          <div
+            className="mt-4"
+            role="group"
+            aria-label="Course progress"
+          >
+            <div className="flex items-center justify-between text-[12px] text-[#444444]">
+              <span className="font-bold tabular-nums">
+                {progress.percent}% complete
+              </span>
+              <span className="tabular-nums text-[#888888]">
+                {progress.requiredCompleted} / {progress.requiredTotal}
+              </span>
+            </div>
+            <div
+              className="mt-2 h-1.5 rounded-full bg-[#ECECEC] overflow-hidden"
+              role="progressbar"
+              aria-valuenow={progress.percent}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label="Course progress"
+            >
+              <div
+                className="h-full bg-[#0a8553] transition-[width] duration-500 ease-out"
+                style={{ width: `${progress.percent}%` }}
+              />
+            </div>
+          </div>
+        )}
       </div>
 
-      <nav className="lg:max-h-[calc(100vh-220px)] lg:overflow-y-auto lg:pr-2">
+      <nav className="lg:max-h-[calc(100vh-260px)] lg:overflow-y-auto lg:pr-2">
         <ol className="space-y-6">
           {course.modules.map((module, mi) => (
             <li key={module.id ?? module.slug}>
@@ -58,6 +97,7 @@ export default function LessonSidebar({ course, activeLessonSlug }: LessonSideba
               <ol className="space-y-1">
                 {module.lessons.map((lesson, li) => {
                   const isActive = lesson.slug === activeLessonSlug
+                  const isComplete = !!(lesson.id && completedLessonIds.has(lesson.id))
                   return (
                     <li key={lesson.id ?? lesson.slug}>
                       <Link
@@ -70,12 +110,26 @@ export default function LessonSidebar({ course, activeLessonSlug }: LessonSideba
                         }`}
                       >
                         <span
-                          className={`flex-shrink-0 mt-0.5 text-[11px] font-bold tabular-nums tracking-[0.06em] w-6 ${
-                            isActive ? 'text-[#C8102E]' : 'text-[#888888]'
+                          className={`flex-shrink-0 mt-0.5 w-6 inline-flex items-center justify-center ${
+                            isComplete ? 'text-[#0a8553]' : isActive ? 'text-[#C8102E]' : 'text-[#888888]'
                           }`}
-                          aria-hidden="true"
+                          aria-hidden={!isComplete}
+                          aria-label={isComplete ? 'Completed' : undefined}
                         >
-                          {String(li + 1).padStart(2, '0')}
+                          {isComplete ? (
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2.5}
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                          ) : (
+                            <span className="text-[11px] font-bold tabular-nums tracking-[0.06em]">
+                              {String(li + 1).padStart(2, '0')}
+                            </span>
+                          )}
                         </span>
                         <span className="flex-1 min-w-0">
                           <span

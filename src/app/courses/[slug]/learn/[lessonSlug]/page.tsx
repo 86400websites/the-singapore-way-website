@@ -5,9 +5,12 @@ import AccessPending from '@/components/course/AccessPending'
 import LessonBody from '@/components/course/LessonBody'
 import LessonNav from '@/components/course/LessonNav'
 import LessonSidebar from '@/components/course/LessonSidebar'
+import MarkCompleteButton from '@/components/course/MarkCompleteButton'
 import {
   checkCourseAccess,
+  computeProgress,
   findLessonContext,
+  getCompletedLessonIds,
   getCourseForPlayer,
 } from '@/lib/course/queries'
 import { pageMetadata } from '@/lib/seo/page-metadata'
@@ -72,6 +75,12 @@ export default async function LessonPage({ params }: LessonPageProps) {
   }
 
   // status === 'enrolled'
+  const completedLessonIds = await getCompletedLessonIds(access.courseId, access.user?.id)
+  const progress = computeProgress(course, completedLessonIds)
+  const isComplete = !!(context.lesson.id && completedLessonIds.has(context.lesson.id))
+  const canMarkComplete =
+    !!access.courseId && !!context.lesson.id && context.lesson.contentType !== 'quiz'
+
   const prev = context.prev
     ? {
         title: context.prev.lesson.title,
@@ -90,7 +99,12 @@ export default async function LessonPage({ params }: LessonPageProps) {
       <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-10 md:py-14 lg:py-16">
         <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] xl:grid-cols-[300px_1fr] gap-10 lg:gap-12 xl:gap-16">
           <div className="order-2 lg:order-1">
-            <LessonSidebar course={course} activeLessonSlug={context.lesson.slug} />
+            <LessonSidebar
+              course={course}
+              activeLessonSlug={context.lesson.slug}
+              completedLessonIds={completedLessonIds}
+              progress={progress}
+            />
           </div>
 
           <main className="order-1 lg:order-2 min-w-0">
@@ -111,6 +125,17 @@ export default async function LessonPage({ params }: LessonPageProps) {
             </header>
 
             <LessonBody lesson={context.lesson} />
+
+            {canMarkComplete && (
+              <div className="mt-10">
+                <MarkCompleteButton
+                  courseSlug={course.slug}
+                  lessonSlug={context.lesson.slug}
+                  isComplete={isComplete}
+                  nextHref={next?.href ?? null}
+                />
+              </div>
+            )}
 
             <LessonNav prev={prev} next={next} />
           </main>

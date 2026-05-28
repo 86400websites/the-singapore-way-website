@@ -210,6 +210,57 @@ async function readCourseFromSupabase(slug: string): Promise<Course | null> {
 }
 
 // =============================================================================
+// Progress
+// =============================================================================
+
+/**
+ * Returns the set of lesson UUIDs that the given user has completed for the
+ * given course. Used to render checkmarks in the sidebar and to compute
+ * progress percentage.
+ *
+ * Returns an empty set when Supabase is not configured, when no course id is
+ * available (DB seed not applied yet), or when the read fails — completion is
+ * non-essential UI and should degrade silently rather than block the player.
+ */
+export async function getCompletedLessonIds(
+  courseId: string | undefined,
+  userId: string | undefined,
+): Promise<Set<string>> {
+  if (!isSupabaseConfigured() || !courseId || !userId) {
+    return new Set()
+  }
+
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('lesson_progress')
+    .select('lesson_id')
+    .eq('user_id', userId)
+    .eq('course_id', courseId)
+
+  if (error || !data) {
+    return new Set()
+  }
+
+  return new Set(data.map((row) => row.lesson_id as string))
+}
+
+export type CourseProgress = {
+  requiredTotal: number
+  requiredCompleted: number
+  percent: number
+}
+
+export function computeProgress(course: Course, completed: Set<string>): CourseProgress {
+  const required = course.modules
+    .flatMap((m) => m.lessons)
+    .filter((l) => l.isRequired)
+  const total = required.length
+  const done = required.filter((l) => l.id && completed.has(l.id)).length
+  const percent = total > 0 ? Math.round((done / total) * 100) : 0
+  return { requiredTotal: total, requiredCompleted: done, percent }
+}
+
+// =============================================================================
 // Lesson navigation helpers
 // =============================================================================
 
