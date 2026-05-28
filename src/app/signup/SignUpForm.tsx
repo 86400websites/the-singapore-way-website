@@ -12,9 +12,10 @@ const MIN_PASSWORD = 8
 
 type SignUpFormProps = {
   origin: string
+  redirectTo: string
 }
 
-export default function SignUpForm({ origin }: SignUpFormProps) {
+export default function SignUpForm({ origin, redirectTo }: SignUpFormProps) {
   const router = useRouter()
 
   const [email, setEmail] = useState('')
@@ -28,10 +29,10 @@ export default function SignUpForm({ origin }: SignUpFormProps) {
 
   useEffect(() => {
     if (success && sessionCreated) {
-      const t = window.setTimeout(() => router.replace('/account'), 1200)
+      const t = window.setTimeout(() => router.replace(redirectTo), 1200)
       return () => window.clearTimeout(t)
     }
-  }, [success, sessionCreated, router])
+  }, [success, sessionCreated, router, redirectTo])
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault()
@@ -82,13 +83,13 @@ export default function SignUpForm({ origin }: SignUpFormProps) {
           className="rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800"
         >
           <p className="font-semibold mb-1">Account created successfully</p>
-          <p>You're signed in. Taking you to your account...</p>
+          <p>You&rsquo;re signed in. Taking you to your next step…</p>
         </div>
         <Link
-          href="/account"
+          href={redirectTo}
           className="block w-full text-center bg-[#C8102E] text-white text-[14px] font-bold py-3 rounded-full hover:bg-[#a50d26] transition-colors"
         >
-          Go to your account
+          Continue
         </Link>
       </div>
     ) : (

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
 import AuthUnavailableNotice from '@/components/AuthUnavailableNotice'
@@ -41,6 +42,27 @@ export default async function AccountPage() {
       <section className="bg-[#F5F5F5] border-t border-[#ECECEC] py-14 md:py-20">
         <div className="max-w-md mx-auto px-5 sm:px-6 lg:px-8">
           <div className="card-editorial p-8 md:p-10">
+            <Link
+              href="/my-learning"
+              className="btn-pill w-full mb-8"
+            >
+              Go to My Learning
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 8l4 4m0 0l-4 4m4-4H3"
+                />
+              </svg>
+            </Link>
+
             <dl className="space-y-5 mb-8">
               <div>
                 <dt className="text-[11px] font-bold tracking-[0.14em] text-[#666666] uppercase">Email</dt>

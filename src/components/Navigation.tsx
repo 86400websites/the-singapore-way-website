@@ -11,7 +11,7 @@ const navItems = [
     label: 'LEARN',
     href: '/learn',
     children: [
-      { label: 'Online Course (Coming Soon)', href: '/online-course' },
+      { label: 'Online Course', href: '/online-course' },
       { label: 'Podcast', href: '/podcasts' },
       { label: 'Blog', href: '/blog' },
     ],
