@@ -17,8 +17,6 @@ function formatError(result: MarkLessonCompleteResult): string {
   switch (result.status) {
     case 'unauthorized':
       return 'Your session has expired. Please sign in again.'
-    case 'not_enrolled':
-      return 'Your enrollment is not active.'
     case 'not_configured':
       return 'Course progress is not available right now.'
     case 'not_found':

@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { notFound, redirect } from 'next/navigation'
 
-import AccessPending from '@/components/course/AccessPending'
 import LessonBody from '@/components/course/LessonBody'
 import LessonNav from '@/components/course/LessonNav'
 import LessonSidebar from '@/components/course/LessonSidebar'
@@ -13,9 +12,9 @@ import {
   findLessonContext,
   getCompletedLessonIds,
   getCourseForPlayer,
-  getEnrolledLessonBody,
   getLatestPassedQuizAttempt,
   getQuizQuestionsForLesson,
+  getSignedInLessonBody,
 } from '@/lib/course/queries'
 import { pageMetadata } from '@/lib/seo/page-metadata'
 
@@ -67,18 +66,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
     redirect(`/login?next=${encodeURIComponent(next)}`)
   }
 
-  if (access.status === 'access_pending' || access.status === 'revoked') {
-    return (
-      <AccessPending
-        courseTitle={course.title}
-        courseHref={`/courses/${course.slug}`}
-        variant={access.status === 'revoked' ? 'revoked' : 'pending'}
-        email={access.user?.email ?? null}
-      />
-    )
-  }
-
-  // status === 'enrolled'
+  // status === 'signed_in'
   const completedLessonIds = await getCompletedLessonIds(access.courseId, access.user?.id)
   const progress = computeProgress(course, completedLessonIds)
   const isComplete = !!(context.lesson.id && completedLessonIds.has(context.lesson.id))
@@ -94,12 +82,12 @@ export default async function LessonPage({ params }: LessonPageProps) {
       ? getLatestPassedQuizAttempt(access.courseId, context.lesson.id, access.user?.id)
       : Promise.resolve(null),
     // Fetch protected lesson body (content + video_url) for non-quiz lessons.
-    // The RPC checks enrollment server-side; reaching here means access ===
-    // 'enrolled', so the call is permitted. In local-data fallback mode
-    // (course.id undefined) the lesson already carries its content from the
-    // local file, so we skip the RPC.
+    // The RPC requires auth; reaching here means status === 'signed_in', so
+    // the call is permitted. In local-data fallback mode (course.id undefined)
+    // the lesson already carries its content from the local file, so we skip
+    // the RPC.
     !isQuizLesson && course.id
-      ? getEnrolledLessonBody(course.slug, context.lesson.slug)
+      ? getSignedInLessonBody(course.slug, context.lesson.slug)
       : Promise.resolve(null),
   ])
 

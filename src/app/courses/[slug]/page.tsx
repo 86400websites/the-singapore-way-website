@@ -66,10 +66,10 @@ export default async function CourseLandingPage({ params }: CoursePageProps) {
 
   const primaryCtaHref = isLoggedIn
     ? firstLessonHref
-    : `/signup?next=${encodeURIComponent(firstLessonHref)}`
+    : `/login?next=${encodeURIComponent(firstLessonHref)}`
   const primaryCtaLabel = isLoggedIn
     ? course.landing.hero.primaryCtaLabel
-    : 'Sign up to start'
+    : 'Sign in to start course'
 
   const courseJsonLd = {
     '@context': 'https://schema.org',
@@ -456,14 +456,14 @@ export default async function CourseLandingPage({ params }: CoursePageProps) {
             <p className="lede mb-9 max-w-xl mx-auto">{course.landing.finalCta.body}</p>
             <div className="flex flex-wrap gap-3 justify-center">
               <Link href={primaryCtaHref} className="btn-pill">
-                {isLoggedIn ? course.landing.finalCta.primaryLabel : 'Sign up to start'}
+                {isLoggedIn ? course.landing.finalCta.primaryLabel : 'Sign in to start course'}
               </Link>
               {!isLoggedIn && (
                 <Link
-                  href={`/login?next=${encodeURIComponent(firstLessonHref)}`}
+                  href={`/signup?next=${encodeURIComponent(firstLessonHref)}`}
                   className="btn-pill-outline"
                 >
-                  I already have an account
+                  Create account
                 </Link>
               )}
             </div>

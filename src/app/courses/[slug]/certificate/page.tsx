@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
 
-import AccessPending from '@/components/course/AccessPending'
 import CertificateView from '@/components/course/CertificateView'
 import {
   checkCourseAccess,
@@ -48,20 +47,11 @@ export default async function CertificatePage({ params }: CertificatePageProps) 
     redirect(`/login?next=${encodeURIComponent(`/courses/${slug}/certificate`)}`)
   }
 
-  if (access.status === 'access_pending' || access.status === 'revoked') {
-    return (
-      <AccessPending
-        courseTitle={course.title}
-        courseHref={`/courses/${course.slug}`}
-        variant={access.status === 'revoked' ? 'revoked' : 'pending'}
-        email={access.user?.email ?? null}
-      />
-    )
-  }
-
-  // status === 'enrolled'
+  // status === 'signed_in'
   if (!access.user || !access.courseId) {
-    // Can only happen when the course row hasn't been seeded yet.
+    // Reachable only when the course row hasn't been seeded yet (DB-mode
+    // without the seed applied). In normal operation the access check
+    // resolves the course id alongside the user.
     return <NotConfiguredState courseTitle={course.title} courseHref={`/courses/${course.slug}`} />
   }
 
@@ -86,8 +76,6 @@ export default async function CertificatePage({ params }: CertificatePageProps) 
         switch (result.status) {
           case 'unauthorized':
             return 'Your session has expired. Please sign in again.'
-          case 'not_enrolled':
-            return 'Your enrollment is not active.'
           case 'not_configured':
             return 'Certificates are not available right now.'
           case 'error':

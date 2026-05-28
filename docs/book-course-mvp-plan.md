@@ -1,5 +1,23 @@
 # Book Companion Course — MVP Technical Blueprint
 
+> ⚠️ **Historical document — Sprint 0 record.**
+>
+> This file is the Sprint 0 blueprint and describes the original
+> **manual-enrollment** access model. That model was replaced in Sprint 10
+> with **sign-in-only** access — any signed-in user can take the course,
+> save progress, take quizzes, and earn a certificate. The
+> `course_enrollments` table is kept in the schema but no longer consulted
+> at runtime.
+>
+> For the current architecture, see:
+> - [`docs/course-setup-and-launch-checklist.md`](./course-setup-and-launch-checklist.md) — operator runbook and access model.
+> - [`docs/update-course-content.md`](./update-course-content.md) — how to change titles, lessons, quizzes, and the certificate.
+> - [`supabase/sql/README.md`](../supabase/sql/README.md) — current SQL apply order (skip 0004; run 0005).
+>
+> Keep this file for audit and history; do not act on its access-model claims.
+
+---
+
 Status: Sprint 0 plan. No production feature code added yet.
 Branch: `feature/book-course-mvp`
 Owner: Maher Kaddoura / 86400 Studio

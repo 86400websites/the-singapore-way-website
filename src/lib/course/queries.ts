@@ -16,22 +16,23 @@ import type {
 import { createClient, isSupabaseConfigured } from '@/lib/supabase/server'
 
 // =============================================================================
-// Access check — auth + enrollment in one shot.
+// Access check — sign-in only.
+//
+// Manual enrollment was removed in 0005. Any signed-in user has access to the
+// course player, quizzes, progress writes, and certificate flows. The
+// course_enrollments table is left in place for possible future use but is
+// not consulted by any runtime path.
 // =============================================================================
 
 export type CourseAccessStatus =
-  | 'logged_out'        // No Supabase session. Caller should redirect to /login.
-  | 'access_pending'    // Logged in, but no active enrollment exists for this course yet.
-  | 'enrolled'          // Logged in with an active enrollment.
-  | 'revoked'           // Logged in but enrollment is explicitly revoked.
+  | 'logged_out' // No Supabase session. Caller should redirect to /login.
+  | 'signed_in'  // Authenticated. Full course access.
 
 export type CourseAccessResult = {
   status: CourseAccessStatus
   user: User | null
-  // The Supabase course id (UUID) when it could be resolved. May be undefined if
-  // the SQL has not been applied yet to the connected Supabase project, in
-  // which case we still attempt to render the player from local data so the UI
-  // is reviewable in dev environments before the seed is applied.
+  // The Supabase course id (UUID) when it could be resolved. Used by
+  // downstream owner-scoped reads (lesson_progress, certificates).
   courseId?: string
 }
 
@@ -52,36 +53,17 @@ export async function checkCourseAccess(courseSlug: string): Promise<CourseAcces
     return { status: 'logged_out', user: null }
   }
 
+  // Resolve the course row so callers can use its id for owner-scoped reads
+  // (lesson_progress, certificates). When the seed has not been applied yet
+  // the id is left undefined and the player falls back to local data.
   const { data: course } = await supabase
     .from('courses')
-    .select('id, status')
+    .select('id')
     .eq('slug', courseSlug)
     .eq('status', 'published')
     .maybeSingle()
 
-  // The Supabase course row may not exist yet (seed not applied). In that case
-  // we cannot verify enrollment, so we surface access_pending — the page will
-  // show the friendly waiting state instead of crashing on a join.
-  if (!course) {
-    return { status: 'access_pending', user }
-  }
-
-  const { data: enrollment } = await supabase
-    .from('course_enrollments')
-    .select('status')
-    .eq('user_id', user.id)
-    .eq('course_id', course.id)
-    .maybeSingle()
-
-  if (!enrollment) {
-    return { status: 'access_pending', user, courseId: course.id }
-  }
-
-  if (enrollment.status === 'revoked') {
-    return { status: 'revoked', user, courseId: course.id }
-  }
-
-  return { status: 'enrolled', user, courseId: course.id }
+  return { status: 'signed_in', user, courseId: course?.id }
 }
 
 // =============================================================================
@@ -89,13 +71,11 @@ export async function checkCourseAccess(courseSlug: string): Promise<CourseAcces
 //
 // In DB mode (Supabase configured + course row exists), we call the
 // get_published_curriculum SECURITY DEFINER RPC, which returns a flat row per
-// lesson with NO content / video_url. That is the only path that anon
-// (and the public landing page) is allowed to traverse.
+// lesson with NO content / video_url. That is the only path anon traverses.
 //
 // In local-data fallback mode (Supabase not configured, or DB seed not
-// applied), we return the typed local record. The local record DOES include
-// lesson content, but that fallback only runs in dev environments — there is
-// no public Supabase surface that exposes anything sensitive in that mode.
+// applied), we return the typed local record so the UI is reviewable in dev
+// environments before the SQL is applied.
 // =============================================================================
 
 type DbCurriculumRow = {
@@ -174,7 +154,7 @@ async function readCourseFromSupabase(slug: string): Promise<Course | null> {
       contentType: row.lesson_content_type,
       isRequired: row.lesson_is_required,
       // Deliberately not populated from DB mode — content/video_url come from
-      // get_enrolled_lesson_body() on the player page, gated by enrollment.
+      // get_signed_in_lesson_body() on the player page, which is sign-in gated.
     }
     module_.lessons.push(lesson)
   }
@@ -194,21 +174,21 @@ async function readCourseFromSupabase(slug: string): Promise<Course | null> {
 }
 
 /**
- * Enrolled-only fetch for an individual lesson's body. Calls the
- * get_enrolled_lesson_body() SECURITY DEFINER RPC, which returns zero rows
- * when the caller is not authenticated or not actively enrolled.
+ * Sign-in-only fetch for an individual lesson's body. Calls the
+ * get_signed_in_lesson_body() SECURITY DEFINER RPC, which returns zero rows
+ * when the caller is not authenticated.
  *
- * The player page calls this only after verifying access; this remains the
+ * The player page calls this only after verifying access; it remains the
  * only path by which content / video_url reaches the server-rendered HTML.
  */
-export async function getEnrolledLessonBody(
+export async function getSignedInLessonBody(
   courseSlug: string,
   lessonSlug: string,
 ): Promise<{ content: string | null; videoUrl: string | null } | null> {
   if (!isSupabaseConfigured()) return null
 
   const supabase = await createClient()
-  const { data, error } = await supabase.rpc('get_enrolled_lesson_body', {
+  const { data, error } = await supabase.rpc('get_signed_in_lesson_body', {
     p_course_slug: courseSlug,
     p_lesson_slug: lessonSlug,
   })
@@ -286,14 +266,13 @@ export function isCourseComplete(course: Course, completed: Set<string>): boolea
 
 /**
  * Fetch the questions for a quiz lesson via the
- * get_enrolled_quiz_questions() SECURITY DEFINER RPC. The RPC returns ONLY
- * id, question, choices, position — `correct_choice` is never selected,
- * never serialised, and never reaches the browser.
+ * get_signed_in_quiz_questions() SECURITY DEFINER RPC. The RPC returns ONLY
+ * id, question, choices, question_position — `correct_choice` is never
+ * selected, never serialised, and never reaches the browser.
  *
- * Returns an empty array when the caller is not authenticated, not actively
- * enrolled, or the lesson is not a quiz. The player page never relies on
- * the array length alone for access control; the access check is the
- * authoritative gate.
+ * The RPC returns `question_position` (renamed from `position` to avoid the
+ * SQL reserved-word issue that broke 0004). We map it back to `position` here
+ * so the rest of the codebase keeps a single field name.
  */
 export async function getQuizQuestionsForLesson(
   courseSlug: string,
@@ -302,7 +281,7 @@ export async function getQuizQuestionsForLesson(
   if (!isSupabaseConfigured()) return []
 
   const supabase = await createClient()
-  const { data, error } = await supabase.rpc('get_enrolled_quiz_questions', {
+  const { data, error } = await supabase.rpc('get_signed_in_quiz_questions', {
     p_course_slug: courseSlug,
     p_lesson_slug: lessonSlug,
   })
@@ -313,14 +292,14 @@ export async function getQuizQuestionsForLesson(
     id: string
     question: string
     choices: string[]
-    position: number
+    question_position: number
   }>
 
   return rows.map((row) => ({
     id: row.id,
     question: row.question,
     choices: row.choices ?? [],
-    position: row.position,
+    position: row.question_position,
   }))
 }
 
@@ -329,8 +308,8 @@ export async function getQuizQuestionsForLesson(
  * there is none. Used to render the "Quiz passed" banner.
  *
  * Reads quiz_attempts directly under the user's session — the owner SELECT
- * policy from 0002 still grants this. The forgery vector was on INSERT,
- * which has now been moved behind submit_quiz_attempt() in 0004.
+ * policy from 0002 still grants this. Write access was moved behind
+ * submit_quiz_attempt() in 0005 (and previously 0004).
  */
 export async function getLatestPassedQuizAttempt(
   courseId: string | undefined,
@@ -388,7 +367,6 @@ export type IssueCertificateResult =
   | { status: 'issued'; id: string; issuedAt: string }
   | { status: 'incomplete'; message: string }
   | { status: 'unauthorized' }
-  | { status: 'not_enrolled' }
   | { status: 'not_configured' }
   | { status: 'error'; message: string }
 
@@ -413,7 +391,6 @@ export async function issueCertificate(courseId: string): Promise<IssueCertifica
   if (error) {
     const message = error.message ?? ''
     if (message.includes('Not authenticated')) return { status: 'unauthorized' }
-    if (message.includes('Not enrolled')) return { status: 'not_enrolled' }
     if (message.includes('Course not complete')) {
       return { status: 'incomplete', message }
     }

@@ -46,15 +46,10 @@ export default async function MyLearningPage() {
   }
 
   const access = await checkCourseAccess(COURSE_SLUG)
-  const isEnrolled = access.status === 'enrolled'
 
   const [completed, certificate] = await Promise.all([
-    isEnrolled
-      ? getCompletedLessonIds(access.courseId, user.id)
-      : Promise.resolve(new Set<string>()),
-    isEnrolled
-      ? getOwnCertificate(access.courseId, user.id)
-      : Promise.resolve(null),
+    getCompletedLessonIds(access.courseId, user.id),
+    getOwnCertificate(access.courseId, user.id),
   ])
 
   const progress = computeProgress(course, completed)
@@ -72,7 +67,6 @@ export default async function MyLearningPage() {
         <div className="max-w-3xl mx-auto px-5 sm:px-6 lg:px-8">
           <MyLearningCard
             course={course}
-            accessStatus={access.status}
             progress={progress}
             certificate={certificate}
             continueHref={continueHref}

@@ -1,11 +1,18 @@
--- Course MVP — seed for the single bundled course.
+-- Course MVP — seed for the single bundled sample course.
 --
 -- File: supabase/sql/seed-the-singapore-way.sql
--- Run AFTER 0001, 0002, 0003.
+-- Run AFTER 0001, 0002, 0003, 0005.
+-- (0004 was the failed hardening migration; 0005 supersedes it.)
+--
+-- The seeded course is a *sample* meant to make the experience reviewable
+-- end-to-end: 4 modules, ~12 lessons (mix of text + one video placeholder),
+-- 3 quizzes of 5 questions each, 80% pass threshold, certificate on
+-- completion. Content can be swapped after launch — see
+-- docs/update-course-content.md.
 --
 -- Idempotent: if a course with slug 'the-singapore-way' already exists, the
 -- seed exits without changing anything. To re-seed, run the corresponding
--- *.down.sql files first.
+-- *.down.sql files first or delete the row manually.
 
 do $$
 declare
@@ -22,9 +29,9 @@ begin
   insert into public.courses (slug, title, subtitle, description, status)
   values (
     'the-singapore-way',
-    'The Singapore Way: Method, not Miracle',
-    'The companion course to the book — built to help you apply the framework.',
-    'A focused, web-based course that walks you through the principles in the book and helps you turn them into a plan for your own country, city, organisation, or team.',
+    'The Singapore Way Companion Course',
+    'A practical guided course to apply the ideas from the book.',
+    'A focused, web-based sample course that walks through the principles in the book and helps you turn them into a plan for your own country, city, organisation, or team.',
     'published'
   )
   on conflict (slug) do nothing
@@ -80,12 +87,19 @@ begin
      'Welcome — Why Singapore matters now',
      'How to get the most out of this course and the book it accompanies.',
      'text', 1, true,
-     'Welcome to the companion course. This first lesson sets the table: what to expect, how to pace yourself, and how the course is built to work alongside the book.'),
+     'Welcome to the companion course. This first lesson sets the table: what to expect, how to pace yourself, and how the course is built to work alongside the book.');
 
+  -- One of the 12 lessons is configured as a video to exercise the video
+  -- player UI. The video_url stays null in the sample seed so the LessonBody
+  -- placeholder ("Video coming soon") is visible — see
+  -- docs/update-course-content.md for how to swap in a real video URL.
+  insert into public.course_lessons
+    (course_id, module_id, slug, title, description, content_type, video_url, position, is_required, content)
+  values
     (v_course_id, v_mod1_id, 'method-not-miracle',
      'The mindset shift: Method, not Miracle',
-     'The single idea that unlocks every other lesson in this course.',
-     'text', 2, true,
+     'A short video lesson — the single idea that unlocks every other lesson.',
+     'video', null, 2, true,
      'Singapore is widely admired and frequently misunderstood. The headline story treats it as a miracle. This lesson reframes it as a method — a set of repeatable choices that produced repeatable results.');
 
   insert into public.course_lessons

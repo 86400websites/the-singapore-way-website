@@ -5,10 +5,10 @@ export const COURSE_SLUG = 'the-singapore-way'
 const courses: Course[] = [
   {
     slug: COURSE_SLUG,
-    title: 'The Singapore Way: Method, not Miracle',
-    subtitle: 'The companion course to the book — built to help you apply the framework.',
+    title: 'The Singapore Way Companion Course',
+    subtitle: 'A practical guided course to apply the ideas from the book.',
     description:
-      'A focused, web-based course that walks you through the principles in the book and helps you turn them into a plan for your own country, city, organisation, or team.',
+      'A focused, web-based sample course that walks through the principles in the book and helps you turn them into a plan for your own country, city, organisation, or team.',
     status: 'published',
     modules: [
       {
@@ -30,8 +30,9 @@ const courses: Course[] = [
           {
             slug: 'method-not-miracle',
             title: 'The mindset shift: Method, not Miracle',
-            description: 'The single idea that unlocks every other lesson in this course.',
-            contentType: 'text',
+            description: 'A short video lesson — the single idea that unlocks every other lesson.',
+            contentType: 'video',
+            videoUrl: null,
             durationMinutes: 12,
             isRequired: true,
             content:
@@ -276,7 +277,7 @@ const courses: Course[] = [
         {
           question: 'How do I get access?',
           answer:
-            'During the MVP, access is granted manually by our team after you create an account. Sign in or create an account, and we will enable your enrollment shortly after. You will see a friendly access-pending screen until enrollment is active.',
+            'Create a free account or sign in. Any signed-in learner can access the course player, take the quizzes, save progress, and earn the certificate. There is no manual enrollment step.',
         },
         {
           question: 'Is there a payment to take the course?',
@@ -303,7 +304,7 @@ const courses: Course[] = [
         eyebrow: 'Ready to start',
         title: 'Method, not Miracle — start today.',
         body:
-          'Create an account or sign in, and we will enable your enrollment. The first lesson is waiting on the other side.',
+          'Create a free account or sign in. The first lesson is waiting on the other side.',
         primaryLabel: 'Start the course',
       },
     },

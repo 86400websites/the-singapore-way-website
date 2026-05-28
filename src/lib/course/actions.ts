@@ -5,7 +5,6 @@ import { createClient, isSupabaseConfigured } from '@/lib/supabase/server'
 export type MarkLessonCompleteResult =
   | { status: 'success' }
   | { status: 'unauthorized' }
-  | { status: 'not_enrolled' }
   | { status: 'not_configured' }
   | { status: 'not_found' }
   | { status: 'error'; message: string }
@@ -14,9 +13,9 @@ export type MarkLessonCompleteResult =
  * Mark a NON-quiz lesson complete for the currently signed-in learner.
  *
  * Server-side: thin wrapper over mark_lesson_complete(), the SECURITY DEFINER
- * RPC introduced in 0004. The RPC re-verifies auth, the course/lesson
- * resolution, enrollment status, and that the lesson is not a quiz. Direct
- * INSERT into lesson_progress is no longer permitted by RLS.
+ * RPC introduced in 0005. The RPC re-verifies auth, the course/lesson
+ * resolution, and that the lesson is not a quiz. Direct INSERT into
+ * lesson_progress is not permitted by RLS — the RPC is the only writer.
  */
 export async function markLessonComplete(
   courseSlug: string,
@@ -35,7 +34,6 @@ export async function markLessonComplete(
   if (error) {
     const message = error.message ?? ''
     if (message.includes('Not authenticated')) return { status: 'unauthorized' }
-    if (message.includes('Not enrolled')) return { status: 'not_enrolled' }
     if (message.includes('Lesson not found')) return { status: 'not_found' }
     // The quiz-lessons-must-be-submitted path surfaces as a generic error —
     // the UI hides the Mark Complete button on quiz lessons, so reaching
@@ -53,7 +51,6 @@ export async function markLessonComplete(
 export type SubmitQuizAttemptResult =
   | { status: 'success'; score: number; passed: boolean; total: number; correct: number }
   | { status: 'unauthorized' }
-  | { status: 'not_enrolled' }
   | { status: 'not_configured' }
   | { status: 'not_found' }
   | { status: 'invalid_input'; message: string }
@@ -61,7 +58,7 @@ export type SubmitQuizAttemptResult =
 
 /**
  * Submit a quiz attempt. Thin wrapper over submit_quiz_attempt(), the
- * SECURITY DEFINER RPC introduced in 0004.
+ * SECURITY DEFINER RPC introduced in 0005.
  *
  * The RPC grades the submitted answers against the DB-side correct_choice
  * column, computes score and pass/fail (80% threshold), inserts the attempt,
@@ -101,7 +98,6 @@ export async function submitQuizAttempt(
   if (error) {
     const message = error.message ?? ''
     if (message.includes('Not authenticated')) return { status: 'unauthorized' }
-    if (message.includes('Not enrolled')) return { status: 'not_enrolled' }
     if (
       message.includes('Quiz lesson not found') ||
       message.includes('Quiz has no questions')
