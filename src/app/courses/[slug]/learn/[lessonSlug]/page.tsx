@@ -13,6 +13,7 @@ import {
   findLessonContext,
   getCompletedLessonIds,
   getCourseForPlayer,
+  getEnrolledLessonBody,
   getLatestPassedQuizAttempt,
   getQuizQuestionsForLesson,
 } from '@/lib/course/queries'
@@ -85,12 +86,31 @@ export default async function LessonPage({ params }: LessonPageProps) {
     !!access.courseId && !!context.lesson.id && context.lesson.contentType !== 'quiz'
 
   const isQuizLesson = context.lesson.contentType === 'quiz'
-  const [quizQuestions, latestPassedAttempt] = isQuizLesson
-    ? await Promise.all([
-        getQuizQuestionsForLesson(access.courseId, context.lesson.id),
-        getLatestPassedQuizAttempt(access.courseId, context.lesson.id, access.user?.id),
-      ])
-    : [[], null]
+  const [quizQuestions, latestPassedAttempt, lessonBody] = await Promise.all([
+    isQuizLesson
+      ? getQuizQuestionsForLesson(course.slug, context.lesson.slug)
+      : Promise.resolve([]),
+    isQuizLesson
+      ? getLatestPassedQuizAttempt(access.courseId, context.lesson.id, access.user?.id)
+      : Promise.resolve(null),
+    // Fetch protected lesson body (content + video_url) for non-quiz lessons.
+    // The RPC checks enrollment server-side; reaching here means access ===
+    // 'enrolled', so the call is permitted. In local-data fallback mode
+    // (course.id undefined) the lesson already carries its content from the
+    // local file, so we skip the RPC.
+    !isQuizLesson && course.id
+      ? getEnrolledLessonBody(course.slug, context.lesson.slug)
+      : Promise.resolve(null),
+  ])
+
+  const lessonForRender =
+    lessonBody !== null
+      ? {
+          ...context.lesson,
+          content: lessonBody.content,
+          videoUrl: lessonBody.videoUrl,
+        }
+      : context.lesson
 
   const prev = context.prev
     ? {
@@ -144,7 +164,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
                 nextHref={next?.href ?? null}
               />
             ) : (
-              <LessonBody lesson={context.lesson} />
+              <LessonBody lesson={lessonForRender} />
             )}
 
             {canMarkComplete && (

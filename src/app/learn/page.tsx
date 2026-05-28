@@ -16,10 +16,10 @@ export const metadata: Metadata = pageMetadata({
 const learnCards = [
   {
     title: 'Online Course',
-    description: 'Explore 15 principles through practical case studies, videos, and interactive lessons.',
+    description: 'The book companion course. Twelve lessons, three quizzes, and a verifiable certificate — built to help you apply the framework.',
     image: '/assets/learn/online-course.png',
     href: '/online-course',
-    cta: 'Coming Soon',
+    cta: 'Start the course',
   },
   {
     title: 'Podcast',

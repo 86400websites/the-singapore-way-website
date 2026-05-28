@@ -2,8 +2,6 @@
 
 import { createClient, isSupabaseConfigured } from '@/lib/supabase/server'
 
-const QUIZ_PASS_THRESHOLD = 80
-
 export type MarkLessonCompleteResult =
   | { status: 'success' }
   | { status: 'unauthorized' }
@@ -13,16 +11,12 @@ export type MarkLessonCompleteResult =
   | { status: 'error'; message: string }
 
 /**
- * Mark a lesson complete for the currently signed-in learner.
+ * Mark a NON-quiz lesson complete for the currently signed-in learner.
  *
- * Security:
- *  - Uses the user's own Supabase session. The insert relies on RLS to enforce
- *    "user can only write their own progress, and only while actively
- *    enrolled" — see supabase/sql/0002_course_mvp_rls.sql.
- *  - We additionally pre-validate the course + enrollment here for clearer
- *    error messages.
- *  - Idempotent: a duplicate (user_id, lesson_id) insert is silently ignored
- *    via the unique constraint on lesson_progress.
+ * Server-side: thin wrapper over mark_lesson_complete(), the SECURITY DEFINER
+ * RPC introduced in 0004. The RPC re-verifies auth, the course/lesson
+ * resolution, enrollment status, and that the lesson is not a quiz. Direct
+ * INSERT into lesson_progress is no longer permitted by RLS.
  */
 export async function markLessonComplete(
   courseSlug: string,
@@ -33,66 +27,20 @@ export async function markLessonComplete(
   }
 
   const supabase = await createClient()
+  const { error } = await supabase.rpc('mark_lesson_complete', {
+    p_course_slug: courseSlug,
+    p_lesson_slug: lessonSlug,
+  })
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    return { status: 'unauthorized' }
-  }
-
-  // Resolve the course (published only).
-  const { data: course, error: courseError } = await supabase
-    .from('courses')
-    .select('id')
-    .eq('slug', courseSlug)
-    .eq('status', 'published')
-    .maybeSingle()
-
-  if (courseError || !course) {
-    return { status: 'not_found' }
-  }
-
-  // Verify enrollment is active. RLS would also block the write, but checking
-  // here lets us return a clearer status.
-  const { data: enrollment } = await supabase
-    .from('course_enrollments')
-    .select('status')
-    .eq('user_id', user.id)
-    .eq('course_id', course.id)
-    .maybeSingle()
-
-  if (!enrollment || enrollment.status !== 'active') {
-    return { status: 'not_enrolled' }
-  }
-
-  // Resolve the lesson within this course.
-  const { data: lesson, error: lessonError } = await supabase
-    .from('course_lessons')
-    .select('id')
-    .eq('course_id', course.id)
-    .eq('slug', lessonSlug)
-    .maybeSingle()
-
-  if (lessonError || !lesson) {
-    return { status: 'not_found' }
-  }
-
-  // Idempotent insert. The unique (user_id, lesson_id) constraint makes a
-  // repeat click a no-op; we ignore duplicates explicitly so we never surface
-  // a 23505 error to the user.
-  const { error: insertError } = await supabase.from('lesson_progress').upsert(
-    {
-      user_id: user.id,
-      course_id: course.id,
-      lesson_id: lesson.id,
-    },
-    { onConflict: 'user_id,lesson_id', ignoreDuplicates: true },
-  )
-
-  if (insertError) {
-    return { status: 'error', message: insertError.message }
+  if (error) {
+    const message = error.message ?? ''
+    if (message.includes('Not authenticated')) return { status: 'unauthorized' }
+    if (message.includes('Not enrolled')) return { status: 'not_enrolled' }
+    if (message.includes('Lesson not found')) return { status: 'not_found' }
+    // The quiz-lessons-must-be-submitted path surfaces as a generic error —
+    // the UI hides the Mark Complete button on quiz lessons, so reaching
+    // here means a client crafted a request to a quiz lesson slug.
+    return { status: 'error', message }
   }
 
   return { status: 'success' }
@@ -111,21 +59,15 @@ export type SubmitQuizAttemptResult =
   | { status: 'invalid_input'; message: string }
   | { status: 'error'; message: string }
 
-type QuizQuestionWithKey = {
-  id: string
-  correct_choice: number
-  choices: string[]
-}
-
 /**
- * Submit a quiz attempt. The action grades the answers server-side using
- * the full quiz_questions rows (including correct_choice) — the answer key
- * never leaves the server.
+ * Submit a quiz attempt. Thin wrapper over submit_quiz_attempt(), the
+ * SECURITY DEFINER RPC introduced in 0004.
  *
- * Side effects:
- *  - Always inserts a quiz_attempts row (append-only history).
- *  - On a passing score (>= 80%), upserts a lesson_progress row so the quiz
- *    counts toward course completion. Idempotent via the unique constraint.
+ * The RPC grades the submitted answers against the DB-side correct_choice
+ * column, computes score and pass/fail (80% threshold), inserts the attempt,
+ * and on a passing score idempotently marks the quiz lesson complete. The
+ * client never receives the answer key and cannot influence the score or
+ * passed flag.
  */
 export async function submitQuizAttempt(
   courseSlug: string,
@@ -136,134 +78,58 @@ export async function submitQuizAttempt(
     return { status: 'not_configured' }
   }
 
-  if (!answers || typeof answers !== 'object') {
+  if (!answers || typeof answers !== 'object' || Array.isArray(answers)) {
     return { status: 'invalid_input', message: 'No answers provided.' }
   }
 
-  const supabase = await createClient()
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    return { status: 'unauthorized' }
-  }
-
-  const { data: course } = await supabase
-    .from('courses')
-    .select('id')
-    .eq('slug', courseSlug)
-    .eq('status', 'published')
-    .maybeSingle()
-
-  if (!course) {
-    return { status: 'not_found' }
-  }
-
-  const { data: enrollment } = await supabase
-    .from('course_enrollments')
-    .select('status')
-    .eq('user_id', user.id)
-    .eq('course_id', course.id)
-    .maybeSingle()
-
-  if (!enrollment || enrollment.status !== 'active') {
-    return { status: 'not_enrolled' }
-  }
-
-  const { data: lesson } = await supabase
-    .from('course_lessons')
-    .select('id, content_type')
-    .eq('course_id', course.id)
-    .eq('slug', lessonSlug)
-    .maybeSingle()
-
-  if (!lesson) {
-    return { status: 'not_found' }
-  }
-
-  if (lesson.content_type !== 'quiz') {
-    return { status: 'invalid_input', message: 'This lesson is not a quiz.' }
-  }
-
-  // Pull the full question rows (including the answer key) under the user's
-  // own session. RLS allows this because they are enrolled.
-  const { data: questionRows, error: questionsError } = await supabase
-    .from('quiz_questions')
-    .select('id, correct_choice, choices')
-    .eq('course_id', course.id)
-    .eq('lesson_id', lesson.id)
-
-  if (questionsError || !questionRows || questionRows.length === 0) {
-    return { status: 'not_found' }
-  }
-
-  const questions = questionRows as QuizQuestionWithKey[]
-  const questionIds = new Set(questions.map((q) => q.id))
-
-  // Validate the submitted answers. Each key must be a real question for
-  // this lesson; each value must be a valid choice index. Unknown question
-  // ids are rejected to prevent payload tampering from spoofing extra
-  // "correct" answers; partial submissions are accepted and the missing
-  // questions count as wrong.
-  for (const [qid, choiceIndex] of Object.entries(answers)) {
-    if (!questionIds.has(qid)) {
-      return { status: 'invalid_input', message: 'Unknown question id in submission.' }
-    }
-    if (!Number.isInteger(choiceIndex) || choiceIndex < 0) {
+  // Cheap shape guard before the RPC: every value must be a non-negative
+  // integer index. The RPC re-validates against the DB; this just avoids a
+  // wasteful round-trip when the payload is obviously wrong.
+  for (const value of Object.values(answers)) {
+    if (!Number.isInteger(value) || value < 0) {
       return { status: 'invalid_input', message: 'Invalid choice index.' }
     }
-    const question = questions.find((q) => q.id === qid)
-    if (!question || choiceIndex >= question.choices.length) {
-      return { status: 'invalid_input', message: 'Choice index out of range.' }
-    }
   }
 
-  // Grade server-side.
-  let correctCount = 0
-  for (const q of questions) {
-    if (answers[q.id] === q.correct_choice) {
-      correctCount += 1
-    }
-  }
-  const total = questions.length
-  const score = Math.round((correctCount / total) * 100)
-  const passed = score >= QUIZ_PASS_THRESHOLD
-
-  // Append the attempt. The answers payload is stored as-is for audit.
-  const { error: attemptInsertError } = await supabase.from('quiz_attempts').insert({
-    user_id: user.id,
-    course_id: course.id,
-    lesson_id: lesson.id,
-    score,
-    passed,
-    answers,
+  const supabase = await createClient()
+  const { data, error } = await supabase.rpc('submit_quiz_attempt', {
+    p_course_slug: courseSlug,
+    p_lesson_slug: lessonSlug,
+    p_answers: answers,
   })
 
-  if (attemptInsertError) {
-    return { status: 'error', message: attemptInsertError.message }
-  }
-
-  // On pass, also mark the quiz lesson complete so it counts in the
-  // course-completion calculation. Idempotent.
-  if (passed) {
-    const { error: progressError } = await supabase.from('lesson_progress').upsert(
-      {
-        user_id: user.id,
-        course_id: course.id,
-        lesson_id: lesson.id,
-      },
-      { onConflict: 'user_id,lesson_id', ignoreDuplicates: true },
-    )
-
-    if (progressError) {
-      // The attempt is recorded; the progress write failing is unusual but
-      // surface a clear error so the learner can retry. Their score is not
-      // lost — the attempt is in the history.
-      return { status: 'error', message: progressError.message }
+  if (error) {
+    const message = error.message ?? ''
+    if (message.includes('Not authenticated')) return { status: 'unauthorized' }
+    if (message.includes('Not enrolled')) return { status: 'not_enrolled' }
+    if (
+      message.includes('Quiz lesson not found') ||
+      message.includes('Quiz has no questions')
+    ) {
+      return { status: 'not_found' }
     }
+    if (message.includes('Invalid answers payload')) {
+      return { status: 'invalid_input', message: 'Invalid answers payload.' }
+    }
+    return { status: 'error', message }
   }
 
-  return { status: 'success', score, passed, total, correct: correctCount }
+  const rows = (Array.isArray(data) ? data : data ? [data] : []) as Array<{
+    score: number
+    passed: boolean
+    total: number
+    correct: number
+  }>
+  if (rows.length === 0) {
+    return { status: 'error', message: 'No grading result returned.' }
+  }
+
+  const result = rows[0]
+  return {
+    status: 'success',
+    score: result.score,
+    passed: result.passed,
+    total: result.total,
+    correct: result.correct,
+  }
 }

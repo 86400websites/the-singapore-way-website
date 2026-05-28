@@ -11,7 +11,7 @@ const staticRoutes: { path: string; priority: number; changeFrequency: MetadataR
   { path: '/teach', priority: 0.8, changeFrequency: 'monthly' },
   { path: '/ideate', priority: 0.7, changeFrequency: 'monthly' },
   { path: '/about', priority: 0.7, changeFrequency: 'monthly' },
-  { path: '/online-course', priority: 0.6, changeFrequency: 'monthly' },
+  { path: '/courses/the-singapore-way', priority: 0.9, changeFrequency: 'monthly' },
   { path: '/podcasts', priority: 0.7, changeFrequency: 'monthly' },
   { path: '/localization-kits', priority: 0.7, changeFrequency: 'monthly' },
   { path: '/possibilities', priority: 0.6, changeFrequency: 'monthly' },

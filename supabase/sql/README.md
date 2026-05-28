@@ -23,15 +23,29 @@ Run, one file at a time, top to bottom:
 2. [`0002_course_mvp_rls.sql`](./0002_course_mvp_rls.sql) — enables RLS on every
    table and adds default-deny + per-role policies.
 3. [`0003_course_mvp_functions.sql`](./0003_course_mvp_functions.sql) —
-   `issue_certificate()` (Sprint 6) and `get_public_certificate()` (verification
-   page) — both `security definer`.
-4. [`seed-the-singapore-way.sql`](./seed-the-singapore-way.sql) — the single
+   `issue_certificate()` and `get_public_certificate()` — both `security definer`.
+4. [`0004_course_mvp_security_hardening.sql`](./0004_course_mvp_security_hardening.sql)
+   — **required** Codex hardening pass. Drops unsafe RLS policies that leaked
+   `correct_choice` / lesson `content` / `video_url` and allowed forged quiz
+   attempt inserts. Adds five SECURITY DEFINER RPCs that the app uses
+   exclusively for protected reads and all course state writes
+   (`get_published_curriculum`, `get_enrolled_lesson_body`,
+   `get_enrolled_quiz_questions`, `submit_quiz_attempt`, `mark_lesson_complete`).
+   Replaces `issue_certificate()` (correct required-quiz join) and
+   `get_public_certificate()` (no email local-part fallback).
+5. [`seed-the-singapore-way.sql`](./seed-the-singapore-way.sql) — the single
    bundled course, 4 modules, 12 lessons, 3 quizzes with 5 questions each.
    Idempotent: re-runs are no-ops once the slug exists.
 
-After step 4, the course is queryable via RLS as any anonymous visitor (only
-the published course landing data is visible) and as an authenticated user
-(no quiz answers, no other learners' progress).
+After step 5, the course is queryable via the safe RPCs as any anonymous
+visitor (curriculum preview only — no lesson bodies, no quiz questions, no
+quiz answers) and as an authenticated enrolled user (curriculum + the
+lesson bodies of the course they are enrolled in + the quiz questions
+without `correct_choice`).
+
+**Do not skip 0004.** Without it, an authenticated enrolled user can
+`select correct_choice from quiz_questions` directly, and `insert into
+quiz_attempts (..., passed) values (..., true)` forges a passing attempt.
 
 ---
 
@@ -46,9 +60,15 @@ If you must roll back, apply down files in **reverse** order:
    ```sql
    delete from public.courses where slug = 'the-singapore-way';
    ```
-2. [`0003_course_mvp_functions.down.sql`](./0003_course_mvp_functions.down.sql)
-3. [`0002_course_mvp_rls.down.sql`](./0002_course_mvp_rls.down.sql)
-4. [`0001_course_mvp_schema.down.sql`](./0001_course_mvp_schema.down.sql)
+2. [`0004_course_mvp_security_hardening.down.sql`](./0004_course_mvp_security_hardening.down.sql)
+   — re-opens the security holes Codex flagged. **Do not run on a shared
+   environment** unless you have a specific reason and are immediately
+   re-applying a fix on top. Then re-apply
+   `0003_course_mvp_functions.sql` to restore the pre-hardening function
+   bodies that 0004 replaced.
+3. [`0003_course_mvp_functions.down.sql`](./0003_course_mvp_functions.down.sql)
+4. [`0002_course_mvp_rls.down.sql`](./0002_course_mvp_rls.down.sql)
+5. [`0001_course_mvp_schema.down.sql`](./0001_course_mvp_schema.down.sql)
 
 **Warning.** The `0001` down file is destructive — it drops every course MVP
 table and every row in them. Only run it on a fresh project or after explicit
@@ -109,17 +129,31 @@ these checks:
 ```sql
 set role anon;
 
--- Published courses are public.
+-- Published courses are public (anon can see id, slug, title, etc).
 select count(*) from public.courses where slug = 'the-singapore-way';
 --> 1
 
--- Modules and lessons under a published course are public.
+-- Modules under a published course are public.
 select count(*) from public.course_modules;
 --> 4
+
+-- Lessons are NOT directly readable after 0004 — no SELECT policy exists
+-- on course_lessons. Anon gets zero rows (or a permission error). The
+-- safe public projection is get_published_curriculum().
 select count(*) from public.course_lessons;
+--> 0
+
+-- The safe projection returns all 12 lesson rows WITHOUT content / video_url.
+select count(*) from public.get_published_curriculum('the-singapore-way');
 --> 12
 
--- Quiz questions are NOT public — anonymous users see zero rows.
+-- Confirm content + video_url are not in the projection's return signature.
+select column_name from information_schema.columns
+where table_schema = 'public' and table_name = 'course_lessons'
+  and column_name in ('content', 'video_url');
+--> 2  (rows exist on the table, but anon can't SELECT them via the table)
+
+-- Quiz questions are NOT directly readable.
 select count(*) from public.quiz_questions;
 --> 0
 
@@ -166,9 +200,44 @@ The dashboard cannot easily impersonate a real user. Two ways to verify:
    select count(*) from public.lesson_progress where user_id <> auth.uid();
    --> 0
 
-   -- Quiz questions are now visible because the user is enrolled.
+   -- After 0004 the quiz_questions table is no longer SELECT-able. The
+   -- enrolled user reads questions through the safe RPC, which returns
+   -- ONLY id, question, choices, position. correct_choice is never
+   -- returned to any client role.
    select count(*) from public.quiz_questions;
-   --> 15
+   --> 0  (or error: no SELECT policy)
+
+   select count(*)
+   from public.get_enrolled_quiz_questions('the-singapore-way', 'foundations-quiz');
+   --> 5
+
+   -- Authenticated enrolled users CANNOT directly insert a forged passing
+   -- attempt. The only insert path is submit_quiz_attempt(), which grades
+   -- the answers server-side against the DB answer key.
+   insert into public.quiz_attempts (user_id, course_id, lesson_id, score, passed, answers)
+   values (auth.uid(),
+           (select id from public.courses where slug = 'the-singapore-way'),
+           (select id from public.course_lessons where slug = 'foundations-quiz'),
+           100, true, '{}'::jsonb);
+   --> ERROR: new row violates row-level security policy for table "quiz_attempts"
+
+   -- Similarly, lesson_progress cannot be inserted directly.
+   insert into public.lesson_progress (user_id, course_id, lesson_id)
+   values (auth.uid(),
+           (select id from public.courses where slug = 'the-singapore-way'),
+           (select id from public.course_lessons where slug = 'welcome'));
+   --> ERROR: new row violates row-level security policy for table "lesson_progress"
+
+   -- The only valid write paths are the RPCs.
+   select * from public.mark_lesson_complete('the-singapore-way', 'welcome');
+   --> succeeds (idempotent)
+
+   select * from public.submit_quiz_attempt(
+     'the-singapore-way',
+     'foundations-quiz',
+     '{"<question-id-1>": 0, "<question-id-2>": 1, ...}'::jsonb
+   );
+   --> returns one row with the genuine score, passed flag, total, correct
 
    rollback;
    ```
@@ -184,15 +253,19 @@ select * from public.get_public_certificate('00000000-0000-0000-0000-00000000000
 
 ---
 
-## Where the app reads/writes this schema
+## Where the app reads/writes this schema (post-0004)
 
-| Sprint | Path | What it touches |
+| Path | RPC / table | Notes |
 | --- | --- | --- |
-| 3 | `/courses/[slug]/learn/[lessonSlug]` | `courses`, `course_modules`, `course_lessons`, `course_enrollments` (read). |
-| 4 | Server action `markLessonComplete` | `lesson_progress` (insert), `course_enrollments` (read for guard). |
-| 5 | `QuizRunner` + server action `submitQuizAttempt` | `quiz_questions` (read, projection without `correct_choice` for the client), `quiz_attempts` (insert), `lesson_progress` (insert on pass). |
-| 6 | `/courses/[slug]/certificate` + `/certificates/[id]` | `issue_certificate()` RPC, `get_public_certificate()` RPC, `certificates` (owner read). |
-| 7 | `/my-learning` | `course_enrollments`, `lesson_progress`, `certificates` (owner reads). |
+| `/courses/[slug]` (landing) | `get_published_curriculum()` RPC | Curriculum metadata only — no content / video_url. |
+| `/courses/[slug]/learn/[lessonSlug]` (player) | `get_published_curriculum()`, `get_enrolled_lesson_body()`, `course_enrollments` (owner read), `lesson_progress` (owner read) | The body RPC returns content/video_url ONLY when the caller is the active learner. |
+| `QuizRunner` (quiz lessons) | `get_enrolled_quiz_questions()` RPC | Returns id / question / choices / position only. `correct_choice` is never returned. |
+| Server action `markLessonComplete` | `mark_lesson_complete()` RPC | Server is the only writer to `lesson_progress`. Quiz lessons rejected. |
+| Server action `submitQuizAttempt` | `submit_quiz_attempt()` RPC | Server-side grading. Server is the only writer to `quiz_attempts`. |
+| `/courses/[slug]/certificate` | `issue_certificate()` RPC, `certificates` (owner read) | The RPC re-verifies completion server-side and is idempotent. |
+| `/certificates/[id]` (public verify) | `get_public_certificate()` RPC | Returns only id / course title / display name / issued date. Display name falls back to "Verified learner" — never email local-part. |
+| `/my-learning` | `course_enrollments`, `lesson_progress`, `certificates` (owner reads) | Composite dashboard reads. |
 
 No app path uses `service_role`. Every read and write goes through the user's
-own session under RLS.
+own session under RLS or a `security definer` RPC the user is granted
+`execute` on.

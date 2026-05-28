@@ -85,40 +85,36 @@ export async function checkCourseAccess(courseSlug: string): Promise<CourseAcces
 }
 
 // =============================================================================
-// Curriculum adapter — read from Supabase when the seed exists, else fall back
-// to the typed local data so the UI is reviewable in dev environments before
-// the SQL is applied to the connected project.
+// Curriculum adapter.
+//
+// In DB mode (Supabase configured + course row exists), we call the
+// get_published_curriculum SECURITY DEFINER RPC, which returns a flat row per
+// lesson with NO content / video_url. That is the only path that anon
+// (and the public landing page) is allowed to traverse.
+//
+// In local-data fallback mode (Supabase not configured, or DB seed not
+// applied), we return the typed local record. The local record DOES include
+// lesson content, but that fallback only runs in dev environments — there is
+// no public Supabase surface that exposes anything sensitive in that mode.
 // =============================================================================
 
-type DbCourseRow = {
-  id: string
-  slug: string
-  title: string
-  subtitle: string | null
-  description: string | null
-  status: 'draft' | 'published'
-}
-
-type DbModuleRow = {
-  id: string
+type DbCurriculumRow = {
   course_id: string
-  title: string
-  description: string | null
-  position: number
-}
-
-type DbLessonRow = {
-  id: string
-  course_id: string
+  course_slug: string
+  course_title: string
+  course_subtitle: string | null
+  course_description: string | null
   module_id: string
-  slug: string
-  title: string
-  description: string | null
-  content_type: CourseLessonContentType
-  content: string | null
-  video_url: string | null
-  position: number
-  is_required: boolean
+  module_title: string
+  module_description: string | null
+  module_position: number
+  lesson_id: string
+  lesson_slug: string
+  lesson_title: string
+  lesson_description: string | null
+  lesson_content_type: CourseLessonContentType
+  lesson_position: number
+  lesson_is_required: boolean
 }
 
 export async function getCourseForPlayer(slug: string): Promise<Course | null> {
@@ -136,81 +132,96 @@ export async function getCourseForPlayer(slug: string): Promise<Course | null> {
 async function readCourseFromSupabase(slug: string): Promise<Course | null> {
   const supabase = await createClient()
 
-  const { data: courseRow, error: courseError } = await supabase
-    .from('courses')
-    .select('id, slug, title, subtitle, description, status')
-    .eq('slug', slug)
-    .eq('status', 'published')
-    .maybeSingle<DbCourseRow>()
-
-  if (courseError || !courseRow) {
-    return null
-  }
-
-  const { data: moduleRows, error: moduleError } = await supabase
-    .from('course_modules')
-    .select('id, course_id, title, description, position')
-    .eq('course_id', courseRow.id)
-    .order('position', { ascending: true })
-
-  if (moduleError || !moduleRows) {
-    return null
-  }
-
-  const { data: lessonRows, error: lessonError } = await supabase
-    .from('course_lessons')
-    .select(
-      'id, course_id, module_id, slug, title, description, content_type, content, video_url, position, is_required',
-    )
-    .eq('course_id', courseRow.id)
-    .order('position', { ascending: true })
-
-  if (lessonError || !lessonRows) {
-    return null
-  }
-
-  // Marketing-only fields. The DB schema doesn't track landing copy, so we
-  // borrow it from the local typed record. The course must exist locally for
-  // its landing copy; this is a deliberate constraint of the MVP.
-  const localCourse = getLocalCourseBySlug(slug)
-  if (!localCourse) {
-    return null
-  }
-
-  const modules: CourseModulePreview[] = (moduleRows as DbModuleRow[]).map((m) => {
-    const lessons: CourseLessonPreview[] = (lessonRows as DbLessonRow[])
-      .filter((l) => l.module_id === m.id)
-      .map((l) => ({
-        id: l.id,
-        slug: l.slug,
-        title: l.title,
-        description: l.description ?? undefined,
-        contentType: l.content_type,
-        isRequired: l.is_required,
-        content: l.content,
-        videoUrl: l.video_url,
-      }))
-
-    return {
-      id: m.id,
-      // Modules have no DB slug; keep the title as a stable React key.
-      slug: m.id,
-      title: m.title,
-      description: m.description ?? undefined,
-      lessons,
-    }
+  const { data, error } = await supabase.rpc('get_published_curriculum', {
+    p_course_slug: slug,
   })
 
+  if (error || !data) return null
+
+  const rows = (Array.isArray(data) ? data : [data]) as DbCurriculumRow[]
+  if (rows.length === 0) return null
+
+  // The landing page copy (`landing`) is not in the DB schema by design — it
+  // is marketing content that lives next to the codebase. We borrow it from
+  // the local typed record. If the slug isn't in the local data, we can't
+  // render a useful landing page, so return null.
+  const localCourse = getLocalCourseBySlug(slug)
+  if (!localCourse) return null
+
+  // First row carries all the course-level fields; they repeat per lesson row.
+  const head = rows[0]
+
+  const modulesById = new Map<string, CourseModulePreview>()
+  for (const row of rows) {
+    let module_ = modulesById.get(row.module_id)
+    if (!module_) {
+      module_ = {
+        id: row.module_id,
+        // Modules have no DB slug; the id makes a stable React key.
+        slug: row.module_id,
+        title: row.module_title,
+        description: row.module_description ?? undefined,
+        lessons: [],
+      }
+      modulesById.set(row.module_id, module_)
+    }
+
+    const lesson: CourseLessonPreview = {
+      id: row.lesson_id,
+      slug: row.lesson_slug,
+      title: row.lesson_title,
+      description: row.lesson_description ?? undefined,
+      contentType: row.lesson_content_type,
+      isRequired: row.lesson_is_required,
+      // Deliberately not populated from DB mode — content/video_url come from
+      // get_enrolled_lesson_body() on the player page, gated by enrollment.
+    }
+    module_.lessons.push(lesson)
+  }
+
+  const modules = Array.from(modulesById.values())
+
   return {
-    id: courseRow.id,
-    slug: courseRow.slug,
-    title: courseRow.title,
-    subtitle: courseRow.subtitle ?? localCourse.subtitle,
-    description: courseRow.description ?? localCourse.description,
-    status: courseRow.status,
+    id: head.course_id,
+    slug: head.course_slug,
+    title: head.course_title,
+    subtitle: head.course_subtitle ?? localCourse.subtitle,
+    description: head.course_description ?? localCourse.description,
+    status: 'published',
     modules,
     landing: localCourse.landing,
   }
+}
+
+/**
+ * Enrolled-only fetch for an individual lesson's body. Calls the
+ * get_enrolled_lesson_body() SECURITY DEFINER RPC, which returns zero rows
+ * when the caller is not authenticated or not actively enrolled.
+ *
+ * The player page calls this only after verifying access; this remains the
+ * only path by which content / video_url reaches the server-rendered HTML.
+ */
+export async function getEnrolledLessonBody(
+  courseSlug: string,
+  lessonSlug: string,
+): Promise<{ content: string | null; videoUrl: string | null } | null> {
+  if (!isSupabaseConfigured()) return null
+
+  const supabase = await createClient()
+  const { data, error } = await supabase.rpc('get_enrolled_lesson_body', {
+    p_course_slug: courseSlug,
+    p_lesson_slug: lessonSlug,
+  })
+
+  if (error || !data) return null
+
+  const rows = (Array.isArray(data) ? data : [data]) as Array<{
+    content: string | null
+    video_url: string | null
+  }>
+  if (rows.length === 0) return null
+
+  return { content: rows[0].content, videoUrl: rows[0].video_url }
 }
 
 // =============================================================================
@@ -274,39 +285,52 @@ export function isCourseComplete(course: Course, completed: Set<string>): boolea
 // =============================================================================
 
 /**
- * Fetch the questions for a quiz lesson, projected for client rendering.
- * The `correct_choice` column is deliberately NOT selected — the answer key
- * never travels to the browser. RLS already blocks unenrolled reads.
+ * Fetch the questions for a quiz lesson via the
+ * get_enrolled_quiz_questions() SECURITY DEFINER RPC. The RPC returns ONLY
+ * id, question, choices, position — `correct_choice` is never selected,
+ * never serialised, and never reaches the browser.
+ *
+ * Returns an empty array when the caller is not authenticated, not actively
+ * enrolled, or the lesson is not a quiz. The player page never relies on
+ * the array length alone for access control; the access check is the
+ * authoritative gate.
  */
 export async function getQuizQuestionsForLesson(
-  courseId: string | undefined,
-  lessonId: string | undefined,
+  courseSlug: string,
+  lessonSlug: string,
 ): Promise<QuizQuestionForClient[]> {
-  if (!isSupabaseConfigured() || !courseId || !lessonId) {
-    return []
-  }
+  if (!isSupabaseConfigured()) return []
 
   const supabase = await createClient()
-  const { data, error } = await supabase
-    .from('quiz_questions')
-    .select('id, question, choices, position')
-    .eq('course_id', courseId)
-    .eq('lesson_id', lessonId)
-    .order('position', { ascending: true })
+  const { data, error } = await supabase.rpc('get_enrolled_quiz_questions', {
+    p_course_slug: courseSlug,
+    p_lesson_slug: lessonSlug,
+  })
 
   if (error || !data) return []
 
-  return data.map((row) => ({
-    id: row.id as string,
-    question: row.question as string,
-    choices: (row.choices as string[]) ?? [],
-    position: row.position as number,
+  const rows = (Array.isArray(data) ? data : [data]) as Array<{
+    id: string
+    question: string
+    choices: string[]
+    position: number
+  }>
+
+  return rows.map((row) => ({
+    id: row.id,
+    question: row.question,
+    choices: row.choices ?? [],
+    position: row.position,
   }))
 }
 
 /**
  * Returns the most recent passing attempt for a quiz lesson, or null when
  * there is none. Used to render the "Quiz passed" banner.
+ *
+ * Reads quiz_attempts directly under the user's session — the owner SELECT
+ * policy from 0002 still grants this. The forgery vector was on INSERT,
+ * which has now been moved behind submit_quiz_attempt() in 0004.
  */
 export async function getLatestPassedQuizAttempt(
   courseId: string | undefined,
@@ -444,9 +468,12 @@ export async function getPublicCertificate(
 }
 
 /**
- * Derive the display name shown on the learner's own certificate from their
- * Supabase user record. Falls back to the email local-part when no full_name
- * metadata is set. Mirrors the SQL fallback in get_public_certificate().
+ * Display name shown on the LEARNER'S OWN certificate (not the public verify
+ * page). Falls back to "Learner" rather than the email local-part so a
+ * shoulder-surfer cannot read an email-like string off a printed cert.
+ *
+ * For the public verify page, the display name comes from
+ * get_public_certificate() and is computed in SQL.
  */
 export function getLearnerDisplayName(user: {
   email?: string | null
@@ -455,10 +482,6 @@ export function getLearnerDisplayName(user: {
   const raw = user.user_metadata?.full_name
   const trimmed = typeof raw === 'string' ? raw.trim() : ''
   if (trimmed) return trimmed
-  if (user.email) {
-    const local = user.email.split('@')[0]
-    if (local) return local
-  }
   return 'Learner'
 }
 
