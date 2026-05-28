@@ -24,6 +24,8 @@ const courses: Course[] = [
             contentType: 'text',
             durationMinutes: 6,
             isRequired: true,
+            content:
+              'Welcome to the companion course. This first lesson sets the table: what to expect, how to pace yourself, and how the course is built to work alongside the book.',
           },
           {
             slug: 'method-not-miracle',
@@ -32,6 +34,8 @@ const courses: Course[] = [
             contentType: 'text',
             durationMinutes: 12,
             isRequired: true,
+            content:
+              'Singapore is widely admired and frequently misunderstood. The headline story treats it as a miracle. This lesson reframes it as a method — a set of repeatable choices that produced repeatable results.',
           },
           {
             slug: 'foundations-quiz',
@@ -40,6 +44,7 @@ const courses: Course[] = [
             contentType: 'quiz',
             durationMinutes: 5,
             isRequired: true,
+            content: null,
           },
         ],
       },
@@ -56,6 +61,8 @@ const courses: Course[] = [
             contentType: 'text',
             durationMinutes: 14,
             isRequired: true,
+            content:
+              'Long-term thinking is not slogan — it is a discipline of sequencing, compounding, and patience that shows up in housing, water, and talent policy.',
           },
           {
             slug: 'trust-and-governance',
@@ -64,6 +71,8 @@ const courses: Course[] = [
             contentType: 'text',
             durationMinutes: 16,
             isRequired: true,
+            content:
+              "Singapore's institutions are not perfect. They are honest enough that citizens and capital can plan around them. This lesson examines the trade-offs and what to copy.",
           },
           {
             slug: 'systems-thinking',
@@ -72,6 +81,8 @@ const courses: Course[] = [
             contentType: 'text',
             durationMinutes: 18,
             isRequired: true,
+            content:
+              'Three case studies — housing, water, and talent — show how a small set of principles, applied consistently, generated a coherent operating system.',
           },
           {
             slug: 'pillars-quiz',
@@ -80,6 +91,7 @@ const courses: Course[] = [
             contentType: 'quiz',
             durationMinutes: 7,
             isRequired: true,
+            content: null,
           },
         ],
       },
@@ -96,6 +108,8 @@ const courses: Course[] = [
             contentType: 'text',
             durationMinutes: 12,
             isRequired: true,
+            content:
+              "Copying Singapore's outputs is a category error. The transferable layer is the underlying reasoning — the \"root\" — not the surface policy (\"fruit\").",
           },
           {
             slug: 'adaptation-playbook',
@@ -104,6 +118,8 @@ const courses: Course[] = [
             contentType: 'text',
             durationMinutes: 14,
             isRequired: true,
+            content:
+              'A four-step playbook: name the principle, audit your context, define the smallest viable intervention, and design for honest measurement.',
           },
           {
             slug: 'adaptation-quiz',
@@ -112,6 +128,7 @@ const courses: Course[] = [
             contentType: 'quiz',
             durationMinutes: 6,
             isRequired: true,
+            content: null,
           },
         ],
       },
@@ -128,6 +145,8 @@ const courses: Course[] = [
             contentType: 'text',
             durationMinutes: 18,
             isRequired: true,
+            content:
+              'A guided exercise that produces a one-page case for change you can take to a stakeholder, a board, or a class.',
           },
           {
             slug: 'final-reflection',
@@ -137,6 +156,8 @@ const courses: Course[] = [
             contentType: 'text',
             durationMinutes: 8,
             isRequired: true,
+            content:
+              'A short reflection on what changed in your thinking. Once you have completed the required lessons and passed every required quiz, your certificate will be issued.',
           },
         ],
       },

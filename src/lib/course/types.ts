@@ -1,15 +1,21 @@
 export type CourseLessonContentType = 'text' | 'video' | 'quiz'
 
 export type CourseLessonPreview = {
+  // DB UUID when sourced from Supabase. Undefined in local-data fallback mode.
+  id?: string
   slug: string
   title: string
   description?: string
   contentType: CourseLessonContentType
   durationMinutes?: number
   isRequired: boolean
+  // Lesson body. Plain prose for text lessons; null for quiz lessons.
+  content?: string | null
+  videoUrl?: string | null
 }
 
 export type CourseModulePreview = {
+  id?: string
   slug: string
   title: string
   description?: string
@@ -69,6 +75,7 @@ export type CourseLandingCopy = {
 }
 
 export type Course = {
+  id?: string
   slug: string
   title: string
   subtitle: string
