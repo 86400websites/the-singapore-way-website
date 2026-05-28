@@ -65,8 +65,10 @@ Run, one file at a time, top to bottom:
    fallback. Idempotent — safe to re-run, including on a project where 0004
    partially applied.
 6. [`seed-the-singapore-way.sql`](./seed-the-singapore-way.sql) — the single
-   bundled sample course: 4 modules, 12 lessons (one video placeholder),
-   3 quizzes × 5 questions, 80% pass threshold. Idempotent on the
+   bundled sample course: 4 modules, 9 video-placeholder teaching lessons
+   (`content_type = 'video'`, `video_url = null` so the player shows the
+   "Video coming soon" card with lesson notes underneath), 3 quiz lessons
+   of 5 questions each, 80% pass threshold. Idempotent on the
    `the-singapore-way` slug.
 
 After step 6, the course is queryable as anon (curriculum metadata only)

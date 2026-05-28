@@ -21,7 +21,8 @@ const courses: Course[] = [
             slug: 'welcome',
             title: 'Welcome — Why Singapore matters now',
             description: 'How to get the most out of this course and the book it accompanies.',
-            contentType: 'text',
+            contentType: 'video',
+            videoUrl: null,
             durationMinutes: 6,
             isRequired: true,
             content:
@@ -59,7 +60,8 @@ const courses: Course[] = [
             slug: 'long-term-thinking',
             title: 'Long-term thinking over short-term wins',
             description: 'Why Singapore plans in decades, and what that looks like in practice.',
-            contentType: 'text',
+            contentType: 'video',
+            videoUrl: null,
             durationMinutes: 14,
             isRequired: true,
             content:
@@ -69,7 +71,8 @@ const courses: Course[] = [
             slug: 'trust-and-governance',
             title: 'Trust, governance, and a meritocratic state',
             description: 'How honest institutions and clear rules compound over time.',
-            contentType: 'text',
+            contentType: 'video',
+            videoUrl: null,
             durationMinutes: 16,
             isRequired: true,
             content:
@@ -79,7 +82,8 @@ const courses: Course[] = [
             slug: 'systems-thinking',
             title: 'Systems thinking: housing, water, talent',
             description: 'Three case studies that show one operating system at work.',
-            contentType: 'text',
+            contentType: 'video',
+            videoUrl: null,
             durationMinutes: 18,
             isRequired: true,
             content:
@@ -106,7 +110,8 @@ const courses: Course[] = [
             slug: 'borrow-the-root',
             title: 'Borrow the root, not the fruit',
             description: 'Why copying policies fails — and what to copy instead.',
-            contentType: 'text',
+            contentType: 'video',
+            videoUrl: null,
             durationMinutes: 12,
             isRequired: true,
             content:
@@ -116,7 +121,8 @@ const courses: Course[] = [
             slug: 'adaptation-playbook',
             title: 'A simple adaptation playbook',
             description: 'A four-step playbook you can use this week.',
-            contentType: 'text',
+            contentType: 'video',
+            videoUrl: null,
             durationMinutes: 14,
             isRequired: true,
             content:
@@ -143,7 +149,8 @@ const courses: Course[] = [
             slug: 'build-your-case',
             title: 'Build your case for change',
             description: 'A guided exercise to draft a one-page case using the framework.',
-            contentType: 'text',
+            contentType: 'video',
+            videoUrl: null,
             durationMinutes: 18,
             isRequired: true,
             content:
@@ -154,7 +161,8 @@ const courses: Course[] = [
             title: 'Final reflection and certificate',
             description:
               'A short reflection to close the course. Complete the required lessons and quizzes to earn your certificate.',
-            contentType: 'text',
+            contentType: 'video',
+            videoUrl: null,
             durationMinutes: 8,
             isRequired: true,
             content:

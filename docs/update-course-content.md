@@ -112,37 +112,121 @@ module's lessons.
 ## 4. Add / edit / reorder lessons
 
 Lesson slugs are visible in URLs (`/courses/the-singapore-way/learn/<slug>`).
-Changing a slug breaks existing bookmarks and existing learner progress
-(progress is keyed on lesson UUID, not slug, so it survives renames — but a
-URL that used the old slug 404s).
+Changing a slug breaks existing bookmarks (progress is keyed on lesson UUID,
+not slug, so progress survives renames — but a URL using the old slug 404s).
 
-**Add a lesson** (do all three):
+### Lesson `content_type` reference
+
+| `content_type` | Player behaviour |
+| --- | --- |
+| `video` (the default for the sample course's teaching lessons) | Shows the polished "Video coming soon" placeholder when `video_url` is null. Plays the URL when set. Lesson `content`, if present, renders as **Lesson notes** under the placeholder. |
+| `quiz` | Renders the QuizRunner. `content` is ignored. Use only for lessons that genuinely have questions in `quiz_questions`. |
+| `text` | Renders the paragraphs in `content` directly. Reserved for written-only lessons. The sample seed does not use this; quizzes and videos cover the current MVP. |
+
+### Replace a "Video coming soon" placeholder with a real video URL
+
+The sample seed leaves every teaching lesson with `video_url = null` so the
+placeholder is visible. To swap in a real video for one lesson:
+
+```sql
+update public.course_lessons
+set video_url = 'https://your-cdn.example.com/lessons/welcome.mp4'
+where slug = 'welcome';
+```
+
+The current `LessonBody` shows a "Video player will render here." stub when
+`video_url` is set — wiring a real `<video>` or HLS player into that branch
+is a small UI follow-up. (No security boundary changes are needed: the URL is
+already returned only by `get_signed_in_lesson_body`, which is sign-in
+gated.)
+
+To swap in real videos for **every** teaching lesson at once:
+
+```sql
+update public.course_lessons l
+set video_url = case l.slug
+  when 'welcome'              then 'https://your-cdn.example.com/welcome.mp4'
+  when 'method-not-miracle'   then 'https://your-cdn.example.com/method.mp4'
+  when 'long-term-thinking'   then 'https://your-cdn.example.com/long-term.mp4'
+  when 'trust-and-governance' then 'https://your-cdn.example.com/trust.mp4'
+  when 'systems-thinking'     then 'https://your-cdn.example.com/systems.mp4'
+  when 'borrow-the-root'      then 'https://your-cdn.example.com/root.mp4'
+  when 'adaptation-playbook'  then 'https://your-cdn.example.com/playbook.mp4'
+  when 'build-your-case'      then 'https://your-cdn.example.com/case.mp4'
+  when 'final-reflection'     then 'https://your-cdn.example.com/reflection.mp4'
+end
+from public.courses c
+where l.course_id = c.id
+  and c.slug = 'the-singapore-way'
+  and l.content_type = 'video';
+```
+
+Quiz lessons are not touched by this UPDATE (the `content_type = 'video'`
+filter keeps them safe).
+
+### Repair an already-seeded DB so every teaching lesson is a video lesson
+
+If you applied an older seed where some teaching lessons were still
+`content_type = 'text'`, run this once. Quizzes are explicitly excluded:
+
+```sql
+update public.course_lessons l
+set
+  content_type = 'video',
+  video_url    = null
+from public.courses c
+where l.course_id = c.id
+  and c.slug = 'the-singapore-way'
+  and l.content_type <> 'quiz';
+```
+
+Then verify the lesson-type counts:
+
+```sql
+select l.content_type, count(*) as lesson_count
+from public.course_lessons l
+join public.courses c on c.id = l.course_id
+where c.slug = 'the-singapore-way'
+group by l.content_type
+order by l.content_type;
+-- expect:
+--   quiz  | 3
+--   video | 9
+```
+
+### Add a lesson
+
+Do all three:
 
 1. Append it to the matching `module.lessons` array in `src/data/course.ts`.
-   Set `contentType` to `'text'`, `'video'`, or `'quiz'`. `videoUrl` is
-   optional; when null the LessonBody shows the "Video coming soon"
-   placeholder. `content` is the body text for text lessons; null for quiz
-   lessons.
+   Set `contentType` to `'video'` (the default for teaching lessons) or
+   `'quiz'`. For a video lesson, include `videoUrl: null` to show the
+   placeholder, or a real URL string.
 2. Append a matching `insert into public.course_lessons` in the seed.
 3. For an already-seeded DB, run the same insert manually.
 
-**Edit a text lesson body:**
+### Edit a video lesson's notes (the `content` column)
 
-- Local: change the `content` string.
+- Local: change the `content` string in `src/data/course.ts`.
 - Seed: change the `content` literal.
 - Already-seeded DB:
   ```sql
   update public.course_lessons
-  set content = $$your new body, dollar-quoted so single quotes are fine$$
+  set content = $$your new notes, dollar-quoted so single quotes are fine$$
   where slug = 'the-lesson-slug';
   ```
+The notes render under the video / placeholder, labelled "Lesson notes".
 
-**Reorder lessons within a module:** update `position` on the lessons in
-question. Positions must remain unique within their module.
+### Reorder lessons within a module
 
-**Mark a lesson optional:** set `isRequired: false` in local data and
-`is_required = false` in the DB. The certificate function (and the progress
-bar) will exclude it from the required-count.
+Update `position` on the lessons in question. Positions must remain unique
+within their module.
+
+### Mark a lesson optional
+
+Set `isRequired: false` in local data and `is_required = false` in the DB.
+The certificate function (and the progress bar) will exclude it from the
+required-count.
 
 ---
 

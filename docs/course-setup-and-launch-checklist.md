@@ -157,7 +157,7 @@ before continuing.
 
 ## 4. Seed the sample course
 
-Already done by step 5 of §2a. Confirm:
+Already done by step 6 of §2a. Confirm:
 
 ```sql
 select slug, title, status from public.courses where slug = 'the-singapore-way';
@@ -165,12 +165,23 @@ select slug, title, status from public.courses where slug = 'the-singapore-way';
 
 select count(*) as modules from public.course_modules;         -- expect: 4
 select count(*) as lessons from public.course_lessons;         -- expect: 12
-select count(*) as quizzes from public.course_lessons
-  where content_type = 'quiz';                                 -- expect: 3
-select count(*) as videos  from public.course_lessons
-  where content_type = 'video';                                -- expect: 1
 select count(*) as questions from public.quiz_questions;       -- expect: 15
+
+-- Lesson-type audit. All teaching lessons are videos; the three required
+-- quizzes are quizzes. There are no text-type lessons in the current sample.
+select l.content_type, count(*) as lesson_count
+from public.course_lessons l
+join public.courses c on c.id = l.course_id
+where c.slug = 'the-singapore-way'
+group by l.content_type
+order by l.content_type;
+-- expect:
+--   quiz  | 3
+--   video | 9
 ```
+
+If the audit shows `text` rows from an older seed, run the repair UPDATE in
+[`docs/update-course-content.md`](./update-course-content.md) §4.
 
 Re-runs of the seed are no-ops once the slug exists.
 
@@ -191,10 +202,13 @@ Before pushing, run on the dev server:
   - [ ] Sign up via `/signup`. After auto-sign-in the "Continue" button
         routes to the lesson you requested (not to `/account`).
   - [ ] `/my-learning` shows the course with "Not started".
-  - [ ] Open the first lesson. The player renders. Mark complete works.
-        Sidebar checkmark appears.
-  - [ ] Open the video lesson (`method-not-miracle`). Placeholder reads
-        "Video coming soon." (No `video_url` in the seed — that's expected.)
+  - [ ] Open the first lesson (`welcome`). The player renders the "Video
+        coming soon" placeholder with the play icon and the lesson notes
+        below. Mark complete works. Sidebar checkmark appears.
+  - [ ] Walk through every other non-quiz lesson. Each one shows the same
+        "Video coming soon" placeholder + Lesson notes. (Sample seed leaves
+        every `video_url` null on purpose; the QA confirms the placeholder
+        is reachable everywhere the curriculum lists a teaching lesson.)
   - [ ] Open a quiz lesson. Submit deliberately wrong answers — result panel
         shows "Not passed yet" and explains the 80% threshold.
   - [ ] Retry with all correct — result shows "Quiz passed". Sidebar

@@ -5,10 +5,14 @@
 -- (0004 was the failed hardening migration; 0005 supersedes it.)
 --
 -- The seeded course is a *sample* meant to make the experience reviewable
--- end-to-end: 4 modules, ~12 lessons (mix of text + one video placeholder),
--- 3 quizzes of 5 questions each, 80% pass threshold, certificate on
--- completion. Content can be swapped after launch — see
--- docs/update-course-content.md.
+-- end-to-end:
+--   * 4 modules.
+--   * 9 teaching lessons, all content_type = 'video' with video_url = null
+--     so the player renders the "Video coming soon" placeholder with the
+--     lesson notes underneath. Real video URLs can be swapped in later via
+--     a single UPDATE — see docs/update-course-content.md §4.
+--   * 3 quiz lessons of 5 questions each, 80% pass threshold.
+--   * Certificate on completion of every required lesson + quiz.
 --
 -- Idempotent: if a course with slug 'the-singapore-way' already exists, the
 -- seed exits without changing anything. To re-seed, run the corresponding
@@ -80,25 +84,22 @@ begin
   returning id into v_mod4_id;
 
   -- ---------- lessons: module 1 ----------
+  -- All teaching lessons are video lessons. video_url is null so the player
+  -- shows the "Video coming soon" placeholder with the lesson notes (the
+  -- `content` column) rendered underneath. See docs/update-course-content.md
+  -- §4 for how to swap in a real video URL.
   insert into public.course_lessons
-    (course_id, module_id, slug, title, description, content_type, position, is_required, content)
+    (course_id, module_id, slug, title, description, content_type, video_url, position, is_required, content)
   values
     (v_course_id, v_mod1_id, 'welcome',
      'Welcome — Why Singapore matters now',
      'How to get the most out of this course and the book it accompanies.',
-     'text', 1, true,
-     'Welcome to the companion course. This first lesson sets the table: what to expect, how to pace yourself, and how the course is built to work alongside the book.');
+     'video', null, 1, true,
+     'Welcome to the companion course. This first lesson sets the table: what to expect, how to pace yourself, and how the course is built to work alongside the book.'),
 
-  -- One of the 12 lessons is configured as a video to exercise the video
-  -- player UI. The video_url stays null in the sample seed so the LessonBody
-  -- placeholder ("Video coming soon") is visible — see
-  -- docs/update-course-content.md for how to swap in a real video URL.
-  insert into public.course_lessons
-    (course_id, module_id, slug, title, description, content_type, video_url, position, is_required, content)
-  values
     (v_course_id, v_mod1_id, 'method-not-miracle',
      'The mindset shift: Method, not Miracle',
-     'A short video lesson — the single idea that unlocks every other lesson.',
+     'The single idea that unlocks every other lesson in this course.',
      'video', null, 2, true,
      'Singapore is widely admired and frequently misunderstood. The headline story treats it as a miracle. This lesson reframes it as a method — a set of repeatable choices that produced repeatable results.');
 
@@ -114,24 +115,24 @@ begin
 
   -- ---------- lessons: module 2 ----------
   insert into public.course_lessons
-    (course_id, module_id, slug, title, description, content_type, position, is_required, content)
+    (course_id, module_id, slug, title, description, content_type, video_url, position, is_required, content)
   values
     (v_course_id, v_mod2_id, 'long-term-thinking',
      'Long-term thinking over short-term wins',
      'Why Singapore plans in decades, and what that looks like in practice.',
-     'text', 1, true,
+     'video', null, 1, true,
      'Long-term thinking is not slogan — it is a discipline of sequencing, compounding, and patience that shows up in housing, water, and talent policy.'),
 
     (v_course_id, v_mod2_id, 'trust-and-governance',
      'Trust, governance, and a meritocratic state',
      'How honest institutions and clear rules compound over time.',
-     'text', 2, true,
+     'video', null, 2, true,
      'Singapore''s institutions are not perfect. They are honest enough that citizens and capital can plan around them. This lesson examines the trade-offs and what to copy.'),
 
     (v_course_id, v_mod2_id, 'systems-thinking',
      'Systems thinking: housing, water, talent',
      'Three case studies that show one operating system at work.',
-     'text', 3, true,
+     'video', null, 3, true,
      'Three case studies — housing, water, and talent — show how a small set of principles, applied consistently, generated a coherent operating system.');
 
   insert into public.course_lessons
@@ -146,18 +147,18 @@ begin
 
   -- ---------- lessons: module 3 ----------
   insert into public.course_lessons
-    (course_id, module_id, slug, title, description, content_type, position, is_required, content)
+    (course_id, module_id, slug, title, description, content_type, video_url, position, is_required, content)
   values
     (v_course_id, v_mod3_id, 'borrow-the-root',
      'Borrow the root, not the fruit',
      'Why copying policies fails — and what to copy instead.',
-     'text', 1, true,
+     'video', null, 1, true,
      'Copying Singapore''s outputs is a category error. The transferable layer is the underlying reasoning — the "root" — not the surface policy ("fruit").'),
 
     (v_course_id, v_mod3_id, 'adaptation-playbook',
      'A simple adaptation playbook',
      'A four-step playbook you can use this week.',
-     'text', 2, true,
+     'video', null, 2, true,
      'A four-step playbook: name the principle, audit your context, define the smallest viable intervention, and design for honest measurement.');
 
   insert into public.course_lessons
@@ -172,18 +173,18 @@ begin
 
   -- ---------- lessons: module 4 ----------
   insert into public.course_lessons
-    (course_id, module_id, slug, title, description, content_type, position, is_required, content)
+    (course_id, module_id, slug, title, description, content_type, video_url, position, is_required, content)
   values
     (v_course_id, v_mod4_id, 'build-your-case',
      'Build your case for change',
      'A guided exercise to draft a one-page case using the framework.',
-     'text', 1, true,
+     'video', null, 1, true,
      'A guided exercise that produces a one-page case for change you can take to a stakeholder, a board, or a class.'),
 
     (v_course_id, v_mod4_id, 'final-reflection',
      'Final reflection and certificate',
      'A short reflection to close the course. Complete the required lessons and quizzes to earn your certificate.',
-     'text', 2, true,
+     'video', null, 2, true,
      'A short reflection on what changed in your thinking. Once you have completed the required lessons and passed every required quiz, your certificate will be issued.');
 
   -- ---------- quiz questions: foundations ----------
