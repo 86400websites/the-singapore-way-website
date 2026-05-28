@@ -8,6 +8,8 @@ import type {
   CourseLessonContentType,
   CourseLessonPreview,
   CourseModulePreview,
+  OwnCertificate,
+  PublicCertificate,
   QuizPassedSummary,
   QuizQuestionForClient,
 } from '@/lib/course/types'
@@ -262,6 +264,11 @@ export function computeProgress(course: Course, completed: Set<string>): CourseP
   return { requiredTotal: total, requiredCompleted: done, percent }
 }
 
+export function isCourseComplete(course: Course, completed: Set<string>): boolean {
+  const p = computeProgress(course, completed)
+  return p.requiredTotal > 0 && p.requiredCompleted >= p.requiredTotal
+}
+
 // =============================================================================
 // Quizzes
 // =============================================================================
@@ -325,6 +332,134 @@ export async function getLatestPassedQuizAttempt(
   if (error || !data) return null
 
   return { score: data.score as number, passedAt: data.created_at as string }
+}
+
+// =============================================================================
+// Certificates
+// =============================================================================
+
+/**
+ * Read the user's own certificate row for a course, if one exists.
+ * RLS allows users to read only their own certificates.
+ */
+export async function getOwnCertificate(
+  courseId: string | undefined,
+  userId: string | undefined,
+): Promise<OwnCertificate | null> {
+  if (!isSupabaseConfigured() || !courseId || !userId) return null
+
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('certificates')
+    .select('id, issued_at')
+    .eq('user_id', userId)
+    .eq('course_id', courseId)
+    .maybeSingle()
+
+  if (error || !data) return null
+  return { id: data.id as string, issuedAt: data.issued_at as string }
+}
+
+export type IssueCertificateResult =
+  | { status: 'issued'; id: string; issuedAt: string }
+  | { status: 'incomplete'; message: string }
+  | { status: 'unauthorized' }
+  | { status: 'not_enrolled' }
+  | { status: 'not_configured' }
+  | { status: 'error'; message: string }
+
+/**
+ * Call the issue_certificate() security-definer RPC. The function re-verifies
+ * completion server-side and inserts a row, idempotent on existing certs.
+ *
+ * The page should only call this when completion is already locally confirmed.
+ * The RPC's exception path is the authoritative defence; this helper translates
+ * those exceptions into a typed result.
+ */
+export async function issueCertificate(courseId: string): Promise<IssueCertificateResult> {
+  if (!isSupabaseConfigured()) {
+    return { status: 'not_configured' }
+  }
+
+  const supabase = await createClient()
+  const { data, error } = await supabase.rpc('issue_certificate', {
+    p_course_id: courseId,
+  })
+
+  if (error) {
+    const message = error.message ?? ''
+    if (message.includes('Not authenticated')) return { status: 'unauthorized' }
+    if (message.includes('Not enrolled')) return { status: 'not_enrolled' }
+    if (message.includes('Course not complete')) {
+      return { status: 'incomplete', message }
+    }
+    return { status: 'error', message }
+  }
+
+  if (!data) {
+    return { status: 'error', message: 'No certificate returned by issue_certificate.' }
+  }
+
+  // The RPC returns a single certificates row. Supabase typing for rpc() is
+  // unknown by default; we narrow here.
+  const row = data as { id: string; issued_at: string }
+  return { status: 'issued', id: row.id, issuedAt: row.issued_at }
+}
+
+/**
+ * Fetch the public-safe projection of a certificate by id, via the
+ * get_public_certificate() security-definer RPC. Exposes ONLY course title,
+ * learner display name, certificate id, and issued date — never user_id,
+ * never email, never progress detail.
+ */
+export async function getPublicCertificate(
+  certificateId: string,
+): Promise<PublicCertificate | null> {
+  if (!isSupabaseConfigured()) return null
+
+  const supabase = await createClient()
+  const { data, error } = await supabase.rpc('get_public_certificate', {
+    certificate_id: certificateId,
+  })
+
+  if (error || !data) return null
+
+  // The RPC returns `returns table (...)` which surfaces as an array.
+  const rows = Array.isArray(data) ? data : [data]
+  if (rows.length === 0) return null
+
+  const row = rows[0] as {
+    id: string
+    course_title: string
+    learner_display_name: string
+    issued_at: string
+  }
+
+  return {
+    id: row.id,
+    courseTitle: row.course_title,
+    learnerDisplayName: row.learner_display_name,
+    issuedAt: row.issued_at,
+  }
+}
+
+/**
+ * Derive the display name shown on the learner's own certificate from their
+ * Supabase user record. Falls back to the email local-part when no full_name
+ * metadata is set. Mirrors the SQL fallback in get_public_certificate().
+ */
+export function getLearnerDisplayName(user: {
+  email?: string | null
+  user_metadata?: { full_name?: string | null } | null | undefined
+}): string {
+  const raw = user.user_metadata?.full_name
+  const trimmed = typeof raw === 'string' ? raw.trim() : ''
+  if (trimmed) return trimmed
+  if (user.email) {
+    const local = user.email.split('@')[0]
+    if (local) return local
+  }
+  return 'Learner'
 }
 
 // =============================================================================

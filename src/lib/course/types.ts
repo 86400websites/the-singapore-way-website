@@ -91,6 +91,23 @@ export type QuizPassedSummary = {
   passedAt: string
 }
 
+export type OwnCertificate = {
+  id: string
+  issuedAt: string
+}
+
+/**
+ * Public projection returned by the get_public_certificate() RPC.
+ * Exposes ONLY what is safe to show on the verification page — no
+ * email, no user id, no progress detail.
+ */
+export type PublicCertificate = {
+  id: string
+  courseTitle: string
+  learnerDisplayName: string
+  issuedAt: string
+}
+
 export type Course = {
   id?: string
   slug: string

@@ -78,6 +78,17 @@ export default function LessonSidebar({
                 style={{ width: `${progress.percent}%` }}
               />
             </div>
+            {progress.percent >= 100 && (
+              <Link
+                href={`/courses/${course.slug}/certificate`}
+                className="mt-4 inline-flex items-center gap-2 text-[12px] font-bold tracking-[0.08em] uppercase text-[#0a8553] hover:underline"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                </svg>
+                Get your certificate
+              </Link>
+            )}
           </div>
         )}
       </div>
