@@ -191,7 +191,13 @@ export default function LocalizationKitsClient() {
         </div>
       </section>
 
-      {modalOpen && <RequestModal onClose={() => setModalOpen(false)} kind="Localization Kits" />}
+      {modalOpen && (
+        <RequestModal
+          onClose={() => setModalOpen(false)}
+          kind="Localization Kits"
+          formType="localization-kits"
+        />
+      )}
     </div>
   )
 }

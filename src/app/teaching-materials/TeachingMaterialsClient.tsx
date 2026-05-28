@@ -679,7 +679,13 @@ export default function TeachingMaterialsClient() {
         </div>
       </section>
 
-      {modalOpen && <RequestModal onClose={() => setModalOpen(false)} kind="Case Studies" />}
+      {modalOpen && (
+        <RequestModal
+          onClose={() => setModalOpen(false)}
+          kind="Case Studies"
+          formType="case-studies"
+        />
+      )}
     </div>
   )
 }

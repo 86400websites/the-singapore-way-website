@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
 
+import FreeBookSummaryButton from '@/components/FreeBookSummaryButton'
 import Reveal from '@/components/motion/Reveal'
 import RevealStagger from '@/components/motion/RevealStagger'
 import { CardMedia } from '@/components/ui/card'
@@ -128,9 +129,7 @@ export default function Page() {
                 This book and platform share a framework and principles—not to copy them, but to understand them, teach them, and adapt them to build new, local futures.
               </p>
               <div className="flex flex-wrap gap-3">
-                <button type="button" className="btn-pill-outline">
-                  Download Free Summary
-                </button>
+                <FreeBookSummaryButton />
               </div>
             </Reveal>
           </div>

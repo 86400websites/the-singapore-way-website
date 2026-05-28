@@ -47,7 +47,10 @@ export default function Footer() {
 
     form.reset()
     setTurnstileToken(null)
-    setSubmitMessage('Thanks for subscribing.')
+    setSubmitMessage(
+      "Thank you for subscribing! You'll receive our newsletters and updates directly in your inbox.\n" +
+        '⏳ Please wait up to 5 minutes for your email to arrive before submitting again.',
+    )
   }
 
   return (
@@ -112,7 +115,7 @@ export default function Footer() {
             )}
             {(submitError || submitMessage) && (
               <p
-                className={`mb-4 text-[12px] leading-snug ${submitError ? 'text-[#ff8da0]' : 'text-gray-300'}`}
+                className={`mb-4 text-[12px] leading-snug whitespace-pre-line ${submitError ? 'text-[#ff8da0]' : 'text-gray-300'}`}
                 role={submitError ? 'alert' : 'status'}
               >
                 {submitError ?? submitMessage}

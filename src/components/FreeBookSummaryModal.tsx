@@ -7,50 +7,16 @@ import { useForm } from 'react-hook-form'
 import TurnstileWidget from '@/components/TurnstileWidget'
 import {
   resourceRequestSchema,
-  type MailchimpFormType,
   type ResourceRequestValues,
 } from '@/lib/validation/forms'
 
-interface RequestModalProps {
+interface FreeBookSummaryModalProps {
   onClose: () => void
-  kind: string
-  description?: string
-  // When set, this submission is a Mailchimp lead-magnet flow:
-  // POST goes directly to /api/mailchimp/subscribe with the matching tag.
-  // When unset, the submission falls back to /api/contact for the
-  // legacy admin-email flow. The server re-validates the formType value
-  // against the public allowlist before doing anything with it.
-  formType?: MailchimpFormType
 }
 
 const turnstileRequired = !!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
 
-// Resource-specific success copy keyed by the public formType allowlist.
-// Each entry is a Mailchimp automation message: heading + spam-folder hint
-// + the standard 5-minute wait reminder. We intentionally do not show the
-// submitted email here because the email arrives via Mailchimp automation,
-// not a manual follow-up.
-const SUCCESS_COPY: Partial<
-  Record<MailchimpFormType, { heading: string; body: string }>
-> = {
-  'localization-kits': {
-    heading: 'Your Localization Kits are on the way!',
-    body: "If you don't see them in your inbox, please check your spam or promotions.",
-  },
-  'use-cases': {
-    heading: 'Your Use Cases are on the way!',
-    body: "If you don't see them in your inbox, please check your spam or promotions.",
-  },
-  'case-studies': {
-    heading: 'Your Case Studies are on the way!',
-    body: "If you don't see them in your inbox, please check your spam or promotions.",
-  },
-}
-
-const WAIT_LINE =
-  '⏳ Please wait up to 5 minutes for your email to arrive before submitting again.'
-
-export default function RequestModal({ onClose, kind, description, formType }: RequestModalProps) {
+export default function FreeBookSummaryModal({ onClose }: FreeBookSummaryModalProps) {
   const [submitted, setSubmitted] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
@@ -82,20 +48,14 @@ export default function RequestModal({ onClose, kind, description, formType }: R
 
   const onSubmit = async (values: ResourceRequestValues) => {
     setSubmitError(null)
-
-    // Lead-magnet flows (Localization Kits, Use Cases, Case Studies, etc.)
-    // post directly to the Mailchimp tagging endpoint and do NOT depend on
-    // Resend / admin email. /api/contact is only used when no formType is
-    // provided (legacy generic contact flow).
-    const endpoint = formType ? '/api/mailchimp/subscribe' : '/api/contact'
-    const body = formType
-      ? { ...values, formType, turnstileToken }
-      : { ...values, kind, description, turnstileToken }
-
-    const response = await fetch(endpoint, {
+    const response = await fetch('/api/mailchimp/subscribe', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
+      body: JSON.stringify({
+        ...values,
+        formType: 'free-book-summary',
+        turnstileToken,
+      }),
     })
     const result = (await response.json().catch(() => null)) as { message?: string } | null
 
@@ -107,15 +67,13 @@ export default function RequestModal({ onClose, kind, description, formType }: R
     setSubmitted(true)
   }
 
-  const successCopy = formType ? SUCCESS_COPY[formType] : null
-
   return (
     <div
       className="fixed inset-0 z-[100] flex items-start justify-center pt-12 sm:pt-16 px-5 bg-[#111111]/40 backdrop-blur-sm overflow-y-auto"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
-      aria-labelledby="request-modal-title"
+      aria-labelledby="free-book-summary-title"
     >
       <div
         className="relative w-full max-w-lg bg-white rounded-2xl shadow-[0_30px_60px_-20px_rgba(17,17,17,0.4)] border border-[#ECECEC] my-8"
@@ -140,38 +98,34 @@ export default function RequestModal({ onClose, kind, description, formType }: R
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <h2 id="request-modal-title" className="text-2xl font-bold text-[#111111] mb-3 leading-[1.2]">
-                {successCopy?.heading ?? "Thanks — we've got your details."}
+              <h2 id="free-book-summary-title" className="text-2xl font-bold text-[#111111] mb-3 leading-[1.2]">
+                Your Free Book Summary is on the way!
               </h2>
-              {successCopy && (
-                <>
-                  <p className="text-[15px] text-[#666666] leading-[1.65] mb-3">
-                    {successCopy.body}
-                  </p>
-                  <p className="text-[14px] text-[#666666] leading-[1.65] mb-6">
-                    {WAIT_LINE}
-                  </p>
-                </>
-              )}
+              <p className="text-[15px] text-[#666666] leading-[1.65] mb-3">
+                If you don&apos;t see it in your inbox, please check your spam or promotions.
+              </p>
+              <p className="text-[14px] text-[#666666] leading-[1.65] mb-6">
+                ⏳ Please wait up to 5 minutes for your email to arrive before submitting again.
+              </p>
               <button onClick={onClose} className="btn-pill" type="button">Close</button>
             </div>
           ) : (
             <>
-              <p className="eyebrow mb-3">Request</p>
-              <h2 id="request-modal-title" className="text-2xl md:text-3xl font-bold text-[#111111] leading-[1.2] mb-2">
-                Get the {kind}
+              <p className="eyebrow mb-3">The Book</p>
+              <h2 id="free-book-summary-title" className="text-2xl md:text-3xl font-bold text-[#111111] leading-[1.2] mb-2">
+                Get the Free Book Summary
               </h2>
               <p className="text-[15px] text-[#666666] leading-[1.65] mb-6">
-                {description || `Share your details and we'll email you the full set as soon as delivery is live.`}
+                Share your details and we&apos;ll email you the free summary of The Singapore Way.
               </p>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4" noValidate>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label htmlFor="req-fn" className="block text-[12px] font-bold tracking-[0.08em] uppercase text-[#666666] mb-1.5">
+                    <label htmlFor="fbs-fn" className="block text-[12px] font-bold tracking-[0.08em] uppercase text-[#666666] mb-1.5">
                       First name <span className="text-[#C8102E]">*</span>
                     </label>
                     <input
-                      id="req-fn"
+                      id="fbs-fn"
                       type="text"
                       {...form.register('firstName')}
                       required
@@ -185,11 +139,11 @@ export default function RequestModal({ onClose, kind, description, formType }: R
                     )}
                   </div>
                   <div>
-                    <label htmlFor="req-ln" className="block text-[12px] font-bold tracking-[0.08em] uppercase text-[#666666] mb-1.5">
+                    <label htmlFor="fbs-ln" className="block text-[12px] font-bold tracking-[0.08em] uppercase text-[#666666] mb-1.5">
                       Last name
                     </label>
                     <input
-                      id="req-ln"
+                      id="fbs-ln"
                       type="text"
                       {...form.register('lastName')}
                       className="w-full border border-[#E5E5E5] rounded-xl px-4 py-3 text-[15px] text-[#111111] focus:outline-none focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/20 bg-[#FAFAFA] transition-colors"
@@ -197,11 +151,11 @@ export default function RequestModal({ onClose, kind, description, formType }: R
                   </div>
                 </div>
                 <div>
-                  <label htmlFor="req-email" className="block text-[12px] font-bold tracking-[0.08em] uppercase text-[#666666] mb-1.5">
+                  <label htmlFor="fbs-email" className="block text-[12px] font-bold tracking-[0.08em] uppercase text-[#666666] mb-1.5">
                     Email <span className="text-[#C8102E]">*</span>
                   </label>
                   <input
-                    id="req-email"
+                    id="fbs-email"
                     type="email"
                     {...form.register('email')}
                     required
@@ -246,12 +200,9 @@ export default function RequestModal({ onClose, kind, description, formType }: R
                     }
                     className="btn-pill w-full sm:w-auto disabled:opacity-60 disabled:cursor-not-allowed"
                   >
-                    {form.formState.isSubmitting ? 'Sending...' : 'Send my request'}
+                    {form.formState.isSubmitting ? 'Sending...' : 'Get the free summary'}
                   </button>
                 </div>
-                <p className="text-[12px] text-[#888888] leading-snug">
-                  Your details will be sent securely to The Singapore Way team.
-                </p>
               </form>
             </>
           )}
