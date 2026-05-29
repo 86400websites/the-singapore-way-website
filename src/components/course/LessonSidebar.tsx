@@ -23,7 +23,7 @@ export default function LessonSidebar({
     <aside aria-label="Course curriculum" className="lg:sticky lg:top-[88px] lg:self-start">
       <Link
         href={`/courses/${course.slug}`}
-        className="inline-flex items-center gap-2 text-[12px] font-bold tracking-[0.12em] uppercase text-[#666666] hover:text-[#C8102E] transition-colors mb-6"
+        className="focus-ring rounded-sm inline-flex items-center gap-2 text-[12px] font-bold tracking-[0.12em] uppercase text-[#666666] hover:text-[#C8102E] transition-colors mb-6"
       >
         <svg
           className="w-4 h-4 rotate-180 flex-shrink-0"
@@ -81,7 +81,7 @@ export default function LessonSidebar({
             {progress.percent >= 100 && (
               <Link
                 href={`/courses/${course.slug}/certificate`}
-                className="mt-4 inline-flex items-center gap-2 text-[12px] font-bold tracking-[0.08em] uppercase text-[#0a8553] hover:underline"
+                className="focus-ring rounded-sm mt-4 inline-flex items-center gap-2 text-[12px] font-bold tracking-[0.08em] uppercase text-[#0a8553] hover:underline"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
@@ -114,7 +114,7 @@ export default function LessonSidebar({
                       <Link
                         href={`/courses/${course.slug}/learn/${lesson.slug}`}
                         aria-current={isActive ? 'page' : undefined}
-                        className={`flex items-start gap-3 rounded-lg px-3 py-2.5 transition-colors ${
+                        className={`focus-ring flex items-start gap-3 rounded-lg px-3 py-2.5 transition-colors ${
                           isActive
                             ? 'bg-[#C8102E]/10 text-[#C8102E]'
                             : 'text-[#444444] hover:bg-[#F5F5F5] hover:text-[#111111]'
@@ -145,7 +145,7 @@ export default function LessonSidebar({
                         <span className="flex-1 min-w-0">
                           <span
                             className={`block text-[14px] leading-[1.4] ${
-                              isActive ? 'font-bold' : 'font-medium'
+                              isActive ? 'font-bold' : 'font-normal'
                             }`}
                           >
                             {lesson.title}
