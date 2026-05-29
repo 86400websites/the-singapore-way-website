@@ -578,6 +578,7 @@ export default function TeachingMaterialsClient() {
         description="Seventeen case studies that bring the book to life — in classrooms, policy circles, and national strategy discussions."
         align="left"
         variant="light"
+        image="/assets/teach/case-studies.png"        priority
       />
 
       <section className="py-12 md:py-16 bg-[#F5F5F5] border-t border-[#ECECEC]">

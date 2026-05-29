@@ -46,6 +46,8 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         title="Sign in"
         description="Sign in to access your account."
         variant="light"
+        image="/assets/auth/login-hero.png"
+        priority
       />
       <section className="bg-[#F5F5F5] border-t border-[#ECECEC] py-14 md:py-20">
         <div className="max-w-md mx-auto px-5 sm:px-6 lg:px-8">

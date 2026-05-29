@@ -63,7 +63,7 @@ export default function TheBookPage() {
               </p>
               <div className="flex flex-wrap gap-3">
                 <a
-                  href="https://www.amazon.com"
+                  href="https://www.amazon.com/Singapore-Way-Principles-Hardship-Prosperity/dp/B0F8DLL2Q9"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn-pill"

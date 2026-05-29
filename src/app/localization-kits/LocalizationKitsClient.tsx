@@ -4,9 +4,9 @@ import { useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import PageHero from '@/components/PageHero'
 import RequestModal from '@/components/RequestModal'
+import { themeIcons, fallbackIcon } from '@/components/sgw-icons'
 
 interface Kit {
-  icon: string
   title: string
   desc: string
   tag: string
@@ -14,22 +14,22 @@ interface Kit {
 }
 
 const kits: Kit[] = [
-  { icon: '🏛️', title: 'Leadership and Governance', tag: 'leadership-and-governance', group: 'governance', desc: "Adapt the guiding leadership and governance practices distilled from Singapore's journey." },
-  { icon: '🏠', title: 'Smart Housing', tag: 'smart-housing', group: 'urban', desc: "A framework to adapt Singapore's smart housing principles to your local context." },
-  { icon: '📈', title: 'Economic Transformation', tag: 'economic-transformation', group: 'economy', desc: "Localise Singapore's economic transformation model for your own market and constraints." },
-  { icon: '🎓', title: 'Talent Development & Education', tag: 'talent-development-and-education', group: 'education', desc: "Adapt Singapore's value development and education strategy to your national or regional context." },
-  { icon: '🏥', title: 'Public Health & Healthcare', tag: 'public-health-and-healthcare-system', group: 'health', desc: "Adapt Singapore's public health and healthcare development for your local context." },
-  { icon: '🌐', title: 'Smart Nation', tag: 'smart-nation', group: 'governance', desc: "Localise Singapore's Smart Nation strategy into a context-driven digital transformation initiative." },
-  { icon: '🚌', title: 'Urban Mobility & Transport', tag: 'urban-mobility-and-sustainable-transport', group: 'urban', desc: "A roadmap to adapt and localise Singapore's urban mobility strategy to your context." },
-  { icon: '💧', title: 'Water & Resources', tag: 'water-and-resource-management', group: 'urban', desc: "A strategic framework for Singapore's integrated approach to water and resource management." },
-  { icon: '🤝', title: 'Business & Trade Hub', tag: 'business-and-trade-hub', group: 'economy', desc: "Adapt Singapore's business and trade hub strategy into your national or regional context." },
-  { icon: '⚖️', title: 'Public Trust & Governance', tag: 'public-trust-and-governance', group: 'governance', desc: "Tools to adapt Singapore's trust-building and governance strategies to your context." },
-  { icon: '🏳️', title: 'National Identity', tag: 'national-identity', group: 'culture', desc: "Localise the Singapore model of multicultural nation-building." },
-  { icon: '🌿', title: 'Green Strategy', tag: 'green-strategy', group: 'urban', desc: "Adapt Singapore's green strategy to your local environmental and policy context." },
-  { icon: '💡', title: 'Innovation & Entrepreneurship', tag: 'fostering-innovation-and-entrepreneurship', group: 'economy', desc: "Localise Singapore's experience in fostering innovation and entrepreneurship." },
-  { icon: '🎨', title: 'Culture & Arts in Nation Building', tag: 'culture-and-arts-in-nation-building', group: 'culture', desc: "Adapt Singapore's strategy of leveraging culture and the arts in nation building." },
-  { icon: '💻', title: 'Harnessing Technology', tag: 'harnessing-technology-for-the-future', group: 'governance', desc: "A roadmap to localise Singapore's approach to national digital transformation." },
-  { icon: '👥', title: 'Civic Engagement & Community', tag: 'civic-engagement-and-community-building', group: 'culture', desc: "Localise Singapore's strategic approach to civic engagement and community building." },
+  { title: 'Leadership and Governance', tag: 'leadership-and-governance', group: 'governance', desc: "Adapt the guiding leadership and governance practices distilled from Singapore's journey." },
+  { title: 'Smart Housing', tag: 'smart-housing', group: 'urban', desc: "A framework to adapt Singapore's smart housing principles to your local context." },
+  { title: 'Economic Transformation', tag: 'economic-transformation', group: 'economy', desc: "Localise Singapore's economic transformation model for your own market and constraints." },
+  { title: 'Talent Development & Education', tag: 'talent-development-and-education', group: 'education', desc: "Adapt Singapore's value development and education strategy to your national or regional context." },
+  { title: 'Public Health & Healthcare', tag: 'public-health-and-healthcare-system', group: 'health', desc: "Adapt Singapore's public health and healthcare development for your local context." },
+  { title: 'Smart Nation', tag: 'smart-nation', group: 'governance', desc: "Localise Singapore's Smart Nation strategy into a context-driven digital transformation initiative." },
+  { title: 'Urban Mobility & Transport', tag: 'urban-mobility-and-sustainable-transport', group: 'urban', desc: "A roadmap to adapt and localise Singapore's urban mobility strategy to your context." },
+  { title: 'Water & Resources', tag: 'water-and-resource-management', group: 'urban', desc: "A strategic framework for Singapore's integrated approach to water and resource management." },
+  { title: 'Business & Trade Hub', tag: 'business-and-trade-hub', group: 'economy', desc: "Adapt Singapore's business and trade hub strategy into your national or regional context." },
+  { title: 'Public Trust & Governance', tag: 'public-trust-and-governance', group: 'governance', desc: "Tools to adapt Singapore's trust-building and governance strategies to your context." },
+  { title: 'National Identity', tag: 'national-identity', group: 'culture', desc: "Localise the Singapore model of multicultural nation-building." },
+  { title: 'Green Strategy', tag: 'green-strategy', group: 'urban', desc: "Adapt Singapore's green strategy to your local environmental and policy context." },
+  { title: 'Innovation & Entrepreneurship', tag: 'fostering-innovation-and-entrepreneurship', group: 'economy', desc: "Localise Singapore's experience in fostering innovation and entrepreneurship." },
+  { title: 'Culture & Arts in Nation Building', tag: 'culture-and-arts-in-nation-building', group: 'culture', desc: "Adapt Singapore's strategy of leveraging culture and the arts in nation building." },
+  { title: 'Harnessing Technology', tag: 'harnessing-technology-for-the-future', group: 'governance', desc: "A roadmap to localise Singapore's approach to national digital transformation." },
+  { title: 'Civic Engagement & Community', tag: 'civic-engagement-and-community-building', group: 'culture', desc: "Localise Singapore's strategic approach to civic engagement and community building." },
 ]
 
 const groupOptions: { value: 'all' | Kit['group']; label: string }[] = [
@@ -69,6 +69,7 @@ export default function LocalizationKitsClient() {
         description="Each kit breaks down a principle from The Singapore Way and re-tasks it for your local reality — whether you're redesigning housing policy, education, or governance."
         align="left"
         variant="light"
+        image="/assets/apply/localization-kits.png"        priority
       />
 
       <section className="py-14 md:py-20 bg-[#F5F5F5] border-t border-[#ECECEC]">
@@ -163,7 +164,7 @@ export default function LocalizationKitsClient() {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
-              {filtered.map(({ icon, title, desc, tag }) => (
+              {filtered.map(({ title, desc, tag }) => (
                 <button
                   key={tag}
                   onClick={scrollToCta}
@@ -177,8 +178,8 @@ export default function LocalizationKitsClient() {
                   >
                     Available via email
                   </span>
-                  <div className="mb-5 w-[60px] h-[60px] sm:w-[68px] sm:h-[68px] rounded-[15px] bg-[#FBF1E7] text-[#C8102E] flex items-center justify-center text-2xl sm:text-[26px] leading-none transition-transform duration-300 group-hover:scale-[1.08]">
-                    <span aria-hidden="true">{icon}</span>
+                  <div className="mb-5 w-[60px] h-[60px] sm:w-[68px] sm:h-[68px] rounded-[15px] bg-[#FBF1E7] text-[#C8102E] flex items-center justify-center transition-transform duration-300 group-hover:scale-[1.08]">
+                    {themeIcons[tag] ?? fallbackIcon}
                   </div>
                   <h3 className="text-[17px] md:text-[18px] font-bold text-[#181C14] leading-[1.3] mb-3 pr-12">{title}</h3>
                   <span className="block w-10 h-1 bg-[#C8102E] rounded-full mb-4" aria-hidden="true" />
