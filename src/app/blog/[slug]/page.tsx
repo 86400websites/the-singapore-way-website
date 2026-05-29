@@ -140,9 +140,14 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             <p className="prose-body mb-7">
               The Singapore Way book walks through all 17 dimensions with practical tools for adaptation.
             </p>
-            <Link href="/thebook" className="btn-pill">
+            <a
+              href="https://www.amazon.com/Singapore-Way-Principles-Hardship-Prosperity/dp/B0F8DLL2Q9"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-pill"
+            >
               Get the Book
-            </Link>
+            </a>
           </div>
         </div>
       </section>

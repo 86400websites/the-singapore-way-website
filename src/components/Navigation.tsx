@@ -5,8 +5,6 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-import { createClient, isSupabaseConfigured } from '@/lib/supabase/client'
-
 type Child = { label: string; href: string; desc: string }
 type NavItem = { label: string; href: string; children: Child[] }
 
@@ -67,9 +65,9 @@ const childIcons: Record<string, ReactNode> = {
   ),
 }
 
-const chevron = (
+const chevron = (open: boolean) => (
   <svg
-    className="w-3.5 h-3.5 transition-transform duration-200 group-hover:rotate-180 group-focus-within:rotate-180"
+    className={`w-3.5 h-3.5 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
     fill="none"
     stroke="currentColor"
     viewBox="0 0 24 24"
@@ -81,45 +79,28 @@ const chevron = (
 
 export default function Navigation() {
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [signedIn, setSignedIn] = useState(false)
+  const [openMenu, setOpenMenu] = useState<string | null>(null)
   const pathname = usePathname() ?? '/'
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/')
 
-  // Auth-aware nav, resolved entirely in the browser so the static site is
-  // not forced dynamic. No auth logic changes — this only toggles which
-  // account link is shown.
+  // Close any open menu (mobile drawer or a desktop dropdown) on Escape.
   useEffect(() => {
-    if (!isSupabaseConfigured()) return
-    let mounted = true
-    const supabase = createClient()
-
-    supabase.auth.getSession().then(({ data }) => {
-      if (mounted) setSignedIn(Boolean(data.session))
-    })
-
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSignedIn(Boolean(session))
-    })
-
-    return () => {
-      mounted = false
-      sub.subscription.unsubscribe()
-    }
-  }, [])
-
-  // Close the mobile drawer on Escape.
-  useEffect(() => {
-    if (!mobileOpen) return
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setMobileOpen(false)
+      if (e.key === 'Escape') {
+        setMobileOpen(false)
+        setOpenMenu(null)
+      }
     }
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
-  }, [mobileOpen])
+  }, [])
 
-  const accountHref = signedIn ? '/account' : '/login'
-  const accountLabel = signedIn ? 'My Account' : 'Log in'
+  // The account link is intentionally static. Signed-out visitors who open it
+  // are redirected by /account to /login?next=/account, so the navigation
+  // needs no Supabase client or auth state on every page.
+  const accountHref = '/account'
+  const accountLabel = 'My Account'
 
   return (
     <header className="bg-white/95 backdrop-blur-sm border-b border-[#ECECEC] sticky top-0 z-50">
@@ -155,28 +136,43 @@ export default function Navigation() {
                   </Link>
                 )
               }
+              const menuId = `nav-menu-${item.href.replace(/\//g, '')}`
+              const isOpen = openMenu === item.label
               return (
-                <div key={item.label} className="relative group">
+                <div
+                  key={item.label}
+                  className="relative"
+                  onMouseEnter={() => setOpenMenu(item.label)}
+                  onMouseLeave={() => setOpenMenu(null)}
+                  onFocus={() => setOpenMenu(item.label)}
+                  onBlur={(e) => {
+                    if (!e.currentTarget.contains(e.relatedTarget as Node)) setOpenMenu(null)
+                  }}
+                >
                   <Link
                     href={item.href}
                     aria-current={active ? 'page' : undefined}
                     aria-haspopup="true"
+                    aria-expanded={isOpen}
+                    aria-controls={menuId}
                     className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-[12px] font-bold tracking-[0.1em] uppercase transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C8102E] focus-visible:ring-offset-2 ${
                       active ? 'bg-[#FBF1E7] text-[#C8102E]' : 'text-[#444444] hover:text-[#C8102E] hover:bg-[#FAF8F4]'
                     }`}
                   >
                     {item.label}
-                    {chevron}
+                    {chevron(isOpen)}
                   </Link>
 
-                  {/* Dropdown panel — hover + keyboard focus-within. The pt-3
-                      wrapper is a transparent hover bridge to the trigger. */}
+                  {/* Dropdown panel — driven by open state (hover + keyboard
+                      focus). The pt-3 wrapper is a transparent bridge to the
+                      trigger so the cursor can cross the gap. */}
                   <div
-                    className="absolute left-0 top-full pt-3 w-[320px]
-                      opacity-0 invisible translate-y-1 pointer-events-none
-                      group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:pointer-events-auto
-                      group-focus-within:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:pointer-events-auto
-                      transition-all duration-200 ease-out"
+                    id={menuId}
+                    className={`absolute left-0 top-full pt-3 w-[320px] transition-all duration-200 ease-out ${
+                      isOpen
+                        ? 'opacity-100 visible translate-y-0 pointer-events-auto'
+                        : 'opacity-0 invisible translate-y-1 pointer-events-none'
+                    }`}
                   >
                     <div className="rounded-2xl bg-white border border-[#ECECEC] shadow-[0_24px_60px_-20px_rgba(17,17,17,0.28)] p-2">
                       {item.children.map((child) => {

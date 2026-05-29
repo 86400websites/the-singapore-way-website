@@ -200,13 +200,13 @@ export default function Page() {
                 className="card-link group flex flex-col h-full"
                 aria-label={`${pillar.title} — Explore`}
               >
-                <CardMedia aspect="aspect-[4/3]">
+                <CardMedia aspect="aspect-[16/9]">
                   <Image
                     src={pillar.image}
                     alt={pillar.title}
                     fill
                     sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-                    className="object-contain p-6 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.03]"
+                    className="object-cover transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.03]"
                   />
                 </CardMedia>
                 <div className="flex flex-col flex-1 p-6 sm:p-7">

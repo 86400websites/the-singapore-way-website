@@ -48,9 +48,7 @@ export default function IdeateClient() {
         description="Strategic analysis and consulting powered by Singapore's proven principles. Describe your challenge, attach context, and explore tailored recommendations."
         align="left"
         variant="light"
-        image="/assets/home/ideate-card.png"
-        imageAlt="Editorial illustration representing ideating with The Singapore Way assistant"
-        priority
+        image="/assets/home/ideate-card.png"        priority
       />
 
       {/* Iframe container */}

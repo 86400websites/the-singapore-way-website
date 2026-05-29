@@ -46,9 +46,7 @@ export default function LearnPage() {
         description="Course, podcast, and blog — three ways into the framework. Pick the format that fits how you learn best."
         align="left"
         variant="light"
-        image="/assets/home/learn-card.png"
-        imageAlt="Editorial illustration representing learning the foundations behind Singapore's success"
-        priority
+        image="/assets/home/learn-card.png"        priority
       />
 
       <section className="py-16 md:py-24 bg-[#F5F5F5] border-t border-[#ECECEC]">
@@ -59,13 +57,13 @@ export default function LearnPage() {
                 key={card.title}
                 className="card-editorial flex flex-col group h-full"
               >
-                <div className="card-thumb aspect-[4/3] flex items-center justify-center">
+                <div className="card-thumb aspect-[16/9]">
                   <Image
                     src={card.image}
                     alt={card.title}
                     fill
                     sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
-                    className="object-contain p-6 group-hover:scale-[1.03] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                    className="object-cover group-hover:scale-[1.03] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
                   />
                 </div>
                 <div className="p-7 md:p-8 flex flex-col flex-1">

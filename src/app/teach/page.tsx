@@ -21,21 +21,19 @@ export default function TeachPage() {
         description="Seventeen case studies, ready for the classroom, the boardroom, and policy briefings — built around the systems behind Singapore's rise."
         align="left"
         variant="light"
-        image="/assets/home/teach-card.png"
-        imageAlt="Editorial illustration representing teaching with proven principles"
-        priority
+        image="/assets/home/teach-card.png"        priority
       />
 
       <section className="py-16 md:py-24 bg-[#F5F5F5] border-t border-[#ECECEC]">
         <div className="max-w-3xl mx-auto px-5 sm:px-6 lg:px-8">
           <article className="card-editorial flex flex-col group">
-            <div className="relative aspect-[16/9] bg-[#faf8f4] overflow-hidden flex items-center justify-center border-b border-[#ECECEC]">
+            <div className="relative aspect-[16/9] bg-[#faf8f4] overflow-hidden border-b border-[#ECECEC]">
               <Image
                 src="/assets/teach/case-studies.png"
                 alt="Case Studies"
                 fill
                 sizes="(min-width: 768px) 768px, 100vw"
-                className="object-contain p-8 group-hover:scale-[1.02] transition-transform duration-300"
+                className="object-cover group-hover:scale-[1.02] transition-transform duration-300"
               />
             </div>
             <div className="p-8 md:p-10 flex flex-col">

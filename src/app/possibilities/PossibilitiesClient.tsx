@@ -40,9 +40,7 @@ export default function PossibilitiesClient() {
         description="Illustrative use cases showing how communities adapt The Singapore Way to address challenges across cities, ministries, and public systems."
         align="left"
         variant="light"
-        image="/assets/apply/examples.png"
-        imageAlt="Editorial illustration representing examples of The Singapore Way in practice"
-        priority
+        image="/assets/apply/examples.png"        priority
       />
 
       <section className="py-14 md:py-20 bg-[#F5F5F5] border-t border-[#ECECEC]">

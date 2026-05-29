@@ -97,15 +97,17 @@ export default function PageHero({
     <section className={`${v.bg} ${className}`}>
       <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-16 sm:py-20 md:py-24 lg:py-28">
         {hasImage ? (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
-            <div className="lg:col-span-6 order-2 lg:order-1">{content}</div>
-            <div className="lg:col-span-6 order-1 lg:order-2">
-              <div className="relative mx-auto lg:ml-auto w-full max-w-[440px] sm:max-w-[500px] lg:max-w-[560px] aspect-[16/9]">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
+            {/* Text first in the DOM: leads on mobile (stacked above the
+                illustration) and sits left on desktop. */}
+            <div className="lg:col-span-6">{content}</div>
+            <div className="lg:col-span-6">
+              <div className="relative mx-auto lg:ml-auto w-full max-w-[320px] sm:max-w-[420px] lg:max-w-[560px] aspect-[16/9]">
                 <Image
                   src={image as string}
                   alt={imageAlt}
                   fill
-                  sizes="(min-width: 1024px) 560px, (min-width: 640px) 500px, 100vw"
+                  sizes="(min-width: 1024px) 560px, (min-width: 640px) 420px, 320px"
                   className="object-contain"
                   priority={priority}
                 />

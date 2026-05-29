@@ -21,9 +21,7 @@ export default function AboutPage() {
         description="We translate Singapore's principles into practical tools that change-makers across the Global Majority can adapt to their own context."
         align="left"
         variant="light"
-        image="/assets/about/about-hero.png"
-        imageAlt="Editorial illustration representing The Singapore Way as a method, not a miracle"
-        priority
+        image="/assets/about/about-hero.png"        priority
       />
 
       {/* About the Author */}
