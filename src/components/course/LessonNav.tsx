@@ -19,7 +19,7 @@ export default function LessonNav({ prev, next }: LessonNavProps) {
       {prev ? (
         <Link
           href={prev.href}
-          className="group flex flex-col gap-1 rounded-2xl border border-[#ECECEC] hover:border-[#C8102E] hover:bg-[#fbf5f2] transition-colors p-5"
+          className="focus-ring group flex flex-col gap-1 rounded-2xl border border-[#ECECEC] hover:border-[#C8102E] hover:bg-[#fbf5f2] transition-colors p-5"
           rel="prev"
         >
           <span className="text-[11px] font-bold tracking-[0.14em] text-[#888888] uppercase inline-flex items-center gap-2">
@@ -50,7 +50,7 @@ export default function LessonNav({ prev, next }: LessonNavProps) {
       {next ? (
         <Link
           href={next.href}
-          className="group flex flex-col gap-1 rounded-2xl border border-[#ECECEC] hover:border-[#C8102E] hover:bg-[#fbf5f2] transition-colors p-5 sm:text-right sm:items-end"
+          className="focus-ring group flex flex-col gap-1 rounded-2xl border border-[#ECECEC] hover:border-[#C8102E] hover:bg-[#fbf5f2] transition-colors p-5 sm:text-right sm:items-end"
           rel="next"
         >
           <span className="text-[11px] font-bold tracking-[0.14em] text-[#888888] uppercase inline-flex items-center gap-2">

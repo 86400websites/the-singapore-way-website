@@ -50,7 +50,7 @@ export default function LessonBody({ lesson }: LessonBodyProps) {
           )}
         </div>
         {lesson.content && (
-          <div className="prose-body space-y-5">
+          <div className="prose-body space-y-5 max-w-2xl">
             <p className="text-[11px] font-bold tracking-[0.14em] text-[#666666] uppercase mb-1">
               Lesson notes
             </p>
@@ -74,7 +74,7 @@ export default function LessonBody({ lesson }: LessonBodyProps) {
   }
 
   return (
-    <div className="prose-body space-y-5">
+    <div className="prose-body space-y-5 max-w-2xl">
       {splitParagraphs(lesson.content).map((paragraph, i) => (
         <p key={i}>{paragraph}</p>
       ))}

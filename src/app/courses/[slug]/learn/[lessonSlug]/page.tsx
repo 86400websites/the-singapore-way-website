@@ -128,7 +128,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
 
           <main className="order-1 lg:order-2 min-w-0">
             <header className="mb-8 md:mb-10">
-              <p className="text-[11px] font-bold tracking-[0.14em] text-[#C8102E] uppercase mb-3">
+              <p className="eyebrow mb-3">
                 {context.module.title}
               </p>
               <h1 className="text-2xl sm:text-3xl md:text-[36px] lg:text-[40px] font-bold text-[#111111] leading-[1.15] tracking-[-0.01em]">
