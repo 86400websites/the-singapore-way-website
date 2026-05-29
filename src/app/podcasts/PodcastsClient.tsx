@@ -132,6 +132,9 @@ export default function PodcastsClient() {
         description="In-depth conversations on the ideas, innovations, and trade-offs behind Singapore's rise."
         align="left"
         variant="light"
+        image="/assets/learn/podcast.png"
+        imageAlt="Editorial illustration representing The Singapore Way podcast"
+        priority
       />
 
       <section className="py-16 md:py-20 bg-[#F5F5F5] border-t border-[#ECECEC]">

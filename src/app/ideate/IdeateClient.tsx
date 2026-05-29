@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react'
 
+import PageHero from '@/components/PageHero'
+
 const ASSISTANT_URL =
   'https://sg-way-ai-agent.up.railway.app/frontend/ai-agent.html?embed=true&hide_header=true'
 
@@ -40,21 +42,16 @@ export default function IdeateClient() {
 
   return (
     <div className="bg-white">
-      {/* Compact header — keep editorial framing, hand most height to the iframe */}
-      <section className="bg-[#fbf5f2] border-b border-[#ECECEC]">
-        <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-10 sm:py-14">
-          <div className="max-w-3xl">
-            <p className="eyebrow mb-4">Ideate</p>
-            <h1 className="text-3xl sm:text-4xl md:text-[44px] font-bold text-[#111111] leading-[1.12] tracking-[-0.01em] mb-5">
-              The Singapore Way Assistant
-            </h1>
-            <span className="editorial-rule mb-5" aria-hidden="true" />
-            <p className="text-[16px] md:text-[18px] text-[#555555] leading-[1.7] max-w-2xl">
-              Strategic analysis and consulting powered by Singapore's proven principles. Describe your challenge, attach context, and explore tailored recommendations.
-            </p>
-          </div>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="Ideate"
+        title="The Singapore Way Assistant"
+        description="Strategic analysis and consulting powered by Singapore's proven principles. Describe your challenge, attach context, and explore tailored recommendations."
+        align="left"
+        variant="light"
+        image="/assets/home/ideate-card.png"
+        imageAlt="Editorial illustration representing ideating with The Singapore Way assistant"
+        priority
+      />
 
       {/* Iframe container */}
       <section className="bg-[#F5F5F5] py-8 md:py-12 border-t border-[#ECECEC]">

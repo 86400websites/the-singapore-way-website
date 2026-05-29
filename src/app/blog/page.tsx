@@ -26,6 +26,9 @@ export default function BlogPage() {
         description="Short, grounded essays applying The Singapore Way to real challenges across the Global Majority."
         align="left"
         variant="light"
+        image="/assets/learn/blog.png"
+        imageAlt="Editorial illustration representing The Singapore Way blog"
+        priority
       />
 
       <section className="py-16 md:py-24 bg-[#F5F5F5] border-t border-[#ECECEC]">

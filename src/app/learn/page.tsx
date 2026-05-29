@@ -46,6 +46,9 @@ export default function LearnPage() {
         description="Course, podcast, and blog — three ways into the framework. Pick the format that fits how you learn best."
         align="left"
         variant="light"
+        image="/assets/home/learn-card.png"
+        imageAlt="Editorial illustration representing learning the foundations behind Singapore's success"
+        priority
       />
 
       <section className="py-16 md:py-24 bg-[#F5F5F5] border-t border-[#ECECEC]">

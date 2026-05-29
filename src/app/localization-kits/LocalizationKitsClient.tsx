@@ -69,6 +69,9 @@ export default function LocalizationKitsClient() {
         description="Each kit breaks down a principle from The Singapore Way and re-tasks it for your local reality — whether you're redesigning housing policy, education, or governance."
         align="left"
         variant="light"
+        image="/assets/apply/localization-kits.png"
+        imageAlt="Editorial illustration representing The Singapore Way localization kits"
+        priority
       />
 
       <section className="py-14 md:py-20 bg-[#F5F5F5] border-t border-[#ECECEC]">

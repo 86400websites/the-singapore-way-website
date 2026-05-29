@@ -21,6 +21,9 @@ export default function TeachPage() {
         description="Seventeen case studies, ready for the classroom, the boardroom, and policy briefings — built around the systems behind Singapore's rise."
         align="left"
         variant="light"
+        image="/assets/home/teach-card.png"
+        imageAlt="Editorial illustration representing teaching with proven principles"
+        priority
       />
 
       <section className="py-16 md:py-24 bg-[#F5F5F5] border-t border-[#ECECEC]">

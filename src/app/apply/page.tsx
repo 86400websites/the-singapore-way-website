@@ -39,6 +39,9 @@ export default function ApplyPage() {
         description="Kits and case studies designed for adaptation, not imitation — built to be tailored to your own context, sector, and constraints."
         align="left"
         variant="light"
+        image="/assets/home/apply-card.png"
+        imageAlt="Editorial illustration representing applying The Singapore Way to your own context"
+        priority
       />
 
       <section className="py-16 md:py-24 bg-[#F5F5F5] border-t border-[#ECECEC]">

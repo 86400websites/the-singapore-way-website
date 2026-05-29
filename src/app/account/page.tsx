@@ -38,6 +38,9 @@ export default async function AccountPage() {
         title="Your account"
         description="You are signed in."
         variant="light"
+        image="/assets/account/my-account-hero.png"
+        imageAlt="Editorial illustration representing your Singapore Way account"
+        priority
       />
       <section className="bg-[#F5F5F5] border-t border-[#ECECEC] py-14 md:py-20">
         <div className="max-w-md mx-auto px-5 sm:px-6 lg:px-8">
