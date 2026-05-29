@@ -117,7 +117,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
     <section className="bg-white">
       <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-10 md:py-14 lg:py-16">
         <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] xl:grid-cols-[300px_1fr] gap-10 lg:gap-12 xl:gap-16">
-          <div className="order-2 lg:order-1">
+          <div>
             <LessonSidebar
               course={course}
               activeLessonSlug={context.lesson.slug}
@@ -126,9 +126,9 @@ export default async function LessonPage({ params }: LessonPageProps) {
             />
           </div>
 
-          <main className="order-1 lg:order-2 min-w-0">
+          <main className="min-w-0">
             <header className="mb-8 md:mb-10">
-              <p className="text-[11px] font-bold tracking-[0.14em] text-[#C8102E] uppercase mb-3">
+              <p className="eyebrow mb-3">
                 {context.module.title}
               </p>
               <h1 className="text-2xl sm:text-3xl md:text-[36px] lg:text-[40px] font-bold text-[#111111] leading-[1.15] tracking-[-0.01em]">

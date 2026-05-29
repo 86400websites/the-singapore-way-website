@@ -20,13 +20,13 @@ export default function CourseFAQ({ faqs }: CourseFAQProps) {
             key={question}
             className={`bg-white rounded-2xl border overflow-hidden transition-all duration-200 ${
               isOpen
-                ? 'border-[#C8102E]/30 shadow-[0_8px_28px_-12px_rgba(200,16,46,0.18)]'
+                ? 'border-[#C8102E]/30 shadow-[0_12px_32px_-18px_rgba(17,17,17,0.16)]'
                 : 'border-[#ECECEC] hover:border-[#DDDDDD]'
             }`}
           >
             <button
               type="button"
-              className="w-full flex items-center justify-between px-6 md:px-7 py-5 text-left transition-colors"
+              className="w-full flex items-center justify-between px-6 md:px-7 py-5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#C8102E]"
               onClick={() => setOpen(isOpen ? null : i)}
               aria-expanded={isOpen}
               aria-controls={`course-faq-${i}`}

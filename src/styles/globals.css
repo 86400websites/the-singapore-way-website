@@ -175,4 +175,11 @@
   .btn-pill-outline {
     @apply inline-flex items-center justify-center gap-2 border border-[#111111] text-[#111111] text-[13px] font-bold px-7 py-3 rounded-full transition-all duration-200 hover:bg-[#111111] hover:text-white focus:outline-none focus:ring-2 focus:ring-[#111111] focus:ring-offset-2;
   }
+
+  /* Shared keyboard-focus ring for interactive elements that are not buttons
+     (nav links, accordion toggles, option labels). Matches the brand focus
+     pattern already used by .card-link and the pill buttons. */
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C8102E] focus-visible:ring-offset-2 focus-visible:ring-offset-white;
+  }
 }

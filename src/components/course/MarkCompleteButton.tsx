@@ -116,6 +116,9 @@ export default function MarkCompleteButton({
           </svg>
         )}
       </button>
+      <p className="text-[13px] text-[#888888]">
+        Marking this complete updates your course progress.
+      </p>
       {error && (
         <p role="alert" className="text-sm text-[#C8102E]">
           {error}
