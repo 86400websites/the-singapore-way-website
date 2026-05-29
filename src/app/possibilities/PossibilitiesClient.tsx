@@ -4,26 +4,27 @@ import { useRef, useState } from 'react'
 import Link from 'next/link'
 import PageHero from '@/components/PageHero'
 import RequestModal from '@/components/RequestModal'
+import { exampleIcons, fallbackIcon } from '@/components/sgw-icons'
 
 interface UseCase {
-  icon: string
+  slug: string
   title: string
   desc: string
 }
 
 const useCases: UseCase[] = [
-  { icon: '🌱', title: 'Climate by Design', desc: "Embeds mandatory climate-positive urban-design studies at the University of Ghana so graduates can future-proof Accra." },
-  { icon: '🔵', title: 'Digital Twins for All', desc: "CityTwin SaaS gives cash-strapped cities mobile digital-twin tools to test infrastructure scenarios before they build." },
-  { icon: '💰', title: 'From Informal to Investable', desc: "Investable Bamako turns informal micro-enterprises into bankable industrial clusters through micro-parks and e-ID finance access." },
-  { icon: '👥', title: 'My City, My Chapter', desc: "Neighborhood Chapters in Lalitpur let citizens co-design plans, budgets, and policies for their own streets." },
-  { icon: '🏛️', title: 'Redesigning the State', desc: "Statecraft Studio Addis swaps rote policy study for live simulations that let students prototype real governance reforms." },
-  { icon: '🌳', title: 'Roots in the Sky', desc: "Skycool Nairobi converts unsafe rooftop shanties into modular green micro-villages with housing, farms, and services." },
-  { icon: '🗺️', title: 'Smart Streets, Safe Cities', desc: "Port Louis Smart Street Grid links sensors, smart lights, and live dashboards to cut crime and smooth traffic." },
-  { icon: '🌐', title: 'Sovereignty as Strategy', desc: "Belmora 2040 equips Saint Calade to steer long-term development with a sovereign foresight framework and diaspora bonds." },
-  { icon: '⚡', title: 'City as a Service', desc: "GridBlocks in Gulu delivers prepaid, high-uptake power via modular micro-grids that treat energy as a civic service." },
-  { icon: '📚', title: 'From Learning to Earning', desc: "W-Connect in Asmara gives women micro-training credits and an app to translate new skills directly into higher income." },
-  { icon: '🔬', title: 'Scenario Labs for Clients', desc: "Cobalt Strategies' Scenario Labs lets companies co-create modular simulations that bake long-term foresight into strategy." },
-  { icon: '❤️', title: 'Unity by Platform', desc: "UbuntuConnect gamifies civic missions, tracks a Unity Index, and rewards diverse users to build social cohesion across Johannesburg." },
+  { slug: 'climate-by-design', title: 'Climate by Design', desc: "Embeds mandatory climate-positive urban-design studies at the University of Ghana so graduates can future-proof Accra." },
+  { slug: 'digital-twins', title: 'Digital Twins for All', desc: "CityTwin SaaS gives cash-strapped cities mobile digital-twin tools to test infrastructure scenarios before they build." },
+  { slug: 'from-informal-to-investable', title: 'From Informal to Investable', desc: "Investable Bamako turns informal micro-enterprises into bankable industrial clusters through micro-parks and e-ID finance access." },
+  { slug: 'my-city-my-chapter', title: 'My City, My Chapter', desc: "Neighborhood Chapters in Lalitpur let citizens co-design plans, budgets, and policies for their own streets." },
+  { slug: 'redesigning-the-state', title: 'Redesigning the State', desc: "Statecraft Studio Addis swaps rote policy study for live simulations that let students prototype real governance reforms." },
+  { slug: 'roots-in-the-sky', title: 'Roots in the Sky', desc: "Skycool Nairobi converts unsafe rooftop shanties into modular green micro-villages with housing, farms, and services." },
+  { slug: 'smart-streets-safe-cities', title: 'Smart Streets, Safe Cities', desc: "Port Louis Smart Street Grid links sensors, smart lights, and live dashboards to cut crime and smooth traffic." },
+  { slug: 'sovereignty-as-strategy', title: 'Sovereignty as Strategy', desc: "Belmora 2040 equips Saint Calade to steer long-term development with a sovereign foresight framework and diaspora bonds." },
+  { slug: 'city-as-a-service', title: 'City as a Service', desc: "GridBlocks in Gulu delivers prepaid, high-uptake power via modular micro-grids that treat energy as a civic service." },
+  { slug: 'from-learning-to-earning', title: 'From Learning to Earning', desc: "W-Connect in Asmara gives women micro-training credits and an app to translate new skills directly into higher income." },
+  { slug: 'scenario-labs', title: 'Scenario Labs for Clients', desc: "Cobalt Strategies' Scenario Labs lets companies co-create modular simulations that bake long-term foresight into strategy." },
+  { slug: 'unity-by-platform', title: 'Unity by Platform', desc: "UbuntuConnect gamifies civic missions, tracks a Unity Index, and rewards diverse users to build social cohesion across Johannesburg." },
 ]
 
 export default function PossibilitiesClient() {
@@ -82,9 +83,9 @@ export default function PossibilitiesClient() {
 
           {/* Cases Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
-            {useCases.map(({ icon, title, desc }) => (
+            {useCases.map(({ slug, title, desc }) => (
               <button
-                key={title}
+                key={slug}
                 onClick={scrollToCta}
                 type="button"
                 aria-label={`${title} — request by email above`}
@@ -96,8 +97,8 @@ export default function PossibilitiesClient() {
                 >
                   Request above
                 </span>
-                <div className="mb-5 w-[60px] h-[60px] sm:w-[68px] sm:h-[68px] rounded-[15px] bg-[#FBF1E7] text-[#C8102E] flex items-center justify-center text-2xl sm:text-[26px] leading-none transition-transform duration-300 group-hover:scale-[1.08]">
-                  <span aria-hidden="true">{icon}</span>
+                <div className="mb-5 w-[60px] h-[60px] sm:w-[68px] sm:h-[68px] rounded-[15px] bg-[#FBF1E7] text-[#C8102E] flex items-center justify-center transition-transform duration-300 group-hover:scale-[1.08]">
+                  {exampleIcons[slug] ?? fallbackIcon}
                 </div>
                 <h3 className="text-[18px] md:text-[20px] font-bold text-[#181C14] leading-[1.25] tracking-[-0.005em] mb-3 pr-10">{title}</h3>
                 <span className="block w-10 h-1 bg-[#C8102E] rounded-full mb-4" aria-hidden="true" />
