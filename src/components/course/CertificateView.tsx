@@ -102,7 +102,7 @@ export default function CertificateView({
           ) : (
             <div className="mt-12 md:mt-14 flex flex-col sm:flex-row items-center gap-3">
               <Link href={verifyUrl} className="btn-pill">
-                Open public verify URL
+                Open verification page
               </Link>
               <span className="text-[12px] text-[#888888] break-all max-w-md">
                 Share this link to let anyone verify your certificate without

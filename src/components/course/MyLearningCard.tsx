@@ -19,6 +19,12 @@ export default function MyLearningCard({
   const courseHref = `/courses/${course.slug}`
   const certHref = `/courses/${course.slug}/certificate`
 
+  const totalLessons = course.modules.reduce((sum, m) => sum + m.lessons.length, 0)
+  const totalQuizzes = course.modules.reduce(
+    (sum, m) => sum + m.lessons.filter((l) => l.contentType === 'quiz').length,
+    0,
+  )
+
   const hasItems = progress.requiredTotal > 0
   const notStarted = hasItems && progress.requiredCompleted === 0
   const completed = hasItems && progress.requiredCompleted >= progress.requiredTotal
@@ -38,7 +44,10 @@ export default function MyLearningCard({
       <h2 className="text-xl md:text-2xl font-bold text-[#111111] leading-[1.25] mb-3">
         {course.title}
       </h2>
-      <p className="prose-body mb-6 max-w-xl">{course.subtitle}</p>
+      <p className="prose-body mb-4 max-w-xl">{course.subtitle}</p>
+      <p className="text-[13px] text-[#666666] mb-6 tabular-nums">
+        {course.modules.length} modules · {totalLessons} lessons · {totalQuizzes} quizzes
+      </p>
 
       {hasItems && (
         <div className="mb-7 max-w-md" role="group" aria-label="Course progress">

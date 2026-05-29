@@ -62,6 +62,7 @@ export default function QuizRunner({
   )
 
   const allAnswered = orderedQuestions.every((q) => typeof answers[q.id] === 'number')
+  const answeredCount = orderedQuestions.filter((q) => typeof answers[q.id] === 'number').length
 
   const onSelect = (questionId: string, choiceIndex: number) => {
     setAnswers((prev) => ({ ...prev, [questionId]: choiceIndex }))
@@ -158,7 +159,7 @@ export default function QuizRunner({
                       <li key={ci}>
                         <label
                           htmlFor={inputId}
-                          className={`flex items-start gap-3 rounded-xl border px-4 py-3 cursor-pointer transition-colors ${
+                          className={`flex items-start gap-3 rounded-xl border px-4 py-3 cursor-pointer transition-colors focus-within:outline-none focus-within:ring-2 focus-within:ring-[#C8102E] focus-within:ring-offset-2 focus-within:ring-offset-white ${
                             isChosen
                               ? 'border-[#C8102E] bg-[#fbf5f2]'
                               : 'border-[#ECECEC] bg-white hover:border-[#DDDDDD] hover:bg-[#FAFAFA]'
@@ -196,10 +197,10 @@ export default function QuizRunner({
         >
           {isPending ? 'Grading…' : 'Submit quiz'}
         </button>
-        <p className="text-[13px] text-[#888888]">
+        <p className="text-[13px] text-[#888888] tabular-nums">
           {allAnswered
-            ? 'Ready to submit.'
-            : `Answer all ${orderedQuestions.length} questions to submit.`}
+            ? 'All questions answered — ready to submit.'
+            : `${answeredCount} of ${orderedQuestions.length} answered.`}
         </p>
       </div>
 
