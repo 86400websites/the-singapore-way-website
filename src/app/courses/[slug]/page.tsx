@@ -117,26 +117,30 @@ export default async function CourseLandingPage({ params }: CoursePageProps) {
                   {course.landing.hero.secondaryCtaLabel}
                 </Link>
               </div>
-              <dl className="grid grid-cols-3 gap-6 mt-10 max-w-md">
-                <div>
+              <dl className="grid grid-cols-3 max-w-md mt-10 divide-x divide-[#E7DDD7]">
+                <div className="pr-5 flex flex-col-reverse gap-2">
                   <dt className="text-[11px] font-bold tracking-[0.14em] text-[#666666] uppercase">
                     Modules
                   </dt>
-                  <dd className="text-2xl font-bold text-[#111111] mt-1">
+                  <dd className="text-[28px] font-bold text-[#111111] leading-none tabular-nums">
                     {course.modules.length}
                   </dd>
                 </div>
-                <div>
+                <div className="px-5 flex flex-col-reverse gap-2">
                   <dt className="text-[11px] font-bold tracking-[0.14em] text-[#666666] uppercase">
                     Lessons
                   </dt>
-                  <dd className="text-2xl font-bold text-[#111111] mt-1">{totalLessons}</dd>
+                  <dd className="text-[28px] font-bold text-[#111111] leading-none tabular-nums">
+                    {totalLessons}
+                  </dd>
                 </div>
-                <div>
+                <div className="pl-5 flex flex-col-reverse gap-2">
                   <dt className="text-[11px] font-bold tracking-[0.14em] text-[#666666] uppercase">
                     Quizzes
                   </dt>
-                  <dd className="text-2xl font-bold text-[#111111] mt-1">{totalQuizzes}</dd>
+                  <dd className="text-[28px] font-bold text-[#111111] leading-none tabular-nums">
+                    {totalQuizzes}
+                  </dd>
                 </div>
               </dl>
             </div>
@@ -228,7 +232,7 @@ export default async function CourseLandingPage({ params }: CoursePageProps) {
           <div className="max-w-2xl mb-12 md:mb-14">
             <p className="eyebrow mb-4">What you will learn</p>
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#111111] leading-[1.15] tracking-[-0.01em]">
-              Four outcomes — clearly stated.
+              What you&rsquo;ll be able to do.
             </h2>
             <span className="editorial-rule mt-5" aria-hidden="true" />
           </div>
@@ -256,7 +260,12 @@ export default async function CourseLandingPage({ params }: CoursePageProps) {
             <span className="editorial-rule mt-5" aria-hidden="true" />
           </div>
           <ol className="space-y-6">
-            {course.modules.map((module, mi) => (
+            {course.modules.map((module, mi) => {
+              const moduleMinutes = module.lessons.reduce(
+                (sum, lesson) => sum + (lesson.durationMinutes ?? 0),
+                0,
+              )
+              return (
               <li
                 key={module.slug}
                 className="bg-white rounded-2xl border border-[#ECECEC] overflow-hidden"
@@ -269,6 +278,11 @@ export default async function CourseLandingPage({ params }: CoursePageProps) {
                     <span className="text-[11px] tracking-[0.06em] text-[#888888] uppercase">
                       {module.lessons.length} lessons
                     </span>
+                    {moduleMinutes > 0 && (
+                      <span className="text-[11px] tracking-[0.06em] text-[#888888] tabular-nums">
+                        ~{moduleMinutes} min
+                      </span>
+                    )}
                   </div>
                   <h3 className="text-lg md:text-xl font-bold text-[#111111] leading-[1.3] mt-2">
                     {module.title}
@@ -317,7 +331,8 @@ export default async function CourseLandingPage({ params }: CoursePageProps) {
                   ))}
                 </ul>
               </li>
-            ))}
+              )
+            })}
           </ol>
         </div>
       </section>
@@ -351,7 +366,7 @@ export default async function CourseLandingPage({ params }: CoursePageProps) {
           <div className="max-w-2xl mb-12 md:mb-14">
             <p className="eyebrow mb-4">How it works</p>
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#111111] leading-[1.15] tracking-[-0.01em]">
-              Simple format. Real method.
+              Four steps, at your own pace.
             </h2>
             <span className="editorial-rule mt-5" aria-hidden="true" />
           </div>
