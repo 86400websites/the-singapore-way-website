@@ -5,6 +5,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
+import { createClient, isSupabaseConfigured } from '@/lib/supabase/client'
+
 type Child = { label: string; href: string; desc: string }
 type NavItem = { label: string; href: string; children: Child[] }
 
@@ -80,6 +82,7 @@ const chevron = (open: boolean) => (
 export default function Navigation() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [openMenu, setOpenMenu] = useState<string | null>(null)
+  const [signedIn, setSignedIn] = useState(false)
   const pathname = usePathname() ?? '/'
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/')
@@ -96,11 +99,31 @@ export default function Navigation() {
     return () => document.removeEventListener('keydown', onKey)
   }, [])
 
-  // The account link is intentionally static. Signed-out visitors who open it
-  // are redirected by /account to /login?next=/account, so the navigation
-  // needs no Supabase client or auth state on every page.
-  const accountHref = '/account'
-  const accountLabel = 'My Account'
+  // Resolve auth state in the browser only — keeps pages static. Defaults to
+  // signed-out ("Log in") and fails safe to that if Supabase is unconfigured.
+  useEffect(() => {
+    if (!isSupabaseConfigured()) return
+    let active = true
+    const supabase = createClient()
+
+    supabase.auth.getSession().then(({ data }) => {
+      if (active) setSignedIn(Boolean(data.session))
+    })
+
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSignedIn(Boolean(session))
+    })
+
+    return () => {
+      active = false
+      sub.subscription.unsubscribe()
+    }
+  }, [])
+
+  // Signed in → My Account; signed out (or unresolved) → Log in. The /account
+  // route still guards itself server-side (redirects to /login?next=/account).
+  const accountHref = signedIn ? '/account' : '/login'
+  const accountLabel = signedIn ? 'My Account' : 'Log in'
 
   return (
     <header className="bg-white/95 backdrop-blur-sm border-b border-[#ECECEC] sticky top-0 z-50">
