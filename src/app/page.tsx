@@ -148,16 +148,16 @@ export default function Page() {
               <span className="editorial-rule mb-7" aria-hidden="true" />
               <ul className="space-y-4 mb-9">
                 <li className="flex items-start gap-3 text-[15px] sm:text-base text-[#444444] leading-[1.6]">
-                  <span className="text-[#C8102E] font-bold mt-0.5 flex-shrink-0" aria-hidden="true">—</span>
-                  <span><span className="font-bold text-[#111111]">Educators</span>, who want to teach systems, not just policies.</span>
+                  <span className="text-[#C8102E] font-bold mt-0.5 flex-shrink-0" aria-hidden="true">•</span>
+                  <span><span className="font-bold text-[#111111]">Educators</span> who want to teach systems, not just policies.</span>
                 </li>
                 <li className="flex items-start gap-3 text-[15px] sm:text-base text-[#444444] leading-[1.6]">
-                  <span className="text-[#C8102E] font-bold mt-0.5 flex-shrink-0" aria-hidden="true">—</span>
-                  <span><span className="font-bold text-[#111111]">Government leaders</span>, who want to pilot reforms with clarity.</span>
+                  <span className="text-[#C8102E] font-bold mt-0.5 flex-shrink-0" aria-hidden="true">•</span>
+                  <span><span className="font-bold text-[#111111]">Government leaders</span> who want to pilot reforms with clarity.</span>
                 </li>
                 <li className="flex items-start gap-3 text-[15px] sm:text-base text-[#444444] leading-[1.6]">
-                  <span className="text-[#C8102E] font-bold mt-0.5 flex-shrink-0" aria-hidden="true">—</span>
-                  <span><span className="font-bold text-[#111111]">Social innovators</span>, who want to design smart from the start.</span>
+                  <span className="text-[#C8102E] font-bold mt-0.5 flex-shrink-0" aria-hidden="true">•</span>
+                  <span><span className="font-bold text-[#111111]">Social innovators</span> who want to design smart from the start.</span>
                 </li>
               </ul>
               <Link href="/q-a" className="btn-pill">

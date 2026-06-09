@@ -728,7 +728,7 @@ function CaseStudyCard({ study, onRequest }: { study: CaseStudy; onRequest: () =
       {/* Available via email — diagonal hover badge */}
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute top-3 -right-3 rotate-6 bg-[#C8102E] text-white text-[11px] font-bold px-3 py-1 rounded-full shadow-[0_10px_24px_rgba(200,16,46,0.25)] opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-200"
+        className="pointer-events-none absolute top-3 right-3 rotate-6 bg-[#C8102E] text-white text-[11px] font-bold px-3 py-1 rounded-full shadow-[0_10px_24px_rgba(200,16,46,0.25)] opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-200"
       >
         Available via email
       </span>

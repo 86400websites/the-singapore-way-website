@@ -154,7 +154,7 @@ export default function Footer() {
             <Link href="/teaching-materials" className="block text-gray-400 text-[13px] py-1 hover:text-white transition-colors">Case Studies</Link>
           </div>
           <div className="space-y-3 col-span-2 sm:col-span-1">
-            <Link href="/localization-kits" className="block text-gray-400 text-[13px] py-1 hover:text-white transition-colors">Localisation Kits</Link>
+            <Link href="/localization-kits" className="block text-gray-400 text-[13px] py-1 hover:text-white transition-colors">Localization Kits</Link>
             <Link href="/podcasts" className="block text-gray-400 text-[13px] py-1 hover:text-white transition-colors">Podcast</Link>
           </div>
         </div>
