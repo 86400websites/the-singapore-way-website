@@ -93,7 +93,7 @@ export default function PossibilitiesClient() {
                   aria-hidden="true"
                   className="pointer-events-none absolute top-3 right-3 rotate-6 bg-[#C8102E] text-white text-[11px] font-bold px-3 py-1 rounded-full shadow-[0_10px_24px_rgba(200,16,46,0.25)] opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-200"
                 >
-                  Request above
+                  Available via email
                 </span>
                 <div className="mb-5 w-[60px] h-[60px] sm:w-[68px] sm:h-[68px] rounded-[15px] bg-[#FBF1E7] text-[#C8102E] flex items-center justify-center transition-transform duration-300 group-hover:scale-[1.08]">
                   {exampleIcons[slug] ?? fallbackIcon}
