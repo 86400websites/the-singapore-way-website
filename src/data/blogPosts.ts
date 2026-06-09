@@ -10,6 +10,33 @@ export interface BlogPost {
 
 export const blogPosts: BlogPost[] = [
   {
+    id: '16',
+    slug: 'singapore-long-term-planning-kenya-city-builders',
+    title: "What Singapore's Long-Term Planning Can Teach Kenya's City Builders",
+    excerpt: "A practical look at how long-term planning, institutional discipline, and public purpose can help city builders adapt Singapore's method without copying its model.",
+    image: '/assets/blog/post-2.png',
+    category: 'Urban Planning',
+    readTime: '6 min read',
+  },
+  {
+    id: '17',
+    slug: 'singapore-housing-mindset-indonesia-growing-cities',
+    title: "Can Singapore's Housing Mindset Travel to Indonesia's Growing Cities?",
+    excerpt: "Singapore's housing story is not a template, but it offers useful questions for fast-growing cities balancing land, infrastructure, dignity, and long-term trust.",
+    image: '/assets/blog/post-3.png',
+    category: 'Housing',
+    readTime: '7 min read',
+  },
+  {
+    id: '18',
+    slug: 'public-service-capability-brazil-state-city-governments',
+    title: "Public Service Capability for Brazil's State and City Governments",
+    excerpt: "How Singapore's emphasis on competent institutions, execution discipline, and public trust can be translated into a very different federal and local context.",
+    image: '/assets/blog/post-1.png',
+    category: 'Governance',
+    readTime: '7 min read',
+  },
+  {
     id: '1',
     slug: '3-secrets-behind-singapore-public-trust-south-africa',
     title: "3 Secrets Behind Singapore's Public Trust—and How South Africa Can Rebuild It",
