@@ -61,6 +61,7 @@ Deferred or retired scope is never silently deleted. Promote one item at a time 
 |---|---|---|---|---|---|
 | Real-domain migration to `thesingaporeway.com` | improvement | High | predates SOP | D-1 (open) | Run `LAUNCH-CHECKLIST.md` in full; includes DNS, Supabase redirect list, `NEXT_PUBLIC_SITE_URL`, search console |
 | Harden `src/lib/request-origin.ts` origin fallback | fix | High | pre-SOP known issue | — | **Required before real-domain migration** (see PROJECT-STATUS §10) |
+| Fail closed on absent abuse-control keys in Production | fix | High | S11 review (Codex) | — | **Required before scale** — rate limiter + Turnstile currently fail open if unset (PROJECT-STATUS §10 #4); until then, operator must keep the keys set in Vercel Production |
 | Split Supabase into test + prod projects | improvement | Medium | SOP gap analysis (S11) | D-2 (open) | Currently one shared project — accepted risk |
 | Remove stale `localhost:5000`/`localhost:5173` Supabase redirect URLs | fix | Low | Replit-era leftover | — | Owner action in Supabase dashboard |
 | Introduce an automated test script | improvement | Medium | SOP gap analysis (S11) | D-3 (open) | Tests currently `N/A`; QA relies on typecheck/lint/build/Preview |

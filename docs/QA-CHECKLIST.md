@@ -42,7 +42,11 @@ env inlining, auth origins, and integrations all behave differently deployed.
 - [ ] An automated accessibility scan reports no serious issue on each touched page; manual checks above still apply.
 
 ### Performance
-- [ ] Key touched pages meet the project's recorded performance budget. If none exists yet, record a baseline and confirm this change causes no material regression.
+- [ ] Key touched pages meet the project's **recorded performance budget** (below); confirm this change causes no material regression against it.
+  - Benchmark pages: `/` and `/courses/the-singapore-way` (same pages as the launch gate in [`course-setup-and-launch-checklist.md`](./course-setup-and-launch-checklist.md)).
+  - **Lighthouse ≥ 90** on Performance, Accessibility, Best Practices, and SEO.
+  - **Core Web Vitals:** LCP ≤ 2.5s, INP ≤ 200ms, CLS ≤ 0.1.
+  - Measure on the deployed Preview (throttled mobile) for any UI- or asset-touching change and record the numbers in the PR.
 - [ ] Images have dimensions and appropriate sizes; no accidental large asset, font, script, or request was added.
 
 ### Content fidelity
@@ -89,7 +93,7 @@ Concrete auth journeys for this site: `/login`, `/signup`, `/forgot-password`, `
 
 - [ ] Sign in / sign out / sign up (`/login`, `/signup`) and password reset (`/forgot-password` → `/update-password`) all work on the Preview.
 - [ ] Auth email links resolve to the PREVIEW origin, never Production.
-- [ ] Gated pages behave correctly per auth state (visitor vs signed-in — the only two roles): `/courses/[slug]/learn/[lessonSlug]`, `/my-learning`, `/account`, and `/learn` redirect visitors to sign-in, and the `?next=` param returns the signed-in user to the page they wanted.
+- [ ] Gated pages behave correctly per auth state (visitor vs signed-in — the only two roles): `/courses/[slug]/learn/[lessonSlug]`, `/my-learning`, and `/account` redirect visitors to sign-in, and the `?next=` param returns the signed-in user to the page they wanted. (`/learn` is a **public** hub — it must NOT redirect; spot-check that it stays public.)
 
 ### Course journeys (only if the change touches the course area — skip otherwise)
 - [ ] Gated lesson: a signed-in user can open `/courses/[slug]/learn/[lessonSlug]` and progress records correctly.

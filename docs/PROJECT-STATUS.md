@@ -113,6 +113,7 @@ The launch sprint cannot pass while this section has unresolved bugs — except 
 | 1 | Medium | `src/lib/request-origin.ts` | Preview origin derivation falls back through request headers; needs hardening | Open — **required before the real-domain migration** (D-1) |
 | 2 | Low | Supabase auth config | Stale `localhost:5000` / `localhost:5173` redirect URLs from the Replit era remain in the allow-list | Open — owner cleanup in Supabase dashboard |
 | 3 | Low | `src/app/opengraph-image.tsx` | OG image text hardcodes `thesingaporeway.com` while the live domain is the vercel.app URL | Open — resolves with the real-domain migration |
+| 4 | Medium | `src/lib/rate-limit.ts`, `src/lib/turnstile/verify.ts` | Abuse controls (Upstash rate limiting, Turnstile) **fail OPEN**: when their env vars are absent the code silently permits the request, with no Production guard — so a missing key disables the control in Production too. Delivery deps (Mailchimp/Resend) correctly fail closed (503). | Open — **required before scale**. Compensating control: the four abuse-control keys are set in Vercel Production, backed by the §9.3 blocking check in [`SECURITY-CHECKLIST.md`](./SECURITY-CHECKLIST.md). Code hardening (fail closed on absent abuse-control keys in Production) is a future sprint. |
 
 ## 11. Update rules
 

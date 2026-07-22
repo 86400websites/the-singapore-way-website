@@ -15,7 +15,7 @@ Companions: [`TECH-ARCHITECTURE.md`](./TECH-ARCHITECTURE.md) (env-var model + st
 | Custom domain | `thesingaporeway.com` — **NOT yet connected**; tracked as the "real-domain migration" backlog item in [`PROJECT-STATUS.md`](./PROJECT-STATUS.md). Do not present it as live. |
 | Supabase projects | **ONE project serves all environments** — accepted risk; split is an open decision (see B1). Project name/ref: TBD-OWNER: record the single Supabase project name/ref (name/ref only — never keys) here and in [`PROJECT-STATUS.md`](./PROJECT-STATUS.md). |
 | Auth model | Email/password + email links (signup confirmation, password reset) only. **No OAuth. There is NO `/auth/callback` route** — do not add one unless OAuth is introduced later. |
-| Auth routes | `/login`, `/signup`, `/forgot-password`, `/update-password`; gated routes include `/account`, `/my-learning`, `/learn`, `/courses/[slug]/learn/[lessonSlug]`, `/courses/[slug]/certificate` |
+| Auth routes | `/login`, `/signup`, `/forgot-password`, `/update-password`; gated routes include `/account`, `/my-learning`, `/courses/[slug]/learn/[lessonSlug]`, `/courses/[slug]/certificate` (`/learn` is a **public** marketing hub, not gated — see [`TECH-ARCHITECTURE.md`](./TECH-ARCHITECTURE.md) §3) |
 
 ## Part A — Vercel (applies to this project)
 
@@ -200,10 +200,10 @@ Per-environment matrix, names only — the Value cells of the wiring table above
 | `SENTRY_AUTH_TOKEN` | Omit | Optional for Preview source maps | Optional for Production source maps | Server/build-time only | Optional | Used by Sentry build config only when all Sentry build vars are present. |
 | `SENTRY_ORG` | Omit | Optional | Optional | Server/build-time only | Optional | Used with `SENTRY_AUTH_TOKEN` and `SENTRY_PROJECT`. |
 | `SENTRY_PROJECT` | Omit | Optional | Optional | Server/build-time only | Optional | Used with `SENTRY_AUTH_TOKEN` and `SENTRY_ORG`. |
-| `UPSTASH_REDIS_REST_URL` | Optional | Optional | Recommended if rate limiting should be enforced | Server-only | Feature-dependent | Rate limiter no-ops when missing. |
-| `UPSTASH_REDIS_REST_TOKEN` | Optional | Optional | Recommended if rate limiting should be enforced | Server-only | Feature-dependent | Rate limiter no-ops when missing. |
-| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Optional | Optional | Recommended if CAPTCHA should be enforced | Public/browser-safe | Feature-dependent | Widget is hidden when empty. |
-| `TURNSTILE_SECRET_KEY` | Optional | Optional | Recommended if CAPTCHA should be enforced | Server-only | Feature-dependent | Server verification is skipped when empty. |
+| `UPSTASH_REDIS_REST_URL` | Optional | Optional | **Required — public forms are live** | Server-only | Required in Production | Rate limiter **fails open** (no-ops) when missing; the code has no guard, so it must be set. |
+| `UPSTASH_REDIS_REST_TOKEN` | Optional | Optional | **Required — public forms are live** | Server-only | Required in Production | Rate limiter **fails open** (no-ops) when missing; the code has no guard, so it must be set. |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Optional | Optional | **Required — public forms are live** | Public/browser-safe | Required in Production | Widget is hidden when empty; pairs with the secret key below. |
+| `TURNSTILE_SECRET_KEY` | Optional | Optional | **Required — public forms are live** | Server-only | Required in Production | Server verification **fails open** (skipped) when empty; the code has no guard, so it must be set. |
 
 Local development: copy `.env.example` (committed, placeholders only) to `.env.local` (gitignored — **never commit it, never open it in agent sessions**) and fill only what you need. Secret-handling rules: [`ENV-VARS-SAFETY.md`](./ENV-VARS-SAFETY.md).
 
