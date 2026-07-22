@@ -20,7 +20,11 @@ Read, don't restate from memory — these define the gates you are checking (cit
 
 Before checking anything, scope the run to the actual change:
 - `git branch --show-current`, `git log main..HEAD --oneline`, `git diff --stat main...HEAD`.
-- From the diff, decide which sections below apply (e.g. run the **Database** section only if `supabase/sql/**` changed; the **Copy & design** section only if UI/strings changed; the **Public-writes** invariant only if a public write handler or its env changed). Mark non-applicable sections **N/A** with one line of why.
+- From the diff, decide which sections below apply — and **when in doubt, run the section**. Triggers:
+  - **Database** — whenever the diff changes *or implies* a database contract: any `supabase/sql/**` change, **or** app code that reads/writes a table, column, or RPC. A required migration can be missing from the diff — that omission is itself the finding.
+  - **Public-writes / abuse controls** — whenever any public-write path can be affected: a handler under `src/app/api/`, **or a shared helper it depends on** (`src/lib/rate-limit.ts`, `src/lib/turnstile/`, `src/lib/validation/`, `src/lib/server-env.ts`, `src/lib/mailchimp/`, `src/lib/resend/`), related config, or an env contract.
+  - **Copy & design** — only if UI/strings changed.
+  Mark a section **N/A** only when nothing in the diff could affect it, with one line of why.
 
 ## The checklist
 
@@ -57,8 +61,9 @@ For each invariant the change could affect, confirm it holds and cite the file:
 - **No admin role exists.** If the diff introduces any admin surface or role, that is out of the recorded model — stop and flag it (it needs a `docs/THREAT-MODEL.md` refresh and an explicit server-side role check before release).
 - **CSP / headers** — the allow-list in `next.config.ts` is unchanged, or every added origin is the narrowest one and recorded.
 
-### 6. Database — only if `supabase/sql/**` changed (WORKFLOW → Database change protocol)
-- Every `*.sql` has a matching `*.down.sql`; RLS **default-deny** on every new user-reachable table; every `SECURITY DEFINER` function hardened (pinned `search_path`, fully-qualified identifiers, session authorization via `auth.uid()` — never trusting arguments, narrow returns, `revoke execute from public, anon` then `grant` to the intended role only).
+### 6. Database — if `supabase/sql/**` changed OR the diff implies a schema/contract change (WORKFLOW → Database change protocol)
+- **Missing-migration check first:** if application code now depends on a table, column, or RPC that no migration in the diff provides, that is a **NO-GO** — the required migration is missing (CI and the build can pass while Production fails against the existing schema).
+- Every **numbered migration** (`supabase/sql/NNNN_*.sql`) has a matching `*.down.sql`. The seed `seed-the-singapore-way.sql` is exempt — its rollback is the separately documented operation in `supabase/sql/README.md`, not a paired down file; validate seed rollback against that README. RLS **default-deny** on every new user-reachable table; every `SECURITY DEFINER` function hardened (pinned `search_path`, fully-qualified identifiers, session authorization via `auth.uid()` — never trusting arguments, narrow returns, `revoke execute from public, anon` then `grant` to the intended role only).
 - Migrations are hand-applied by the owner via the Supabase dashboard SQL Editor in the order given by `supabase/sql/README.md` (no CLI). **Ask the owner to confirm** they were applied to the shared project and verified per role. You cannot reach the Supabase dashboard — do not assume; if unconfirmed for a destructive/data-changing migration, this is a NO-GO. Note plainly: a down migration reverses compatible schema; it does not restore lost data, and there is no separate non-prod database to rehearse on (single-project risk).
 
 ### 7. Sprint & review records

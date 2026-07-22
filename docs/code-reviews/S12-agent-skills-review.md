@@ -9,10 +9,11 @@ pinned range; inspect enough surrounding context to validate them.
 ## Review target
 
 - Repo: 86400websites/the-singapore-way-website
-- PR: #[PR_NUMBER] — opened from the branch below
+- PR: #14 — https://github.com/86400websites/the-singapore-way-website/pull/14
 - Branch: claude/s12-agent-skills (context only)
-- Merge-base SHA: a81b4f36... (current main head at branch creation — confirm with `git merge-base main HEAD`)
-- Reviewed head SHA: [record the PR head at review time]
+- Merge-base SHA: a81b4f3660452042562b0f022a488b62b2193558
+- Reviewed head SHA: the current PR #14 head — round 1 reviewed `16b93ca` and returned REQUEST CHANGES; those fixes are on-branch, so re-review at the new head (confirm with `git rev-parse HEAD`)
+- Immutable range: a81b4f3660452042562b0f022a488b62b2193558..<current PR #14 head>
 - Sprint record: docs/sprint-prompts/S12-agent-skills.md
 - Expected changed paths: `.claude/skills/close/SKILL.md`, `.claude/skills/sprint-prompt/SKILL.md`,
   `docs/sprint-prompts/S12-agent-skills.md`, `docs/code-reviews/S12-agent-skills-review.md`,
@@ -54,4 +55,19 @@ REQUEST CHANGES, restating the reviewed range.
 
 ## Returned review record
 
-*(appended after review — none yet)*
+### Round 1 — reviewed head `16b93ca` — REQUEST CHANGES (Codex, 2026-07-23)
+
+Confirmed range `a81b4f3..16b93ca`; scope match YES (6 Markdown files, 0 app-code). No secrets; links clean; build unchanged (32 routes / 41 static pages). Verified: fail-open vs delivery-fail-closed matches code; no admin model or nonexistent copy/design directories; correct branch + verification commands; the implementation prompt uses the canonical template; S11 Done / S12 In Progress otherwise accurate.
+
+Findings (all fixed on-branch in the follow-up commit):
+1. **Blocking** — `sprint-prompt` labelled Codex review optional for non-risky sprints; WORKFLOW §6 + ROADMAP exit gate require review for **every** sprint. → Review now mandatory for every sprint; depth varies by risk.
+2. **Blocking** — `sprint-prompt` Mode B "save" committed unconditionally, bypassing the per-task Commit: YES policy. → Save now writes the record only; commits/pushes solely when the task authorizes it.
+3. **Blocking** — `close` ran the public-writes invariant only when a handler/env changed, missing shared helpers (`rate-limit.ts`, `turnstile/verify.ts`, `server-env.ts`, validation). → Trigger broadened to any handler, shared helper, config, or env contract on a public-write path.
+4. **Blocking** — `close` ran the DB section only when `supabase/sql/**` changed (misses a runtime change needing an omitted migration), and overstated "every `*.sql` needs a paired `.down.sql`" (the seed is exempt). → DB gate triggers on any change/implication of a DB contract with a missing-migration NO-GO; paired-down limited to numbered migrations, seed rollback per `supabase/sql/README.md`.
+5. **Should-fix** — trackers/brief left PR/head as placeholders though PR #14 was open. → PR #14, full base, and range recorded here and in PROJECT-STATUS.
+
+**Verdict: REQUEST CHANGES** — reviewed range `a81b4f3..16b93ca` · Reviewed by Codex on 2026-07-23.
+
+### Round 2 — reviewed head `<current PR #14 head>`
+
+*(pending — re-review after the round-1 fixes)*

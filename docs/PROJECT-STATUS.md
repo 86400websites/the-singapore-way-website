@@ -9,7 +9,7 @@ The living tracker for **The Singapore Way**. Any fresh session — AI or human 
 | Current stage | Post-launch |
 | Active sprint | S12 — Agent Skills (`/close`, `/sprint-prompt`) — Status: In Progress |
 | Current branch | `claude/s12-agent-skills` |
-| Next action | 1. Test the PR's Preview (skills/docs-only; sanity-load). 2. Codex review of the immutable range; append to `docs/code-reviews/S12-agent-skills-review.md`. 3. Owner merges. — *Prior:* ~~Owner merges PR #13~~ done — S11 merged 2026-07-23 (PR #13, smoke passed) |
+| Next action | 1. Re-run Codex review of PR #14 at the current head (round 1 returned REQUEST CHANGES — 4 blocking + 1 should-fix, all fixed on-branch). 2. Append the record to `docs/code-reviews/S12-agent-skills-review.md`. 3. Owner merges. — *Prior:* ~~Owner merges PR #13~~ done — S11 merged 2026-07-23 (PR #13, smoke passed) |
 | Preview / Production | Vercel Preview per PR / https://the-singapore-way-website.vercel.app on Vercel (custom domain `thesingaporeway.com` pending — backlog) |
 | Last updated | 2026-07-23 — S11 merged (PR #13) + Production smoke passed (HTTP 200, all six security headers); S12 adds the `/close` and `/sprint-prompt` agent skills. — *Prior:* 2026-07-22 — S11 approved by Codex (`e96dd75..fef6f63`, No findings) after three review rounds |
 
@@ -32,7 +32,7 @@ Status legend: Not Started · In Progress · Blocked (say why) · Ready for Revi
 | Setup Gate | Done | — | — | pre-SOP | Repo, protected `main`, CI + gitleaks, Vercel Previews predate SOP adoption; governing docs completed by S11 |
 | Sprints 0–10 — site + course MVP | Done | various | #1–#12 | 2026-05-21 → 2026-06-09 | Pre-SOP delivery; see `git log` and [`book-course-mvp-plan.md`](./book-course-mvp-plan.md) |
 | S11 — SOP docs pack migration | Done | `claude/s11-sop-docs-pack` | #13 | 2026-07-23 | Codex APPROVE at `fef6f63` (3 rounds); merged + Production smoke passed. Records: [`sprint-prompts/S11-sop-docs-pack.md`](./sprint-prompts/S11-sop-docs-pack.md), [`code-reviews/S11-sop-docs-pack-review.md`](./code-reviews/S11-sop-docs-pack-review.md) |
-| S12 — Agent skills (`/close`, `/sprint-prompt`) | In Progress | `claude/s12-agent-skills` | — | — | Records: [`sprint-prompts/S12-agent-skills.md`](./sprint-prompts/S12-agent-skills.md), [`code-reviews/S12-agent-skills-review.md`](./code-reviews/S12-agent-skills-review.md) |
+| S12 — Agent skills (`/close`, `/sprint-prompt`) | In Progress (review round 2) | `claude/s12-agent-skills` | #14 | — | Codex round 1 REQUEST CHANGES (4 blocking + 1 should-fix) fixed on-branch. Records: [`sprint-prompts/S12-agent-skills.md`](./sprint-prompts/S12-agent-skills.md), [`code-reviews/S12-agent-skills-review.md`](./code-reviews/S12-agent-skills-review.md) |
 
 Retired sprints stay in the table, struck through, with the date, reason, and where the scope moved (backlog).
 
@@ -60,7 +60,7 @@ Retired sprints stay in the table, struck through, with the date, reason, and wh
 | lint | 2026-07-23 | pass | `pnpm run lint` on the S12 branch |
 | tests | 2026-07-23 | N/A | No test script; verification = typecheck + lint + build + gitleaks CI + Preview QA (decision D-3 tracks adding tests) |
 | build | 2026-07-23 | pass | `pnpm run build` — 32 routes / 41 static pages (unchanged; S12 touches no `src/`) |
-| deployed Preview | — | pending | Vercel Preview to be tested when the S12 PR opens; record via `docs/templates/VERCEL-PREVIEW-TEST-TEMPLATE.md` |
+| deployed Preview | — | pending | PR #14 open; manual Preview testing pending (skills/docs-only — no runtime change). Record via `docs/templates/VERCEL-PREVIEW-TEST-TEMPLATE.md` |
 
 ## 7. Locked decisions (do not reopen)
 
