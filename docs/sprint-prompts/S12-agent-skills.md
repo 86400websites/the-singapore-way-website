@@ -87,10 +87,14 @@ rather than inlining a competing template. Flipped S11 to Done and recorded S12 
 
 **Checks:** typecheck / lint / build — see PROJECT-STATUS §6 (run 2026-07-23); tests N/A.
 
-**Deviations:** SOP-pack generalization deferred (owner chose repo-only). GitHub CLI not installed on the
-build machine — PR opened by the owner from the pushed branch (body prepared by the builder).
+**Independent review (PR #14):** two Codex rounds.
+- Round 1 (`16b93ca`) — REQUEST CHANGES: 4 Blocking + 1 Should-fix. The skills as first written would have let future sprints bypass our gates — review labelled optional, `save` auto-committing, the public-writes gate missing shared helpers, the DB gate missing implied-schema changes / overstating the paired-down rule.
+- Fixes landed in `f9a90e1`; round 2 (`f9a90e1`) — **APPROVE, No blocking findings.** Verdict recorded in [`../code-reviews/S12-agent-skills-review.md`](../code-reviews/S12-agent-skills-review.md).
 
-**Follow-ups:** if desired later, generalize these two skills into the external SOP pack as templated
-versions for future sites.
+**Deviations:** SOP-pack generalization deferred (owner chose repo-only; owner will fold the skills into the external SOP instead). GitHub CLI not installed on the build machine — PR opened by the owner from the pushed branch (body prepared by the builder).
 
-**Next:** review per [`../code-reviews/S12-agent-skills-review.md`](../code-reviews/S12-agent-skills-review.md).
+**Learnings:** a governance skill must be held to the gates it encodes — a skill that quietly permits skipping review or auto-committing is worse than none. Round 1 caught exactly those defects.
+
+**Follow-ups:** owner to add both skills to the external Website Development SOP pack for future sites.
+
+**Next:** merge PR #14 (Approved at `f9a90e1`); skills register from `.claude/skills/` on the next pull.
