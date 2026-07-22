@@ -7,11 +7,11 @@ The living tracker for **The Singapore Way**. Any fresh session — AI or human 
 | Item | Value |
 |---|---|
 | Current stage | Post-launch |
-| Active sprint | S11 — Migrate repo governance to the SOP docs pack — Status: Ready for Review |
-| Current branch | `claude/s11-sop-docs-pack` |
-| Next action | 1. Test the PR's Vercel Preview (docs-only; sanity-load key pages). 2. Run Codex review of the immutable merge-base..head range and append the record to `docs/code-reviews/S11-sop-docs-pack-review.md`. — *Prior:* none — first SOP-tracked sprint |
+| Active sprint | S11 — Migrate repo governance to the SOP docs pack — Status: Approved (Codex APPROVE at head `fef6f63`) |
+| Current branch | `claude/s11-sop-docs-pack` (PR #13) |
+| Next action | 1. Owner merges PR #13. 2. Delete the branch. 3. Production smoke test. — *Prior:* ~~Run Codex review + append the record~~ done — APPROVE recorded at `fef6f63` |
 | Preview / Production | Vercel Preview per PR / https://the-singapore-way-website.vercel.app on Vercel (custom domain `thesingaporeway.com` pending — backlog) |
-| Last updated | 2026-07-22 — S11 migrated all governance docs to the SOP pack; awaiting Preview test + review. — *Prior:* 2026-06-09 — PR #12 merged (website report cleanups); pre-SOP delivery complete |
+| Last updated | 2026-07-22 — S11 approved by Codex (`e96dd75..fef6f63`, No findings) after three review rounds; ready for owner merge of PR #13. — *Prior:* 2026-06-09 — PR #12 merged (website report cleanups); pre-SOP delivery complete |
 
 ### How to resume in a fresh AI session
 
@@ -31,7 +31,7 @@ Status legend: Not Started · In Progress · Blocked (say why) · Ready for Revi
 |---|---|---|---|---|---|
 | Setup Gate | Done | — | — | pre-SOP | Repo, protected `main`, CI + gitleaks, Vercel Previews predate SOP adoption; governing docs completed by S11 |
 | Sprints 0–10 — site + course MVP | Done | various | #1–#12 | 2026-05-21 → 2026-06-09 | Pre-SOP delivery; see `git log` and [`book-course-mvp-plan.md`](./book-course-mvp-plan.md) |
-| S11 — SOP docs pack migration | Ready for Review | `claude/s11-sop-docs-pack` | opens from this branch (number assigned on open) | — | Records: [`sprint-prompts/S11-sop-docs-pack.md`](./sprint-prompts/S11-sop-docs-pack.md), [`code-reviews/S11-sop-docs-pack-review.md`](./code-reviews/S11-sop-docs-pack-review.md) |
+| S11 — SOP docs pack migration | Approved (awaiting merge) | `claude/s11-sop-docs-pack` | #13 | — | Codex APPROVE at `fef6f63` (3 rounds). Records: [`sprint-prompts/S11-sop-docs-pack.md`](./sprint-prompts/S11-sop-docs-pack.md), [`code-reviews/S11-sop-docs-pack-review.md`](./code-reviews/S11-sop-docs-pack-review.md) |
 
 Retired sprints stay in the table, struck through, with the date, reason, and where the scope moved (backlog).
 

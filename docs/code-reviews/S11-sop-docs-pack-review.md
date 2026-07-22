@@ -111,4 +111,38 @@ scope and reviewed head are recorded.
 
 ## Returned review record
 
-*(appended after review — none yet)*
+> Independent review by Codex. Reviewed across three heads: the initial `3adeb22` (REQUEST CHANGES — 1 blocking + 2 should-fix), `a35bbe5` (REQUEST CHANGES — the blocking abuse-control correction was incomplete), and the final `fef6f63` below (APPROVE). Each REQUEST CHANGES was fixed on-branch and re-reviewed at a new immutable head.
+
+**Final review — reviewed range: `e96dd75..fef6f63`**
+
+Confirmed range e96dd75..fef6f63 · Scope match YES — exact merge base/head; 36 changed files, all Markdown, 0 non-Markdown.
+
+Files/context inspected: all changed paths; the three-file corrective commit; AGENTS.md; README, architecture, security, setup, status, roadmap, QA, launch, and threat-model docs; rate-limit, Turnstile, server-env, and API-handler implementations; unchanged SOP templates and guides.
+
+Commands/evidence:
+- `tsc --noEmit`: pass.
+- `eslint .`: pass.
+- `next build`: pass — 32 routes, 41 static pages.
+- Exact pnpm wrappers were not used because the sandbox previously required an unavailable Corepack fetch; installed binaries and head-specific CI were used as authorized.
+- Tests: N/A — no test script.
+- Head-specific CI, gitleaks, Vercel deployment, and Vercel Preview Comments all succeeded for `fef6f6378b2baef413448a10a42a0ebce8c79a38`.
+- Relative-link scan: 34 head Markdown files, 0 failures.
+- Secret scan: 3,034 added lines, 0 high-confidence secret patterns; `.env.local` remains ignored and untracked.
+- Final worktree status: clean.
+
+**No findings.**
+
+Verified:
+- README, CLAUDE.md, architecture §§6–7, security checklist §§5/9.3, setup env matrix, project status §10, and roadmap consistently state that Upstash/Turnstile are required in Production but fail open if unset.
+- Code matches: absent Upstash configuration returns success; absent Turnstile secret returns ok; delivery configuration failures return HTTP 503.
+- No current statement claims the abuse controls fail closed.
+- `/learn` remains documented as public; the lesson player remains gated.
+- QA and launch performance thresholds remain identical and linked.
+- No new broken links, secret exposure, domain contradiction, or template-fidelity regression was introduced.
+
+**Verdict: APPROVE** — all prior findings are resolved and the pinned docs-only range is internally consistent with the implementation.
+Reviewed range: e96dd75..fef6f63 · Reviewed by Codex on 2026-07-22.
+
+---
+
+*Note: this record was appended to the branch after the reviewed head `fef6f63`. Per AGENTS.md / docs/WORKFLOW.md, a commit that only appends the returned review record (and the paired status bookkeeping) is documentation-only and exempt from re-review; the reviewed head `fef6f63` and scope are recorded here.*
