@@ -75,7 +75,7 @@ Auth introduces classic spoofing risks: session fixation, open redirect via post
 Required guarantees:
 
 - Supabase session cookies MUST be set/refreshed via `middleware.ts` and the server SSR client, not by client-only code.
-- Signup and password-reset email links MUST resolve to the origin where the request was made (see `src/lib/request-origin.ts` and the Preview safety notes in [`SUPABASE_VERCEL_SETUP.md`](./SUPABASE_VERCEL_SETUP.md)). Preview deployments MUST NOT send users to Production.
+- Signup and password-reset email links MUST resolve to the origin where the request was made (see `src/lib/request-origin.ts` and the Preview safety notes in [`SUPABASE-VERCEL-SETUP.md`](./SUPABASE-VERCEL-SETUP.md)). Preview deployments MUST NOT send users to Production.
 - The Supabase dashboard redirect-URL allow-list MUST cover only local, Preview wildcard, and Production origins — no broad wildcards.
 - The Resend sending domain MUST be verified (SPF + DKIM + DMARC) before `/api/contact` goes live so transactional mail is not flagged as spoofed.
 - External links opened in a new tab MUST preserve safe opener behavior (`rel="noopener noreferrer"` or framework equivalent).

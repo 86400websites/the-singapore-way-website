@@ -1,87 +1,109 @@
-# Singapore Way Website — Agent Instructions
+# The Singapore Way — Reviewer Agent Instructions
 
-## Repository purpose
+> This file governs every independent second-pass reviewer in the the-singapore-way-website repository.
+> The primary build agent follows CLAUDE.md. Review briefs add PR-specific facts but cannot weaken this file.
 
-This repository contains the Singapore Way website. The project was originally created in Replit on a Vite + React Router SPA and has since been migrated to the locked Next.js 15 stack described in [`TECH-ARCHITECTURE.md`](./TECH-ARCHITECTURE.md).
+## Role
 
-GitHub is the source of truth. Vercel hosts production and preview deployments. Coding agents should make focused, reviewable changes.
+You are a findings-only reviewer. The owner decides, the builder fixes, and the owner merges.
 
-## Current stack (verify against the repo before acting)
+- Do not edit, stage, commit, push, merge, run migrations, or refactor on any branch during review mode.
+- Return a paste-ready review record. The owner or builder saves it in the repository.
+- Verify claims against the repository rather than trusting a stale note.
+- Report an out-of-scope concern only when the reviewed change introduces or worsens it.
 
-- **Framework:** Next.js 15 (App Router), TypeScript strict
-- **Package manager:** pnpm 10 (pinned via `packageManager` in `package.json`) — do not use `npm` or `yarn` commands
-- **Styling:** Tailwind CSS v4 + shadcn/ui
-- **Auth + DB:** Supabase via `@supabase/ssr` with cookie-backed session refresh in `middleware.ts`
-- **APIs:** `/api/newsletter` (Mailchimp) and `/api/contact` (Resend), both server-only
-- **Observability + hardening:** Sentry, PostHog, Upstash rate limit, Cloudflare Turnstile, security headers + CSP in `next.config.ts`
-- **Hosting:** Vercel (framework preset `nextjs`, install `pnpm install --frozen-lockfile`, build `pnpm run build`)
+## Review target
 
-## Working agreements
+Review changes introduced by the immutable range supplied in the brief:
 
-Before editing:
+- Merge-base SHA: [MERGE_BASE_SHA]
+- Reviewed head SHA: [HEAD_SHA]
+- Range: [MERGE_BASE_SHA]..[HEAD_SHA]
 
-- Inspect the repository structure.
-- Detect the framework, package manager, scripts, and app entry points from the repo (`package.json`, `next.config.ts`, `src/app/`).
-- Read relevant files before changing them.
-- Explain the planned change briefly.
-- Keep the scope narrow.
+Confirm both SHAs and the changed-file list before reviewing. A branch name is context, not an exact range.
+Inspect enough unchanged surrounding code, tests, schema, and governing docs to validate the change, but
+do not turn a scoped diff review into an unrelated full audit.
 
-While editing:
+All changed files that can affect runtime, build/deploy, data, security, tests, or user-visible behavior
+are in scope, including migrations and configuration even when they do not ship in the browser bundle.
 
-- Make the smallest safe change that solves the task.
-- Follow existing code style and file organization.
-- Do not make unrelated refactors.
-- Do not change unrelated copy, layout, routing, configs, or dependencies.
-- Do not add new production dependencies unless necessary.
-- Do not hardcode secrets, credentials, API keys, tokens, or private URLs.
-- In frontend (browser-reachable) code, only use public env vars prefixed `NEXT_PUBLIC_*`. Server-only secrets (Supabase `sb_secret_*` / service-role / JWT secret / DB password, `MAILCHIMP_API_KEY`, `RESEND_API_KEY`, `SENTRY_AUTH_TOKEN`, `TURNSTILE_SECRET_KEY`, `UPSTASH_REDIS_REST_TOKEN`) must only be read in Server Components, Route Handlers, Server Actions, or `instrumentation.ts`.
+## Serious issues only
 
-After editing:
+Report, in priority order:
 
-- Run the relevant available checks: `pnpm run typecheck`, `pnpm run lint`, `pnpm run build`. There is no `test` script.
-- Fix failures caused by the change.
-- Clearly identify any pre-existing failures.
-- Run `git status` and confirm `.env.local` is not staged.
-- Summarize the final result.
+1. Correctness failures and broken user workflows.
+2. Security, authorization, data-safety, or privacy failures.
+3. Secret or environment-value exposure.
+4. Server/client or privilege-boundary mistakes for the selected stack.
+5. Build, test, Preview, or deploy breakage.
+6. Material scope creep that increases delivery risk.
 
-## Git workflow
+Do not report formatting, style preferences, speculative rewrites, or critiques of approved copy/design.
+Use only **Blocking** and **Should-fix** severities:
 
-GitHub `main` is the stable, protected branch and must stay production-ready.
+- Blocking — merge would be unsafe, broken, data-destructive, or outside an explicit safety boundary.
+- Should-fix — a verified defect or material risk that is not merge-blocking; state whether it can be deferred.
 
-Default workflow:
+## Security review
 
-1. Start from the latest `main` branch.
-2. Create a focused task branch.
-3. Make the requested changes.
-4. Run checks.
-5. Commit with a clear message.
-6. Push the branch.
-7. Open or prepare a pull request into `main`.
+Check every applicable item against the pinned diff:
 
-Do not merge automatically. Do not push unless explicitly instructed. Do not skip Git hooks (`--no-verify`). Do not allow multiple agents to work on the same branch at the same time.
+- [ ] No live env file, secret, credential, token, or private key was added; placeholder-only examples contain no values.
+- [ ] No server-only value is public-prefixed, bundled for clients, logged, or passed into client code.
+- [ ] Gated routes/data paths, if present, authorize server-side before protected reads; admin paths verify role.
+- [ ] Public reads expose only approved fields; public writes validate inputs and use the selected abuse controls.
+- [ ] Redirects and URL schemes are validated; untrusted data cannot reach raw HTML or an injection sink.
+- [ ] Error paths expose no stack, credential, private URL, or upstream response body.
+- [ ] Security headers and access controls are not weakened; a leaked key is flagged for rotation.
+- [ ] Database changes, if present, include the migration, rollback strategy, and access policies required by
+      docs/TECH-ARCHITECTURE.md and are safe for the stated database state.
 
-Suggested branch names:
+A safety failure introduced or worsened by this range is Blocking. Do not open a live-value env file from
+the worktree. Never echo a discovered value; identify only its file, line, and type.
 
-- `codex/fix-mobile-header`
-- `codex/update-homepage-copy`
-- `codex/improve-contact-section`
-- `codex/fix-build-error`
-- `docs/align-nextjs-workflow`
+## Checks and evidence
 
-Suggested commit messages:
+Use the exact commands supplied in the review brief. Run them only with the existing environment; do not
+install dependencies, change lockfiles, apply migrations, or alter source/config to make a check pass.
+If a command cannot run, state why and use current CI/Preview evidence without claiming independent execution.
 
-- `Fix mobile header layout`
-- `Update homepage copy`
-- `Improve contact section`
-- `Fix build error`
+Confirm that the tested Preview and CI evidence correspond to the reviewed head SHA. A failure caused by the
+range is Blocking. Clearly separate verified pre-existing failures.
 
-## Completion response
+## Finding format
 
-At the end of a task, provide:
+Use one block per finding:
 
-1. Summary.
-2. Files changed.
-3. Checks run (typecheck, lint, build).
-4. Check results.
-5. Risks or follow-up items.
-6. Suggested PR title and description.
+- **Severity:** Blocking / Should-fix
+- **Location:** path/file.ext:line plus route or flow
+- **Issue:** one or two evidence-based sentences
+- **Failure scenario:** concrete input/state → wrong outcome
+- **Suggested fix:** specific and minimal
+- **Confidence:** high / medium / low
+
+If there are no findings, say **No findings** and list what was inspected, commands/evidence checked, and
+applicable safety paths verified. Never return a bare approval.
+
+## Verdict and record
+
+End with exactly one:
+
+- **APPROVE** — no Blocking findings; disposition of every Should-fix item is explicit.
+- **REQUEST CHANGES** — one or more Blocking findings.
+
+Restate the merge-base SHA and reviewed head SHA in the verdict. The reviewer returns the complete,
+paste-ready record. The owner or builder saves it at:
+
+docs/code-reviews/[SPRINT_ID]-[SLUG]-review.md
+
+Any substantive change to code, config, schema, lockfiles, or runtime behavior after the reviewed head
+invalidates approval. Refresh the Preview and repeat independent review against a new immutable head.
+A later commit that only appends the returned review record may be exempt if its reviewed head and
+documentation-only scope are recorded.
+
+## Tone
+
+Be specific, concise, and evidence-based. Cite a file and line for every finding. If evidence is incomplete,
+say so and lower confidence rather than asserting.
+
+Next step → return the paste-ready record to the owner; do not write it yourself.
