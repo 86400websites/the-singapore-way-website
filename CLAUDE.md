@@ -85,7 +85,9 @@ Treat traces of an earlier prototype or stack (the original Replit Vite + React 
 - Validate untrusted input. Validate redirect destinations and URL schemes; never feed untrusted data into
   raw HTML. Error responses must not expose internals or upstream bodies.
 - Public write endpoints use the abuse controls selected in docs/TECH-ARCHITECTURE.md (zod validation,
-  Upstash rate limiting, and Cloudflare Turnstile). Controls configured as required in Production fail closed.
+  Upstash rate limiting, and Cloudflare Turnstile). Delivery controls fail closed in Production (honest 503
+  when a key is missing); the abuse controls (Upstash, Turnstile) currently fail open if unset — a recorded
+  gap (docs/TECH-ARCHITECTURE.md §7, docs/PROJECT-STATUS.md §10) — so their keys must be set in Vercel Production.
 - Database changes apply only when the project has a database and follow its selected migration and access
   policy. Ship the required forward/rollback artifacts and policies together. Do not apply a migration
   unless the owner explicitly asks; use a non-production environment first. This repo's procedure is

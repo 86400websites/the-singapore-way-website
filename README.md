@@ -22,7 +22,7 @@ Live at: `https://the-singapore-way-website.vercel.app` (production deploys from
 - **Hosting:** Vercel
 - **Source control:** GitHub (source of truth)
 
-Optional integrations safely no-op when their environment variables are absent, so local dev, CI, and Preview deployments work without provisioning every provider; in Production, required delivery/abuse controls fail closed with honest errors.
+Optional integrations safely no-op when their environment variables are absent, so local dev, CI, and Preview deployments work without provisioning every provider. In Production the two failure modes differ: the delivery controls (Mailchimp, Resend) fail **closed** — a missing key returns an honest 503, never fake success — while the abuse controls (Upstash rate limiting, Turnstile) currently fail **open**, silently skipping when their keys are absent, so those keys must be set in Vercel Production (see `docs/TECH-ARCHITECTURE.md` §7 and the required-before-scale gap in `docs/PROJECT-STATUS.md` §10).
 
 Full detail (locked layers, integrations, invariants): `docs/TECH-ARCHITECTURE.md`.
 If the code and docs disagree, report the mismatch; update docs only in an authorized task.

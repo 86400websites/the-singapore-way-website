@@ -127,16 +127,16 @@ Public naming differs by framework. Public prefix: `NEXT_PUBLIC_` — anything b
 | `NEXT_PUBLIC_POSTHOG_KEY` | Public | PostHog analytics (no-ops when empty). Note: the code reads `_KEY`, not `_TOKEN` | Local / Preview / Production (optional) | Owner via Vercel dashboard |
 | `NEXT_PUBLIC_POSTHOG_HOST` | Public | PostHog host (defaults to the US host when unset) | Local / Preview / Production (optional) | Owner via Vercel dashboard |
 | `NEXT_PUBLIC_SENTRY_DSN` | Public | Sentry error tracking (no-ops when empty) | Local / Preview / Production (optional) | Owner via Vercel dashboard |
-| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Public | Turnstile widget (hidden when empty) | Production (recommended); optional elsewhere | Owner via Vercel dashboard |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Public | Turnstile widget (hidden when empty) | **Production (required — public forms live)**; optional Local/Preview | Owner via Vercel dashboard |
 | `MAILCHIMP_API_KEY` | Server-only | Newsletter + tagged subscribe (`/api/newsletter`, `/api/mailchimp/subscribe`) | Production (required — feature is live); optional Local/Preview | Owner via Vercel dashboard |
 | `MAILCHIMP_SERVER_PREFIX` | Server-only | Mailchimp server prefix | Production; optional Local/Preview | Owner via Vercel dashboard |
 | `MAILCHIMP_AUDIENCE_ID` | Server-only | Mailchimp audience/list | Production; optional Local/Preview | Owner via Vercel dashboard |
 | `RESEND_API_KEY` | Server-only | Contact form delivery (`/api/contact`) | Production (required — feature is live); optional Local/Preview | Owner via Vercel dashboard |
 | `RESEND_FROM_EMAIL` | Server-only | Verified Resend sender | Production; optional Local/Preview | Owner via Vercel dashboard |
 | `RESEND_TO_EMAIL` | Server-only | Contact recipient — the code reads this name, NOT `CONTACT_FORM_TO_EMAIL` | Production; optional Local/Preview | Owner via Vercel dashboard |
-| `UPSTASH_REDIS_REST_URL` | Server-only | Rate limiting on public API handlers | Production (recommended enforced); optional elsewhere | Owner via Vercel dashboard |
-| `UPSTASH_REDIS_REST_TOKEN` | Server-only | Rate limiting | Production (recommended enforced); optional elsewhere | Owner via Vercel dashboard |
-| `TURNSTILE_SECRET_KEY` | Server-only | Turnstile server verification | Production (recommended enforced); optional elsewhere | Owner via Vercel dashboard |
+| `UPSTASH_REDIS_REST_URL` | Server-only | Rate limiting on public API handlers (fails open if unset — no code guard) | **Production (required — public forms live)**; optional Local/Preview | Owner via Vercel dashboard |
+| `UPSTASH_REDIS_REST_TOKEN` | Server-only | Rate limiting | **Production (required — public forms live)**; optional Local/Preview | Owner via Vercel dashboard |
+| `TURNSTILE_SECRET_KEY` | Server-only | Turnstile server verification (fails open if unset — no code guard) | **Production (required — public forms live)**; optional Local/Preview | Owner via Vercel dashboard |
 | `SENTRY_AUTH_TOKEN` | Server/build-time only | Sentry source-map upload (skipped when unset) | Preview / Production (optional) | Owner via Vercel dashboard |
 | `SENTRY_ORG` | Server/build-time only | Sentry build config | Preview / Production (optional) | Owner via Vercel dashboard |
 | `SENTRY_PROJECT` | Server/build-time only | Sentry build config | Preview / Production (optional) | Owner via Vercel dashboard |
