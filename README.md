@@ -79,6 +79,7 @@ or paste real values into any committed file.
 | `docs/update-course-content.md` | *How is course content edited safely?* |
 | `docs/book-course-mvp-plan.md` | *What was the original course MVP plan? (historical Sprint 0 record)* |
 | `supabase/sql/README.md` | *Which SQL migrations exist and in what order are they applied?* |
+| `docs/SPRINT-PROMPT-TEMPLATE.md` · `docs/CODEX-REVIEW-PROMPT.md` | *How to prepare a sprint implementation prompt and an independent review brief.* |
 | `docs/templates/` | *Which reusable prompt, PR, Preview, and change-record templates do we use?* |
 | `docs/sprint-prompts/` · `docs/code-reviews/` | *Per-sprint records and review verdicts.* |
 
