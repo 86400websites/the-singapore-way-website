@@ -7,11 +7,11 @@ The living tracker for **The Singapore Way**. Any fresh session — AI or human 
 | Item | Value |
 |---|---|
 | Current stage | Post-launch |
-| Active sprint | S11 — Migrate repo governance to the SOP docs pack — Status: Approved (Codex APPROVE at head `fef6f63`) |
-| Current branch | `claude/s11-sop-docs-pack` (PR #13) |
-| Next action | 1. Owner merges PR #13. 2. Delete the branch. 3. Production smoke test. — *Prior:* ~~Run Codex review + append the record~~ done — APPROVE recorded at `fef6f63` |
+| Active sprint | S12 — Agent Skills (`/close`, `/sprint-prompt`) — Status: Approved (Codex APPROVE at head `f9a90e1`, round 2) |
+| Current branch | `claude/s12-agent-skills` (PR #14) |
+| Next action | 1. Owner merges PR #14. 2. Delete the branch. — *Prior:* ~~Re-run Codex review of PR #14~~ done — APPROVE at `f9a90e1` after round-1 REQUEST CHANGES (4 blocking + 1 should-fix) fixed |
 | Preview / Production | Vercel Preview per PR / https://the-singapore-way-website.vercel.app on Vercel (custom domain `thesingaporeway.com` pending — backlog) |
-| Last updated | 2026-07-22 — S11 approved by Codex (`e96dd75..fef6f63`, No findings) after three review rounds; ready for owner merge of PR #13. — *Prior:* 2026-06-09 — PR #12 merged (website report cleanups); pre-SOP delivery complete |
+| Last updated | 2026-07-23 — S11 merged (PR #13) + Production smoke passed (HTTP 200, all six security headers); S12 adds the `/close` and `/sprint-prompt` agent skills. — *Prior:* 2026-07-22 — S11 approved by Codex (`e96dd75..fef6f63`, No findings) after three review rounds |
 
 ### How to resume in a fresh AI session
 
@@ -31,18 +31,20 @@ Status legend: Not Started · In Progress · Blocked (say why) · Ready for Revi
 |---|---|---|---|---|---|
 | Setup Gate | Done | — | — | pre-SOP | Repo, protected `main`, CI + gitleaks, Vercel Previews predate SOP adoption; governing docs completed by S11 |
 | Sprints 0–10 — site + course MVP | Done | various | #1–#12 | 2026-05-21 → 2026-06-09 | Pre-SOP delivery; see `git log` and [`book-course-mvp-plan.md`](./book-course-mvp-plan.md) |
-| S11 — SOP docs pack migration | Approved (awaiting merge) | `claude/s11-sop-docs-pack` | #13 | — | Codex APPROVE at `fef6f63` (3 rounds). Records: [`sprint-prompts/S11-sop-docs-pack.md`](./sprint-prompts/S11-sop-docs-pack.md), [`code-reviews/S11-sop-docs-pack-review.md`](./code-reviews/S11-sop-docs-pack-review.md) |
+| S11 — SOP docs pack migration | Done | `claude/s11-sop-docs-pack` | #13 | 2026-07-23 | Codex APPROVE at `fef6f63` (3 rounds); merged + Production smoke passed. Records: [`sprint-prompts/S11-sop-docs-pack.md`](./sprint-prompts/S11-sop-docs-pack.md), [`code-reviews/S11-sop-docs-pack-review.md`](./code-reviews/S11-sop-docs-pack-review.md) |
+| S12 — Agent skills (`/close`, `/sprint-prompt`) | Approved (awaiting merge) | `claude/s12-agent-skills` | #14 | — | Codex APPROVE at `f9a90e1` (round 2; round 1 was REQUEST CHANGES — 4 blocking + 1 should-fix, fixed). Records: [`sprint-prompts/S12-agent-skills.md`](./sprint-prompts/S12-agent-skills.md), [`code-reviews/S12-agent-skills-review.md`](./code-reviews/S12-agent-skills-review.md) |
 
 Retired sprints stay in the table, struck through, with the date, reason, and where the scope moved (backlog).
 
 ## 3. Last completed work
 
 - 2026-06-09 — Sprint 10 (pre-SOP): website report cleanups merged (PR #12); before that, premium course frontend polish (PR #11, 2026-05-30) and premium visual refresh (PR #10, 2026-05-29). The course MVP itself landed in PR #9 (2026-05-28). Access model is sign-in-only (manual enrollment retired).
-- 2026-07-22 — S11 (this sprint): full governance migration to the SOP docs pack; no app code changed.
+- 2026-07-22 — S11: full governance migration to the SOP docs pack; no app code changed. Merged 2026-07-23 (PR #13) after Codex APPROVE; Production smoke passed.
+- 2026-07-23 — S12 (this sprint): added the `/close` and `/sprint-prompt` Claude Code skills under `.claude/skills/`; no app code changed.
 
 ## 4. Next sprint
 
-- To be promoted from the post-launch backlog in [`ROADMAP.md`](./ROADMAP.md) after S11 merges. Leading candidate: harden `src/lib/request-origin.ts` then the real-domain migration to `thesingaporeway.com` (depends on decision D-1). Brief: create from `docs/templates/SPRINT-PLAN-TEMPLATE.md` when promoted.
+- To be promoted from the post-launch backlog in [`ROADMAP.md`](./ROADMAP.md). Leading candidate: harden `src/lib/request-origin.ts` then the real-domain migration to `thesingaporeway.com` (depends on decision D-1). Brief: create from `docs/templates/SPRINT-PLAN-TEMPLATE.md` (or run `/sprint-prompt`) when promoted.
 
 ## 5. Blockers
 
@@ -54,11 +56,11 @@ Retired sprints stay in the table, struck through, with the date, reason, and wh
 
 | Check | Last run | Result | Notes |
 |---|---|---|---|
-| typecheck | 2026-07-22 | pass | `pnpm run typecheck` on the S11 branch |
-| lint | 2026-07-22 | pass | `pnpm run lint` on the S11 branch |
-| tests | 2026-07-22 | N/A | No test script; verification = typecheck + lint + build + gitleaks CI + Preview QA (decision D-3 tracks adding tests) |
-| build | 2026-07-22 | pass | `pnpm run build` — route count baseline: 32 routes (41 static pages generated) |
-| deployed Preview | — | pending | Vercel Preview to be tested when the S11 PR opens; record via `docs/templates/VERCEL-PREVIEW-TEST-TEMPLATE.md` |
+| typecheck | 2026-07-23 | pass | `pnpm run typecheck` on the S12 branch |
+| lint | 2026-07-23 | pass | `pnpm run lint` on the S12 branch |
+| tests | 2026-07-23 | N/A | No test script; verification = typecheck + lint + build + gitleaks CI + Preview QA (decision D-3 tracks adding tests) |
+| build | 2026-07-23 | pass | `pnpm run build` — 32 routes / 41 static pages (unchanged; S12 touches no `src/`) |
+| deployed Preview | — | pending | PR #14 open; manual Preview testing pending (skills/docs-only — no runtime change). Record via `docs/templates/VERCEL-PREVIEW-TEST-TEMPLATE.md` |
 
 ## 7. Locked decisions (do not reopen)
 

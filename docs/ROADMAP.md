@@ -39,9 +39,10 @@ The smallest complete website and the approved MVP additions shipped before SOP 
 
 | Sprint | Goal / scope | Explicitly out of scope | Acceptance criteria | Depends on | Status |
 |---|---|---|---|---|---|
-| S11 | Migrate repo governance to the SOP docs pack: filled governing docs at root + `docs/`, templates, sprint/review record folders; retire ad-hoc docs | App code, config, CI, SQL, or dependency changes | Every governing doc filled with real values or `N/A — reason`; old root docs removed; records exist; typecheck/lint/build unchanged | Setup Gate | Ready for Review |
+| S11 | Migrate repo governance to the SOP docs pack: filled governing docs at root + `docs/`, templates, sprint/review record folders; retire ad-hoc docs | App code, config, CI, SQL, or dependency changes | Every governing doc filled with real values or `N/A — reason`; old root docs removed; records exist; typecheck/lint/build unchanged | Setup Gate | Done (merged 2026-07-23, PR #13) |
+| S12 | Add the `/close` and `/sprint-prompt` Claude Code skills under `.claude/skills/`, adapted to this repo and consistent with the governing docs | App code, config, CI, SQL; external SOP-pack changes; the abuse-control code fix | Both skills committed and repo-consistent (fail-open reality, no admin role, our conventions/templates); typecheck/lint/build unchanged | S11 | In Progress |
 
-Every sprint gets a record at `docs/sprint-prompts/[SPRINT_ID]-[SLUG].md`. Promote backlog items into new rows here one at a time via `docs/templates/SPRINT-PLAN-TEMPLATE.md`.
+Every sprint gets a record at `docs/sprint-prompts/[SPRINT_ID]-[SLUG].md`. Promote backlog items into new rows here one at a time via `docs/templates/SPRINT-PLAN-TEMPLATE.md` (or run `/sprint-prompt`).
 
 ## Launch Gate
 
