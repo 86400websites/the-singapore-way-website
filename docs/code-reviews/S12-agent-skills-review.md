@@ -12,8 +12,8 @@ pinned range; inspect enough surrounding context to validate them.
 - PR: #14 — https://github.com/86400websites/the-singapore-way-website/pull/14
 - Branch: claude/s12-agent-skills (context only)
 - Merge-base SHA: a81b4f3660452042562b0f022a488b62b2193558
-- Reviewed head SHA: the current PR #14 head — round 1 reviewed `16b93ca` and returned REQUEST CHANGES; those fixes are on-branch, so re-review at the new head (confirm with `git rev-parse HEAD`)
-- Immutable range: a81b4f3660452042562b0f022a488b62b2193558..<current PR #14 head>
+- Reviewed head SHA: f9a90e1c16ad60f6e27879a302dc2520637f288e (round 2, APPROVED). Round 1 reviewed `16b93ca` and returned REQUEST CHANGES; those fixes landed in `f9a90e1`.
+- Immutable range: a81b4f3660452042562b0f022a488b62b2193558..f9a90e1c16ad60f6e27879a302dc2520637f288e
 - Sprint record: docs/sprint-prompts/S12-agent-skills.md
 - Expected changed paths: `.claude/skills/close/SKILL.md`, `.claude/skills/sprint-prompt/SKILL.md`,
   `docs/sprint-prompts/S12-agent-skills.md`, `docs/code-reviews/S12-agent-skills-review.md`,
@@ -68,6 +68,16 @@ Findings (all fixed on-branch in the follow-up commit):
 
 **Verdict: REQUEST CHANGES** — reviewed range `a81b4f3..16b93ca` · Reviewed by Codex on 2026-07-23.
 
-### Round 2 — reviewed head `<current PR #14 head>`
+### Round 2 — reviewed head `f9a90e1` — APPROVE (Codex, 2026-07-23)
 
-*(pending — re-review after the round-1 fixes)*
+Confirmed range `a81b4f3..f9a90e1`; scope match YES (6 Markdown/skills files, 0 app-code/config/CI/SQL). Installed `tsc --noEmit`, `eslint .`, `next build` all pass (32 routes / 41 static pages, unchanged); head-specific CI + gitleaks + Vercel deploy green for `f9a90e1`; 0 unresolved local links; no secret patterns; `.env.local` ignored/untracked. Manual Preview QA recorded as pending (skills/docs-only — no runtime change).
+
+The four former Blocking findings are resolved: review is mandatory for every sprint; `save` mode cannot independently commit or push; shared public-write helpers activate the security gate; implied database contracts, missing migrations, paired numbered migrations, and the seed exemption are handled correctly. Abuse controls remain accurately documented as fail-open when unset, with delivery dependencies failing closed. No invented admin model, Palestine House facts, template fork, command drift, or standing commit/push authorization was found.
+
+One documentation-only Should-fix from this round (the review record still carried `<current PR #14 head>` placeholders) is resolved by this record: reviewed head `f9a90e1c16ad60f6e27879a302dc2520637f288e`, immutable range `a81b4f3660452042562b0f022a488b62b2193558..f9a90e1c16ad60f6e27879a302dc2520637f288e`.
+
+**Verdict: APPROVE** — all Blocking findings resolved; the exact-range placeholder is corrected in this record. Reviewed range: `a81b4f3..f9a90e1` · Reviewed by Codex on 2026-07-23.
+
+---
+
+*Note: this record + the paired PROJECT-STATUS bookkeeping were appended/updated after the reviewed head `f9a90e1`. Per AGENTS.md / docs/WORKFLOW.md, a documentation-only commit that only records the returned review and status is exempt from re-review; the reviewed head `f9a90e1` and scope are recorded here.*
