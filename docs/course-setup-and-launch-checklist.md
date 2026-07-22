@@ -39,7 +39,7 @@ Production).
       Production. The app never reads it.
 - [ ] Set `NEXT_PUBLIC_SITE_URL` to the canonical origin for the environment.
 - [ ] In Supabase → Authentication → URL Configuration, configure Site URL and
-      Redirect URLs per [`SUPABASE_VERCEL_SETUP.md`](../SUPABASE_VERCEL_SETUP.md).
+      Redirect URLs per [`SUPABASE-VERCEL-SETUP.md`](./SUPABASE-VERCEL-SETUP.md).
 
 ---
 
@@ -243,7 +243,7 @@ Before pushing, run on the dev server:
   - [ ] `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` set.
   - [ ] No `SUPABASE_SECRET_KEY` / `sb_secret_*`.
 - [ ] Supabase Auth → URL Configuration covers the preview wildcard per
-      `SUPABASE_VERCEL_SETUP.md`.
+      [`SUPABASE-VERCEL-SETUP.md`](./SUPABASE-VERCEL-SETUP.md).
 - [ ] Run the local testing checklist (§5) against the Preview URL.
 - [ ] Lighthouse on `/` and `/courses/the-singapore-way` — Performance,
       Accessibility, Best Practices, SEO all ≥ 90.

@@ -41,7 +41,7 @@ If this document drifts from the on-disk reality (see `package.json`, `next.conf
 
 ## 2. Confirmed repo reality (Sprint 0 inspection)
 
-The repo matches the locked stack in [`TECH-ARCHITECTURE.md`](../TECH-ARCHITECTURE.md). Key facts validated from disk:
+The repo matches the locked stack in [`TECH-ARCHITECTURE.md`](./TECH-ARCHITECTURE.md). Key facts validated from disk:
 
 - Framework: **Next.js 15.5** App Router, React 19, TypeScript strict (`tsconfig.json`).
 - Package manager: **pnpm 10.12.1** (pinned via `packageManager`).
