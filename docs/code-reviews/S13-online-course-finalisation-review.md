@@ -73,4 +73,56 @@ Owner actions before round 2: apply 0007 in the SQL Editor (builder verifies rea
 0 certificates remain, function contains the gate); open the PR; run Preview QA per pack
 08; then request Codex round 2 against the new head with the brief fields filled.
 
-## Round 2 — pending
+## Round 2 — 2026-07-23 — REQUEST CHANGES
+
+- Merge base: `38f2e6301904a18f38bfe16f3d5a1aeda5bf3d95` · Reviewed head: `c7f93c021f9d6170d6bba7133d7fadad36a2d542`
+- Scope confirmed: 29 files, 2,971 insertions, 538 deletions.
+
+### Findings (as returned by the reviewer)
+
+**1. PR, Preview, tester, and CI evidence remain unresolved — Blocking.**
+Brief placeholders unfilled; no identifiable PR, Preview, tester/date, or CI run for the
+head. Fix: supply real URLs and evidence for the exact head; re-review a new head if
+fulfilling this changes behavior. Confidence: high.
+
+**2. Public verification still displays certificates whose names fail the new gate —
+Blocking.** 0007 returned an existing certificate before validating the name, and the
+unchanged `get_public_certificate` converts a missing name to "Verified learner" and
+displays the certificate publicly. Fix: forward migration gating the existing-cert
+return and making public verification return nothing for blank/generic names; verify
+with boolean/count-only checks. Confidence: high.
+
+**3. The name form accepts values the certificate gate rejects — Should-fix.**
+`updateLearnerName` stored "Learner"/"Verified learner" as success, leaving the learner
+with a suppressed certificate and no explanation. Fix: same generic-name validation in
+the Server Action. Confidence: high.
+
+**4. Runbooks still describe the retired curriculum and ungated public fallback —
+Should-fix.** Checklist expected "Verified learner" public display as normal and "all
+12" required lessons; SQL README documented the fallback as the norm; PROJECT-STATUS
+contradicted the applied-migration state. Confidence: high.
+
+Reviewer evidence: diff --check pass; offline TypeScript/ESLint/build pass (41 pages);
+no dependency changes; `.env.local` clean; `correct_choice` = 3 doc comments; no
+secrets; YouTube parser verified. **Verdict: REQUEST CHANGES.**
+
+---
+
+## Builder disposition — round 2 (2026-07-23)
+
+| # | Finding | Disposition |
+|---|---|---|
+| 1 | PR/Preview/CI evidence | **Owner-process** — PR to be opened; pack-08 Preview QA recorded at the exact head; CI/gitleaks run linked; round 3 runs with the brief fully filled. |
+| 2 | Public display of generic-name certificates | **Fixed** — new `supabase/sql/0008_certificate_public_name_gate.sql` (+ paired down): (a) `issue_certificate` now checks the meaningful name BEFORE the idempotent existing-certificate return; (b) `get_public_certificate` returns **no row** when the owner's stored name is blank or generic ('learner'/'verified learner'), so the public URL renders the not-found state instead of a generic-name credential (the app's null → CertificateNotFound path already handles this with no code change). Function-only migration; no data change; fully reversible down restoring the 0007/0005 bodies. |
+| 3 | Name form accepts gate-rejected values | **Fixed** — `updateLearnerName` (`src/lib/course/actions.ts`) now rejects "learner"/"verified learner" (trimmed, case-insensitive) with an explanatory `invalid_input` before writing metadata, mirroring `hasMeaningfulLearnerName` and the SQL gate. |
+| 4 | Stale runbook instructions | **Fixed** — launch checklist §2a adds 0008; §5 QA now tests the name-required state before issuance and expects not-found for generic-name public URLs; §9 "All 12" → "All 21" and the fallback troubleshooting entry rewritten for the 0008 behavior; SQL README access model + apply order + rollback + file index updated; `update-course-content.md` §7 fallback pointer moved to 0008; PROJECT-STATUS §1 reconciled with the applied-migration reality. |
+
+Files changed in this fix round: `supabase/sql/0008_certificate_public_name_gate.sql` (new),
+`…0008….down.sql` (new), `src/lib/course/actions.ts`, `supabase/sql/README.md`,
+`docs/course-setup-and-launch-checklist.md`, `docs/update-course-content.md`,
+`docs/PROJECT-STATUS.md`, this record.
+
+Owner actions before round 3: apply 0008 (builder verifies read-only, boolean-only);
+open the PR; run pack-08 Preview QA at the new head; fill the brief completely.
+
+## Round 3 — pending

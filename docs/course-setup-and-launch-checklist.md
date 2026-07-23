@@ -61,6 +61,9 @@ is superseded by 0005.
    — required: adds the certificate full-name gate (and, on older projects,
    removes sample-era certificates not backed by current-curriculum
    completion; a no-op on a fresh project).
+8. [`supabase/sql/0008_certificate_public_name_gate.sql`](../supabase/sql/0008_certificate_public_name_gate.sql)
+   — required: name gate before the existing-certificate return, and public
+   verification returns no row for blank/generic-name certificates.
 
 ### 2b. If 0004 was partially or fully applied
 
@@ -238,12 +241,19 @@ Before pushing, run on the dev server:
         `total`, `correct` — no `correct_choice`.
   - [ ] Complete every required item. Sidebar shows a "Get your certificate"
         link.
-  - [ ] Open the cert page. It auto-issues + shows the branded view + a
-        verify URL.
-  - [ ] Open the verify URL in a private window — shows "Verified" badge
-        and ONLY id, course title, learner display name, issued date.
-  - [ ] If the test learner has no `full_name`, the verify page shows
-        "Verified learner" — never an email-like string.
+  - [ ] With NO `full_name` on the test account: the cert page shows the
+        "Add your name to receive your certificate" step — no certificate,
+        no Print button. Submitting "Learner" is rejected with an
+        explanation; a real name is accepted.
+  - [ ] After saving a real name: the cert page auto-issues + shows the
+        branded view + a verify URL + the Print button.
+  - [ ] Open the verify URL in a private window — shows the "Verified
+        certificate" badge and ONLY id, course title, learner display name,
+        issued date.
+  - [ ] Generic-name certificates are never publicly displayed: since 0008,
+        `get_public_certificate` returns no row when the owner's stored name
+        is blank or generic, so such a URL renders the not-found state (an
+        email-like string is never shown in any case).
 - [ ] Sign out → `/my-learning` and `/courses/.../learn/...` redirect to
       `/login?next=...`.
 - [ ] `git status` shows nothing unexpected — no `.env.local`, no
@@ -337,12 +347,16 @@ where course_id = (select id from public.courses where slug = 'the-singapore-way
 order by position;
 ```
 
-All 12 should show `is_required = true` in the seeded sample course.
+All 21 should show `is_required = true` in the seeded course.
 
-### Public verify shows "Verified learner" instead of a name
+### Public verify shows the not-found state for an issued certificate
 
-That is the privacy-safe default. To show a real name, set
-`raw_user_meta_data.full_name` on the relevant `auth.users` row.
+Since 0008, public verification deliberately returns nothing while the
+certificate owner's stored `full_name` is blank or a generic fallback — a
+generic-name credential is never publicly displayed. The learner fixes this
+themselves via the certificate page's name step (or the owner sets
+`raw_user_meta_data.full_name` on the relevant `auth.users` row); the
+existing certificate then verifies normally, unchanged.
 
 ---
 

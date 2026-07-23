@@ -300,11 +300,13 @@ filename — code references it as a static path.
 **To change the eyebrow / heading / labels:** edit
 `CertificateView.tsx` directly. Re-run `pnpm run build` after.
 
-**To change the display-name fallback:** the public fallback is hard-coded
-in `get_public_certificate()` inside
-[`0005_course_mvp_open_access_sample.sql`](../supabase/sql/0005_course_mvp_open_access_sample.sql).
-Change the `'Verified learner'` literal there and re-apply the file. The
-owner-side fallback is in
+**Public display of generic-name certificates:** since
+[`0008_certificate_public_name_gate.sql`](../supabase/sql/0008_certificate_public_name_gate.sql),
+`get_public_certificate()` returns **no row** while the certificate owner's
+stored full name is blank or a generic fallback — the public URL shows the
+not-found state until the learner saves a real name. The `'Verified
+learner'` coalesce literal (defense-in-depth only) now lives in 0008's
+function body; the owner-side fallback is in
 [`getLearnerDisplayName`](../src/lib/course/queries.ts) and currently
 returns `'Learner'`.
 

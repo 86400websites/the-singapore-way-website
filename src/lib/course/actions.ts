@@ -177,6 +177,16 @@ export async function updateLearnerName(
       message: `Please keep your name under ${LEARNER_NAME_MAX_LENGTH} characters.`,
     }
   }
+  // Mirror the certificate gate (issue_certificate / get_public_certificate):
+  // generic fallback strings are not a meaningful name, so reject them here
+  // with an explanation instead of storing a value the gate will refuse.
+  const lowered = cleaned.toLowerCase()
+  if (lowered === 'learner' || lowered === 'verified learner') {
+    return {
+      status: 'invalid_input',
+      message: 'Please enter your real full name — it will appear on your certificate.',
+    }
+  }
 
   const supabase = await createClient()
   const {

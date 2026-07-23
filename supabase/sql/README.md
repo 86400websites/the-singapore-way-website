@@ -31,8 +31,11 @@ questions, no answer keys). Any signed-in user can:
   (the 0007 name gate).
 
 Public certificate verification goes through `get_public_certificate`. It
-returns only id / course title / learner display name / issued date. The
-display-name fallback is "Verified learner" — never the email local-part.
+returns only id / course title / learner display name / issued date — and,
+since 0008, returns **no row at all** while the certificate owner's stored
+full name is blank or a generic fallback, so a generic-name credential is
+never publicly displayed. The "Verified learner" coalesce remains in the
+projection purely as defense-in-depth; the email local-part is never used.
 
 There is no manual-enrollment step. The `course_enrollments` table is kept
 in the schema for possible future use but is **not** consulted by any
@@ -85,9 +88,14 @@ Run, one file at a time, top to bottom:
    backed by completion of the current curriculum (on an older project that
    ran 0006, that is the preserved sample-era test certificate; on a fresh
    project the cleanup is a no-op).
+9. [`0008_certificate_public_name_gate.sql`](./0008_certificate_public_name_gate.sql)
+   — **required on every project.** Moves the name gate before the
+   existing-certificate return in `issue_certificate`, and makes
+   `get_public_certificate` return no row for blank/generic-name owners so
+   such a certificate is never publicly displayed.
 
-After the seed and 0007 (plus 0006 on an older project), the course is
-queryable as anon (curriculum metadata only) and as any signed-in user
+After the seed, 0007, and 0008 (plus 0006 on an older project), the course
+is queryable as anon (curriculum metadata only) and as any signed-in user
 (full player + quizzes + progress + certificate).
 
 ---
@@ -96,6 +104,10 @@ queryable as anon (curriculum metadata only) and as any signed-in user
 
 Down files are destructive. Only run when explicitly rolling back.
 
+00. If 0008 was applied:
+   [`0008_certificate_public_name_gate.down.sql`](./0008_certificate_public_name_gate.down.sql)
+   — restores the 0007 `issue_certificate` and 0005 `get_public_certificate`
+   bodies. No data change either way.
 0. If 0007 was applied:
    [`0007_certificate_name_gate_and_cleanup.down.sql`](./0007_certificate_name_gate_and_cleanup.down.sql)
    — restores the ungated 0005 `issue_certificate` body. Certificate rows
@@ -187,5 +199,7 @@ granted `execute` on.
 | `0006_course_final_content.down.sql` | Restores the pre-S13 sample content shape. Cannot restore deleted learner history. Destructive rollback. |
 | `0007_certificate_name_gate_and_cleanup.sql` | S13 review fixes: full-name gate in `issue_certificate` + removal of certificates not backed by current-curriculum completion. Up. |
 | `0007_certificate_name_gate_and_cleanup.down.sql` | Restores the ungated 0005 function body. Cannot restore deleted certificates. Rollback. |
+| `0008_certificate_public_name_gate.sql` | Name gate before the existing-cert return + public verification hides blank/generic-name certificates. Up. |
+| `0008_certificate_public_name_gate.down.sql` | Restores the 0007 `issue_certificate` and 0005 `get_public_certificate` bodies. Rollback. |
 | `seed-the-singapore-way.sql` | Idempotent final-course seed (content identical to the 0006 rebuild body). Up. |
 | `README.md` | This file. |
