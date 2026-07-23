@@ -26,7 +26,9 @@ questions, no answer keys). Any signed-in user can:
 - mark non-quiz lessons complete via the `mark_lesson_complete` RPC;
 - take a quiz via the `submit_quiz_attempt` RPC (server-side grading);
 - read their own progress and certificate rows under RLS;
-- earn a certificate via the `issue_certificate` RPC after completion.
+- earn a certificate via the `issue_certificate` RPC after completion —
+  issuance additionally requires a meaningful full name on the auth record
+  (the 0007 name gate).
 
 Public certificate verification goes through `get_public_certificate`. It
 returns only id / course title / learner display name / issued date. The
@@ -77,10 +79,16 @@ Run, one file at a time, top to bottom:
    S13 runbook — owner-confirmed test data); certificates are preserved.
    A fresh project seeded at step 6 must NOT run this file — the seed
    already contains the final content.
+8. [`0007_certificate_name_gate_and_cleanup.sql`](./0007_certificate_name_gate_and_cleanup.sql)
+   — **required on every project.** Replaces `issue_certificate` with the
+   full-name-gated version and removes any certificate for this course not
+   backed by completion of the current curriculum (on an older project that
+   ran 0006, that is the preserved sample-era test certificate; on a fresh
+   project the cleanup is a no-op).
 
-After the seed (or 0006 on an older project), the course is queryable as
-anon (curriculum metadata only) and as any signed-in user (full player +
-quizzes + progress + certificate).
+After the seed and 0007 (plus 0006 on an older project), the course is
+queryable as anon (curriculum metadata only) and as any signed-in user
+(full player + quizzes + progress + certificate).
 
 ---
 
@@ -88,6 +96,10 @@ quizzes + progress + certificate).
 
 Down files are destructive. Only run when explicitly rolling back.
 
+0. If 0007 was applied:
+   [`0007_certificate_name_gate_and_cleanup.down.sql`](./0007_certificate_name_gate_and_cleanup.down.sql)
+   — restores the ungated 0005 `issue_certificate` body. Certificate rows
+   deleted by 0007's cleanup are NOT restored.
 1. If 0006 was applied:
    [`0006_course_final_content.down.sql`](./0006_course_final_content.down.sql)
    — restores the pre-S13 SAMPLE course content shape. It cannot restore
@@ -173,5 +185,7 @@ granted `execute` on.
 | `0005_course_mvp_open_access_sample.down.sql` | Drops the sign-in RPCs. Rollback. |
 | `0006_course_final_content.sql` | S13: replaces the sample content with the final course (5 modules / 16 videos / 5 quizzes / 25 questions). Destructive for this course's progress + attempts (Path A); preserves certificates. Up. |
 | `0006_course_final_content.down.sql` | Restores the pre-S13 sample content shape. Cannot restore deleted learner history. Destructive rollback. |
+| `0007_certificate_name_gate_and_cleanup.sql` | S13 review fixes: full-name gate in `issue_certificate` + removal of certificates not backed by current-curriculum completion. Up. |
+| `0007_certificate_name_gate_and_cleanup.down.sql` | Restores the ungated 0005 function body. Cannot restore deleted certificates. Rollback. |
 | `seed-the-singapore-way.sql` | Idempotent final-course seed (content identical to the 0006 rebuild body). Up. |
 | `README.md` | This file. |

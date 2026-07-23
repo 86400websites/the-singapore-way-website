@@ -366,6 +366,7 @@ export async function getOwnCertificate(
 export type IssueCertificateResult =
   | { status: 'issued'; id: string; issuedAt: string }
   | { status: 'incomplete'; message: string }
+  | { status: 'name_required' }
   | { status: 'unauthorized' }
   | { status: 'not_configured' }
   | { status: 'error'; message: string }
@@ -391,6 +392,7 @@ export async function issueCertificate(courseId: string): Promise<IssueCertifica
   if (error) {
     const message = error.message ?? ''
     if (message.includes('Not authenticated')) return { status: 'unauthorized' }
+    if (message.includes('Full name required')) return { status: 'name_required' }
     if (message.includes('Course not complete')) {
       return { status: 'incomplete', message }
     }
@@ -460,6 +462,22 @@ export function getLearnerDisplayName(user: {
   const trimmed = typeof raw === 'string' ? raw.trim() : ''
   if (trimmed) return trimmed
   return 'Learner'
+}
+
+/**
+ * True when the learner's stored full name is meaningful — non-blank and not
+ * one of the generic fallback strings. Mirrors the authoritative gate inside
+ * the issue_certificate() RPC (0007): the UI uses this to decide whether to
+ * request a name before issuing/displaying the certificate.
+ */
+export function hasMeaningfulLearnerName(user: {
+  user_metadata?: { full_name?: string | null } | null | undefined
+}): boolean {
+  const raw = user.user_metadata?.full_name
+  const trimmed = typeof raw === 'string' ? raw.trim() : ''
+  if (!trimmed) return false
+  const lowered = trimmed.toLowerCase()
+  return lowered !== 'learner' && lowered !== 'verified learner'
 }
 
 // =============================================================================

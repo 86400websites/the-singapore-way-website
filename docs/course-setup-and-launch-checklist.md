@@ -57,6 +57,10 @@ is superseded by 0005.
 4. **Skip 0004.**
 5. [`supabase/sql/0005_course_mvp_open_access_sample.sql`](../supabase/sql/0005_course_mvp_open_access_sample.sql)
 6. [`supabase/sql/seed-the-singapore-way.sql`](../supabase/sql/seed-the-singapore-way.sql)
+7. [`supabase/sql/0007_certificate_name_gate_and_cleanup.sql`](../supabase/sql/0007_certificate_name_gate_and_cleanup.sql)
+   — required: adds the certificate full-name gate (and, on older projects,
+   removes sample-era certificates not backed by current-curriculum
+   completion; a no-op on a fresh project).
 
 ### 2b. If 0004 was partially or fully applied
 
@@ -74,7 +78,10 @@ once. Before running it, do the read-only preflight (counts of
 are preserved) — and is only safe when that history is disposable test data.
 The owner confirmed exactly that on 2026-07-23 (17 / 5 / 1). Verification
 queries are appended as comments at the end of the 0006 file; expected
-results: 16 video / 5 quiz / 21 required lessons, 25 questions.
+results: 16 video / 5 quiz / 21 required lessons, 25 questions. After 0006,
+run `0007_certificate_name_gate_and_cleanup.sql` (step 7 above) — it removes
+any preserved sample-era certificate that is no longer backed by completion
+of the final curriculum.
 
 ### 2c. What NOT to run
 
@@ -136,11 +143,11 @@ select set_config('request.jwt.claims',
 set local role authenticated;
 
 -- Signed-in lesson body works.
-select * from public.get_signed_in_lesson_body('the-singapore-way', 'welcome');
--- expect: 1 row with content set, video_url null
+select * from public.get_signed_in_lesson_body('the-singapore-way', 'start-here');
+-- expect: 1 row with content set and video_url = 'https://youtu.be/tVoscHU9Qas'
 
 -- Quiz questions are readable WITHOUT correct_choice.
-select count(*) from public.get_signed_in_quiz_questions('the-singapore-way', 'foundations-quiz');
+select count(*) from public.get_signed_in_quiz_questions('the-singapore-way', 'purpose-constraints-pragmatism-quiz');
 -- expect: 5
 -- and the result columns are: id, question, choices, question_position
 
@@ -149,7 +156,7 @@ select count(*) from public.get_signed_in_quiz_questions('the-singapore-way', 'f
 insert into public.quiz_attempts (user_id, course_id, lesson_id, score, passed, answers)
 values (auth.uid(),
         (select id from public.courses where slug = 'the-singapore-way'),
-        (select id from public.course_lessons where slug = 'foundations-quiz'),
+        (select id from public.course_lessons where slug = 'purpose-constraints-pragmatism-quiz'),
         100, true, '{}'::jsonb);
 -- expect: ERROR: new row violates row-level security policy for table "quiz_attempts"
 
@@ -157,7 +164,7 @@ values (auth.uid(),
 insert into public.lesson_progress (user_id, course_id, lesson_id)
 values (auth.uid(),
         (select id from public.courses where slug = 'the-singapore-way'),
-        (select id from public.course_lessons where slug = 'welcome'));
+        (select id from public.course_lessons where slug = 'start-here'));
 -- expect: ERROR
 
 rollback;
@@ -168,20 +175,20 @@ before continuing.
 
 ---
 
-## 4. Seed the sample course
+## 4. Confirm the seeded course
 
 Already done by step 6 of §2a. Confirm:
 
 ```sql
 select slug, title, status from public.courses where slug = 'the-singapore-way';
--- expect: ('the-singapore-way', 'The Singapore Way Companion Course', 'published')
+-- expect: ('the-singapore-way', 'The Singapore Way Online Course', 'published')
 
-select count(*) as modules from public.course_modules;         -- expect: 4
-select count(*) as lessons from public.course_lessons;         -- expect: 12
-select count(*) as questions from public.quiz_questions;       -- expect: 15
+select count(*) as modules from public.course_modules;         -- expect: 5
+select count(*) as lessons from public.course_lessons;         -- expect: 21
+select count(*) as questions from public.quiz_questions;       -- expect: 25
 
--- Lesson-type audit. All teaching lessons are videos; the three required
--- quizzes are quizzes. There are no text-type lessons in the current sample.
+-- Lesson-type audit. Sixteen video lessons; five required quizzes. There are
+-- no text-type lessons in the current course.
 select l.content_type, count(*) as lesson_count
 from public.course_lessons l
 join public.courses c on c.id = l.course_id
@@ -189,12 +196,12 @@ where c.slug = 'the-singapore-way'
 group by l.content_type
 order by l.content_type;
 -- expect:
---   quiz  | 3
---   video | 9
+--   quiz  | 5
+--   video | 16
 ```
 
-If the audit shows `text` rows from an older seed, run the repair UPDATE in
-[`docs/update-course-content.md`](./update-course-content.md) §4.
+If the counts show the old sample shape (4 / 12 / 15), the project predates
+S13 — apply `0006_course_final_content.sql` per §2b-bis, then 0007.
 
 Re-runs of the seed are no-ops once the slug exists.
 
@@ -215,13 +222,11 @@ Before pushing, run on the dev server:
   - [ ] Sign up via `/signup`. After auto-sign-in the "Continue" button
         routes to the lesson you requested (not to `/account`).
   - [ ] `/my-learning` shows the course with "Not started".
-  - [ ] Open the first lesson (`welcome`). The player renders the "Video
-        coming soon" placeholder with the play icon and the lesson notes
-        below. Mark complete works. Sidebar checkmark appears.
-  - [ ] Walk through every other non-quiz lesson. Each one shows the same
-        "Video coming soon" placeholder + Lesson notes. (Sample seed leaves
-        every `video_url` null on purpose; the QA confirms the placeholder
-        is reachable everywhere the curriculum lists a teaching lesson.)
+  - [ ] Open the first lesson (`start-here`). The player renders the YouTube
+        embed (`youtube-nocookie.com` iframe, no autoplay) with the lesson
+        notes below. Mark complete works. Sidebar checkmark appears.
+  - [ ] Spot-check several other video lessons. Each plays its own approved
+        tracker video with Lesson notes underneath; no console CSP errors.
   - [ ] Open a quiz lesson. Submit deliberately wrong answers — result panel
         shows "Not passed yet" and explains the 80% threshold.
   - [ ] Retry with all correct — result shows "Quiz passed". Sidebar

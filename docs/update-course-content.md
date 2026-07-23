@@ -218,7 +218,7 @@ insert into public.quiz_questions
   (course_id, lesson_id, question, choices, correct_choice, explanation, position)
 values (
   (select id from public.courses where slug = 'the-singapore-way'),
-  (select id from public.course_lessons where slug = 'foundations-quiz'),
+  (select id from public.course_lessons where slug = 'purpose-constraints-pragmatism-quiz'),
   'Your question text',
   '["Choice A", "Choice B", "Choice C", "Choice D"]'::jsonb,
   1,                            -- ← zero-indexed: 0 = A, 1 = B, 2 = C, 3 = D
@@ -232,7 +232,7 @@ values (
 ```sql
 update public.quiz_questions
 set correct_choice = 2
-where lesson_id = (select id from public.course_lessons where slug = 'foundations-quiz')
+where lesson_id = (select id from public.course_lessons where slug = 'purpose-constraints-pragmatism-quiz')
   and position = 3;
 ```
 
@@ -308,15 +308,19 @@ owner-side fallback is in
 [`getLearnerDisplayName`](../src/lib/course/queries.ts) and currently
 returns `'Learner'`.
 
-**Learner full name:** implemented in S13. When the signed-in learner has no
-`full_name` in their user metadata, the own-certificate page shows
-[`CertificateNameForm`](../src/components/course/CertificateNameForm.tsx),
-which calls the `updateLearnerName` Server Action
-([`src/lib/course/actions.ts`](../src/lib/course/actions.ts)) — the learner
-updates only their own auth record through their own session (validated and
-length-capped server-side), then the certificate re-renders. Issuance is
-never blocked on the name; the fallback display name is used until one is
-saved.
+**Learner full name (gate):** implemented in S13. A certificate is only
+issued and displayed once the learner's account carries a meaningful full
+name. Enforcement is layered: authoritatively inside the
+`issue_certificate()` RPC (replaced by
+[`0007_certificate_name_gate_and_cleanup.sql`](../supabase/sql/0007_certificate_name_gate_and_cleanup.sql)
+— raises `Full name required` when `raw_user_meta_data ->> 'full_name'` is
+blank or a generic fallback), and in the own-certificate page, which shows
+[`CertificateNameForm`](../src/components/course/CertificateNameForm.tsx)
+(calling the `updateLearnerName` Server Action in
+[`src/lib/course/actions.ts`](../src/lib/course/actions.ts) — the learner
+updates only their own auth record through their own session, validated and
+length-capped server-side) and suppresses the certificate and print action
+until a meaningful name is saved.
 
 ---
 

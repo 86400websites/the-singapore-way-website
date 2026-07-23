@@ -12,7 +12,11 @@
 --   * Deletes and rebuilds the course CONTENT: 5 modules, 16 required video
 --     lessons (real YouTube URLs), 5 required quiz lessons, 25 questions.
 --   * Deletes this course's lesson_progress and quiz_attempts rows.
---   * DOES NOT touch public.certificates — issued certificates stay valid.
+--   * DOES NOT touch public.certificates. NOTE (post-review): because the
+--     course row is reused, a preserved sample-era certificate would present
+--     as a credential for the FINAL course — 0007 therefore removes
+--     certificates not backed by completion of the current curriculum.
+--     Always apply 0007 after this file.
 --   * Touches no other course, table, function, policy, or grant.
 --
 -- CLASSIFICATION: DESTRUCTIVE (Path A of the S13 runbook).
