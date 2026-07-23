@@ -16,7 +16,7 @@ const navItems: NavItem[] = [
     label: 'Learn',
     href: '/learn',
     children: [
-      { label: 'Online Course', href: '/online-course', desc: 'Twelve lessons, quizzes, and a certificate.' },
+      { label: 'Online Course', href: '/online-course', desc: 'Sixteen video lessons, quizzes, and a certificate.' },
       { label: 'Podcast', href: '/podcasts', desc: "Conversations on Singapore's rise." },
       { label: 'Blog', href: '/blog', desc: 'Short, practical essays you can use.' },
     ],
