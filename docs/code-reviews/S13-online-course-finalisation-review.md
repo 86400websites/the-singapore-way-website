@@ -125,4 +125,40 @@ Files changed in this fix round: `supabase/sql/0008_certificate_public_name_gate
 Owner actions before round 3: apply 0008 (builder verifies read-only, boolean-only);
 open the PR; run pack-08 Preview QA at the new head; fill the brief completely.
 
-## Round 3 — pending
+## Round 3 — 2026-07-23 — REQUEST CHANGES
+
+- Merge base: `38f2e6301904a18f38bfe16f3d5a1aeda5bf3d95` · Reviewed head: `37c96ceb5810207a1f3fef05be6a13ab91de269e`
+- Scope confirmed: 31 files, 3,410 insertions, 555 deletions.
+
+### Findings (as returned by the reviewer)
+
+**1. PR, Preview, tester, and CI evidence remain placeholders — Blocking.**
+The brief again carried `[OWNER: …]` placeholders; no identifiable PR, deployment,
+tester/date record, or CI/gitleaks run exists for the head. Fix: create and test them,
+then repeat the release-evidence review. Confidence: high.
+
+**2. Documentation still describes behavior superseded by 0008 — Should-fix.**
+Four residual statements said blank-name certificates display "Learner"/"Verified
+learner" (checklist intro, content-guide render list, SQL README table) and
+PROJECT-STATUS still said 0008/PR/Preview pending. Confidence: high.
+
+Round-2 disposition verified by the reviewer: public generic-name display **fixed**;
+name-form validation **fixed**; main runbooks **fixed**; 0008 up/down SQL inspected
+completely (privileges + pinned search_path retained, rollback restores documented
+bodies, no data mutation). Offline typecheck/lint/build pass; no dependency changes;
+secrets/answer-key scans clean. **Verdict: REQUEST CHANGES.**
+
+---
+
+## Builder disposition — round 3 (2026-07-23)
+
+| # | Finding | Disposition |
+|---|---|---|
+| 1 | PR/Preview/CI evidence | **Owner-process — the only open item in the entire sprint.** All migrations (0006–0008) are applied and MCP-verified; every code and documentation finding from rounds 1–3 is fixed. The owner must: open the PR, let CI/gitleaks run, execute pack-08 Preview QA at the exact head, and fill the brief's evidence fields with real values before requesting re-review. |
+| 2 | Residual 0008-superseded docs | **Fixed** — checklist intro (§1 access-model summary), `update-course-content.md` render list + gate-reference (0007 → live body 0008), SQL README app-table row + access-model bullet, and the two equivalent stale lines in `TECH-ARCHITECTURE.md` (§3 route table, §4 certificates row — same defect class, fixed proactively). PROJECT-STATUS §1 reconciled: 0006–0008 applied/verified; sole remaining blocker is release evidence. |
+
+Files changed in this fix round: `docs/course-setup-and-launch-checklist.md`,
+`docs/update-course-content.md`, `supabase/sql/README.md`, `docs/TECH-ARCHITECTURE.md`,
+`docs/PROJECT-STATUS.md`, this record. Docs-only; no code, config, SQL, or runtime change.
+
+## Round 4 — pending

@@ -279,9 +279,11 @@ It renders (A4-landscape print target; print styles live at the end of
 
 - Site logo (`/assets/logo/logo-red.png`).
 - "Certificate of Completion" heading and "This certificate is presented to".
-- Learner display name (from `auth.users.raw_user_meta_data.full_name`, or
-  "Learner" on the own-cert page / "Verified learner" on the public verify
-  page when no full name is set).
+- Learner display name (from `auth.users.raw_user_meta_data.full_name`).
+  With a blank or generic stored name the certificate is not displayed at
+  all: the own-cert page shows the name-required step instead, and the
+  public verify URL renders the not-found state (0008). The "Learner" /
+  "Verified learner" fallbacks remain in code purely as defense-in-depth.
 - Course title with the supporting line "15 guiding principles for building
   systems that work".
 - Typographic signature block — "Maher Kaddoura / Author and Instructor"
@@ -313,10 +315,11 @@ returns `'Learner'`.
 **Learner full name (gate):** implemented in S13. A certificate is only
 issued and displayed once the learner's account carries a meaningful full
 name. Enforcement is layered: authoritatively inside the
-`issue_certificate()` RPC (replaced by
-[`0007_certificate_name_gate_and_cleanup.sql`](../supabase/sql/0007_certificate_name_gate_and_cleanup.sql)
-— raises `Full name required` when `raw_user_meta_data ->> 'full_name'` is
-blank or a generic fallback), and in the own-certificate page, which shows
+`issue_certificate()` RPC (gate introduced in 0007; live body in
+[`0008_certificate_public_name_gate.sql`](../supabase/sql/0008_certificate_public_name_gate.sql)
+— raises `Full name required` before returning any certificate, new or
+existing, when `raw_user_meta_data ->> 'full_name'` is blank or a generic
+fallback), and in the own-certificate page, which shows
 [`CertificateNameForm`](../src/components/course/CertificateNameForm.tsx)
 (calling the `updateLearnerName` Server Action in
 [`src/lib/course/actions.ts`](../src/lib/course/actions.ts) — the learner

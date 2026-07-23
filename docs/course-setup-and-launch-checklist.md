@@ -19,9 +19,11 @@ and earn a certificate. There is no `course_enrollments` lookup in the
 runtime path. Quiz grading is server-side via a `SECURITY DEFINER` RPC.
 Lesson-completion writes are server-side via a `SECURITY DEFINER` RPC.
 Certificate issuance is server-side via a `SECURITY DEFINER` RPC that
-re-verifies completion. Public certificate verification exposes only id,
-course title, learner display name (or "Verified learner" fallback), and
-issued date — never an email.
+re-verifies completion and requires a meaningful full name (0007/0008).
+Public certificate verification exposes only id, course title, learner
+display name, and issued date — never an email — and returns nothing at all
+for a blank/generic-name owner (0008), so a generic-name credential is
+never publicly displayed.
 
 ---
 

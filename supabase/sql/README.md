@@ -27,8 +27,9 @@ questions, no answer keys). Any signed-in user can:
 - take a quiz via the `submit_quiz_attempt` RPC (server-side grading);
 - read their own progress and certificate rows under RLS;
 - earn a certificate via the `issue_certificate` RPC after completion —
-  issuance additionally requires a meaningful full name on the auth record
-  (the 0007 name gate).
+  the RPC also requires a meaningful full name on the auth record before
+  returning any certificate, new or existing (gate introduced in 0007;
+  live body in 0008).
 
 Public certificate verification goes through `get_public_certificate`. It
 returns only id / course title / learner display name / issued date — and,
@@ -172,7 +173,7 @@ If any of those return unexpected counts, stop and re-apply 0005.
 | Server action `markLessonComplete` | `mark_lesson_complete()` | Server is the only writer to `lesson_progress`. Quiz lessons rejected. |
 | Server action `submitQuizAttempt` | `submit_quiz_attempt()` | Server-side grading. Server is the only writer to `quiz_attempts`. |
 | `/courses/[slug]/certificate` | `issue_certificate()`, `certificates` (owner read) | RPC re-verifies completion. |
-| `/certificates/[id]` (public verify) | `get_public_certificate()` | id / course title / display name / issued date. Display name falls back to "Verified learner". |
+| `/certificates/[id]` (public verify) | `get_public_certificate()` | id / course title / display name / issued date. Returns no row for a blank/generic-name owner (0008) — the page renders not-found instead of a generic-name credential. |
 | `/my-learning` | `lesson_progress`, `certificates` (owner reads) | Sign-in only. |
 
 No app path uses `service_role`. Every read and write goes through the
