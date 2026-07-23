@@ -7,11 +7,11 @@ The living tracker for **The Singapore Way**. Any fresh session — AI or human 
 | Item | Value |
 |---|---|
 | Current stage | Post-launch |
-| Active sprint | S12 — Agent Skills (`/close`, `/sprint-prompt`) — Status: Approved (Codex APPROVE at head `f9a90e1`, round 2) |
-| Current branch | `claude/s12-agent-skills` (PR #14) |
-| Next action | 1. Owner merges PR #14. 2. Delete the branch. — *Prior:* ~~Re-run Codex review of PR #14~~ done — APPROVE at `f9a90e1` after round-1 REQUEST CHANGES (4 blocking + 1 should-fix) fixed |
+| Active sprint | S13 — Online Course Finalisation — Status: In Progress (all phases implemented; migrations 0006–0008 applied by owner and MCP-verified; Codex rounds 1–3 = REQUEST CHANGES with every code/doc finding fixed — the sole remaining blocker is release evidence: open the PR, run Preview QA + CI at the head, then Codex re-review) |
+| Current branch | `claude/s13-online-course-finalisation` |
+| Next action | **Release evidence only — every code/doc finding is fixed.** 1. Owner opens the PR from `claude/s13-online-course-finalisation` → CI + gitleaks green. 2. Full pack-08 Preview QA at the exact head; record Preview URL, tester, date (note: Preview certificates display a localhost verify URL by design — `NEXT_PUBLIC_SITE_URL` is deliberately unset in Preview per TECH-ARCHITECTURE §6; test `/certificates/<id>` directly on the Preview host). 3. Codex re-review with the brief fully filled → owner merge → Production smoke. — *Done:* migrations `0006`–`0008` applied 2026-07-23 and MCP-verified (curriculum 5/16/5/21 + 25 questions, key checksums match; name gate live in both RPCs; 0 non-displayable certificates — the sole remaining certificate is completion-backed with a meaningful name). Codex rounds 1–3 (`b41c657`, `c7f93c0`, `37c96ce`): REQUEST CHANGES; all fixes landed (record: [`code-reviews/S13-online-course-finalisation-review.md`](./code-reviews/S13-online-course-finalisation-review.md)). |
 | Preview / Production | Vercel Preview per PR / https://the-singapore-way-website.vercel.app on Vercel (custom domain `thesingaporeway.com` pending — backlog) |
-| Last updated | 2026-07-23 — S11 merged (PR #13) + Production smoke passed (HTTP 200, all six security headers); S12 adds the `/close` and `/sprint-prompt` agent skills. — *Prior:* 2026-07-22 — S11 approved by Codex (`e96dd75..fef6f63`, No findings) after three review rounds |
+| Last updated | 2026-07-23 — S12 merged (PR #14). S13 in progress: final 16-video course content, YouTube player + narrow CSP, certificate name-gate/print/redesign, 0006 Path A migration package (preflight 17/5/1 confirmed disposable test data by owner). Read-only Supabase MCP (`supabase-prod-readonly`) added with `docs/SUPABASE-MCP-SAFETY.md`. — *Prior:* 2026-07-23 — S11 merged (PR #13) + Production smoke passed |
 
 ### How to resume in a fresh AI session
 
@@ -32,7 +32,8 @@ Status legend: Not Started · In Progress · Blocked (say why) · Ready for Revi
 | Setup Gate | Done | — | — | pre-SOP | Repo, protected `main`, CI + gitleaks, Vercel Previews predate SOP adoption; governing docs completed by S11 |
 | Sprints 0–10 — site + course MVP | Done | various | #1–#12 | 2026-05-21 → 2026-06-09 | Pre-SOP delivery; see `git log` and [`book-course-mvp-plan.md`](./book-course-mvp-plan.md) |
 | S11 — SOP docs pack migration | Done | `claude/s11-sop-docs-pack` | #13 | 2026-07-23 | Codex APPROVE at `fef6f63` (3 rounds); merged + Production smoke passed. Records: [`sprint-prompts/S11-sop-docs-pack.md`](./sprint-prompts/S11-sop-docs-pack.md), [`code-reviews/S11-sop-docs-pack-review.md`](./code-reviews/S11-sop-docs-pack-review.md) |
-| S12 — Agent skills (`/close`, `/sprint-prompt`) | Approved (awaiting merge) | `claude/s12-agent-skills` | #14 | — | Codex APPROVE at `f9a90e1` (round 2; round 1 was REQUEST CHANGES — 4 blocking + 1 should-fix, fixed). Records: [`sprint-prompts/S12-agent-skills.md`](./sprint-prompts/S12-agent-skills.md), [`code-reviews/S12-agent-skills-review.md`](./code-reviews/S12-agent-skills-review.md) |
+| S12 — Agent skills (`/close`, `/sprint-prompt`) | Done | `claude/s12-agent-skills` | #14 | 2026-07-23 | Codex APPROVE at `f9a90e1` (round 2; round 1 was REQUEST CHANGES — 4 blocking + 1 should-fix, fixed). Records: [`sprint-prompts/S12-agent-skills.md`](./sprint-prompts/S12-agent-skills.md), [`code-reviews/S12-agent-skills-review.md`](./code-reviews/S12-agent-skills-review.md) |
+| S13 — Online Course Finalisation | In Progress | `claude/s13-online-course-finalisation` | — | — | Final 16-video course + 5 quizzes (25 questions) + printable certificate. DB path: 0006 Path A (owner-confirmed disposable test data, preflight 2026-07-23: 17 progress / 5 attempts / 1 cert) + 0007 (name gate + certificate cleanup, from Codex round 1 REQUEST CHANGES at `b41c657`). Records: [`sprint-prompts/S13-online-course-finalisation.md`](./sprint-prompts/S13-online-course-finalisation.md), [`code-reviews/S13-online-course-finalisation-review.md`](./code-reviews/S13-online-course-finalisation-review.md) |
 
 Retired sprints stay in the table, struck through, with the date, reason, and where the scope moved (backlog).
 
@@ -40,7 +41,8 @@ Retired sprints stay in the table, struck through, with the date, reason, and wh
 
 - 2026-06-09 — Sprint 10 (pre-SOP): website report cleanups merged (PR #12); before that, premium course frontend polish (PR #11, 2026-05-30) and premium visual refresh (PR #10, 2026-05-29). The course MVP itself landed in PR #9 (2026-05-28). Access model is sign-in-only (manual enrollment retired).
 - 2026-07-22 — S11: full governance migration to the SOP docs pack; no app code changed. Merged 2026-07-23 (PR #13) after Codex APPROVE; Production smoke passed.
-- 2026-07-23 — S12 (this sprint): added the `/close` and `/sprint-prompt` Claude Code skills under `.claude/skills/`; no app code changed.
+- 2026-07-23 — S12: added the `/close` and `/sprint-prompt` Claude Code skills under `.claude/skills/`; no app code changed. Merged (PR #14).
+- 2026-07-23 — S13 (this sprint, in progress): replaced the sample course with the final approved content (5 modules / 16 tracker-mapped YouTube video lessons / 5 quizzes); real `youtube-nocookie.com` player + one-origin `frame-src` CSP addition; certificate redesign with name-gate (`updateLearnerName`), print support, and typographic signature; `0006` Path A migration + rewritten seed authored (owner applies by hand). Also wired the read-only Supabase MCP (`.mcp.json` + `docs/SUPABASE-MCP-SAFETY.md`) — write-refusal verified.
 
 ## 4. Next sprint
 
@@ -56,11 +58,11 @@ Retired sprints stay in the table, struck through, with the date, reason, and wh
 
 | Check | Last run | Result | Notes |
 |---|---|---|---|
-| typecheck | 2026-07-23 | pass | `pnpm run typecheck` on the S12 branch |
-| lint | 2026-07-23 | pass | `pnpm run lint` on the S12 branch |
-| tests | 2026-07-23 | N/A | No test script; verification = typecheck + lint + build + gitleaks CI + Preview QA (decision D-3 tracks adding tests) |
-| build | 2026-07-23 | pass | `pnpm run build` — 32 routes / 41 static pages (unchanged; S12 touches no `src/`) |
-| deployed Preview | — | pending | PR #14 open; manual Preview testing pending (skills/docs-only — no runtime change). Record via `docs/templates/VERCEL-PREVIEW-TEST-TEMPLATE.md` |
+| typecheck | 2026-07-23 | pass | `pnpm run typecheck` on the S13 branch (after each phase) |
+| lint | 2026-07-23 | pass | `pnpm run lint` on the S13 branch (after each phase) |
+| tests | 2026-07-23 | N/A | No test script; verification = typecheck + lint + build + gitleaks CI + Preview QA (decision D-3 tracks adding tests). S13 adds a scripted three-way content drift check (course.ts ↔ 0006 ↔ seed — all pass). |
+| build | 2026-07-23 | pass | `pnpm run build` on the S13 branch (after each phase) |
+| deployed Preview | — | pending | S13 PR not yet opened; full Preview QA per the S13 pack (`08_QA_STRESS_TEST_AND_SIGNOFF`) pending push authorization |
 
 ## 7. Locked decisions (do not reopen)
 

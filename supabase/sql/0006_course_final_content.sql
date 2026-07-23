@@ -1,21 +1,34 @@
--- Course seed — the final approved course (S13).
+-- 0006_course_final_content.sql — S13: replace the sample course with the
+-- final approved course content.
 --
--- File: supabase/sql/seed-the-singapore-way.sql
--- Run AFTER 0001, 0002, 0003, 0005. (0004 stays skipped; 0005 supersedes it.)
+-- File: supabase/sql/0006_course_final_content.sql
+-- Run AFTER 0001, 0002, 0003, 0005 and the original seed (0004 stays skipped).
+-- Rollback: 0006_course_final_content.down.sql (restores the SAMPLE content
+-- shape only — it cannot restore deleted learner history).
 --
--- Seeds the complete approved course on a FRESH project:
---   * 5 modules.
---   * 16 required video lessons with the approved tracker YouTube URLs.
---   * 5 required quiz lessons, 25 questions total, 80% pass threshold.
---   * Certificate on completion of every required lesson + quiz.
+-- WHAT THIS DOES
+--   * Updates the course row (slug stays 'the-singapore-way') to the approved
+--     title, subtitle, and description.
+--   * Deletes and rebuilds the course CONTENT: 5 modules, 16 required video
+--     lessons (real YouTube URLs), 5 required quiz lessons, 25 questions.
+--   * Deletes this course's lesson_progress and quiz_attempts rows.
+--   * DOES NOT touch public.certificates. NOTE (post-review): because the
+--     course row is reused, a preserved sample-era certificate would present
+--     as a credential for the FINAL course — 0007 therefore removes
+--     certificates not backed by completion of the current curriculum.
+--     Always apply 0007 after this file.
+--   * Touches no other course, table, function, policy, or grant.
 --
--- The lesson/question content in this file is intentionally identical to the
--- rebuild body in 0006_course_final_content.sql — keep the two in sync when
--- course content changes (see docs/update-course-content.md).
+-- CLASSIFICATION: DESTRUCTIVE (Path A of the S13 runbook).
+--   The owner ran the read-only preflight on 2026-07-23 (17 lesson_progress /
+--   5 quiz_attempts / 1 certificate for this course) and confirmed all of it
+--   is disposable test data, authorising Path A. If the preflight were re-run
+--   today and showed REAL learner rows, STOP and use the Path B reconciliation
+--   described in docs/update-course-content.md instead.
 --
--- Idempotent: if a course with slug 'the-singapore-way' already exists, the
--- seed exits without changing anything. On an already-seeded project, content
--- replacement is done by the numbered migration (0006), never by this seed.
+-- The whole change runs in one do-block, i.e. one transaction: it either
+-- completes fully or leaves the database untouched. The course row is locked
+-- for the duration to serialise against concurrent RPC writers.
 
 do $$
 declare
@@ -31,22 +44,32 @@ declare
   v_quiz4_id  uuid;
   v_quiz5_id  uuid;
 begin
-  -- ---------- course ----------
-  insert into public.courses (slug, title, subtitle, description, status)
-  values (
-    'the-singapore-way',
-    'The Singapore Way Online Course',
-    '15 guiding principles for building systems that work.',
-    'A practical 16-video course for leaders, policymakers, educators, and changemakers who want to turn values, trust, systems thinking, and long-term leadership into action in their own context.',
-    'published'
-  )
-  on conflict (slug) do nothing
-  returning id into v_course_id;
+  -- ---------- resolve + lock the course ----------
+  select id into v_course_id
+  from public.courses
+  where slug = 'the-singapore-way'
+  for update;
 
   if v_course_id is null then
-    raise notice 'Course "the-singapore-way" is already seeded. Skipping.';
-    return;
+    raise exception 'Course "the-singapore-way" not found. On a fresh project run seed-the-singapore-way.sql instead of this migration.';
   end if;
+
+  -- ---------- course identity (slug unchanged) ----------
+  update public.courses
+     set title       = 'The Singapore Way Online Course',
+         subtitle    = '15 guiding principles for building systems that work.',
+         description = 'A practical 16-video course for leaders, policymakers, educators, and changemakers who want to turn values, trust, systems thinking, and long-term leadership into action in their own context.',
+         status      = 'published'
+   where id = v_course_id;
+
+  -- ---------- remove existing content, scoped to this course only ----------
+  -- Cascades from course_lessons would cover the child rows, but explicit
+  -- course-scoped deletes keep the blast radius auditable. Order respects FKs.
+  delete from public.quiz_questions  where course_id = v_course_id;
+  delete from public.quiz_attempts   where course_id = v_course_id;  -- test data (Path A)
+  delete from public.lesson_progress where course_id = v_course_id;  -- test data (Path A)
+  delete from public.course_lessons  where course_id = v_course_id;
+  delete from public.course_modules  where course_id = v_course_id;
 
   -- ---------- module 1 ----------
   insert into public.course_modules (course_id, title, description, position)
@@ -593,3 +616,45 @@ Apply it: Document one solution that works in your context. Share the principle,
      'The course ends by asking learners to build, adapt, teach, and share—without encouraging copy-paste reform.',
      5);
 end $$;
+
+-- =============================================================================
+-- Verification (read-only; run after applying)
+-- =============================================================================
+--
+-- Expected: 16 video lessons, 5 quiz lessons, 21 required.
+--
+--   select
+--     count(*) filter (where l.content_type = 'video') as video_lessons,
+--     count(*) filter (where l.content_type = 'quiz')  as quiz_lessons,
+--     count(*) filter (where l.is_required)            as required_lessons
+--   from public.course_lessons l
+--   join public.courses c on c.id = l.course_id
+--   where c.slug = 'the-singapore-way';
+--
+-- Expected: 25 questions, 5 per quiz lesson.
+--
+--   select l.slug, count(q.id) as questions
+--   from public.quiz_questions q
+--   join public.course_lessons l on l.id = q.lesson_id
+--   join public.courses c on c.id = q.course_id
+--   where c.slug = 'the-singapore-way'
+--   group by l.slug
+--   order by l.slug;
+--
+-- Expected: every video lesson has a non-null tracker URL; positions are
+-- sequential within each module.
+--
+--   select m.position as module_position, l.position as lesson_position,
+--          l.slug, l.content_type, l.video_url, l.is_required
+--   from public.course_modules m
+--   join public.courses c on c.id = m.course_id
+--   join public.course_lessons l on l.module_id = m.id
+--   where c.slug = 'the-singapore-way'
+--   order by m.position, l.position;
+--
+-- Expected: certificates were preserved (count unchanged from preflight).
+--
+--   select count(*) as certificate_rows
+--   from public.certificates x
+--   join public.courses c on c.id = x.course_id
+--   where c.slug = 'the-singapore-way';

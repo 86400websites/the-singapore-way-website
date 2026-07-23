@@ -8,8 +8,8 @@ import {
   getCourseBySlug,
   getFirstLessonHref,
   getRequiredLessonCount,
-  getTotalLessonCount,
   getTotalQuizCount,
+  getVideoLessonCount,
 } from '@/data/course'
 import { pageMetadata } from '@/lib/seo/page-metadata'
 import { createClient, isSupabaseConfigured } from '@/lib/supabase/server'
@@ -60,7 +60,7 @@ export default async function CourseLandingPage({ params }: CoursePageProps) {
   }
 
   const firstLessonHref = getFirstLessonHref(course)
-  const totalLessons = getTotalLessonCount(course)
+  const videoLessons = getVideoLessonCount(course)
   const requiredLessons = getRequiredLessonCount(course)
   const totalQuizzes = getTotalQuizCount(course)
 
@@ -128,10 +128,10 @@ export default async function CourseLandingPage({ params }: CoursePageProps) {
                 </div>
                 <div className="px-5 flex flex-col-reverse gap-2">
                   <dt className="text-[11px] font-bold tracking-[0.14em] text-[#666666] uppercase">
-                    Lessons
+                    Video lessons
                   </dt>
                   <dd className="text-[28px] font-bold text-[#111111] leading-none tabular-nums">
-                    {totalLessons}
+                    {videoLessons}
                   </dd>
                 </div>
                 <div className="pl-5 flex flex-col-reverse gap-2">
@@ -156,7 +156,8 @@ export default async function CourseLandingPage({ params }: CoursePageProps) {
                       className="mt-2 flex-shrink-0 w-1.5 h-1.5 rounded-full bg-[#C8102E]"
                       aria-hidden="true"
                     />
-                    {requiredLessons} required lessons across {course.modules.length} modules.
+                    {requiredLessons} required items across {course.modules.length} modules —{' '}
+                    {videoLessons} video lessons and {totalQuizzes} quizzes.
                   </li>
                   <li className="flex items-start gap-3">
                     <span
@@ -250,12 +251,12 @@ export default async function CourseLandingPage({ params }: CoursePageProps) {
       </section>
 
       {/* Curriculum preview */}
-      <section className="py-16 md:py-24 bg-white border-t border-[#ECECEC]">
+      <section id="curriculum" className="py-16 md:py-24 bg-white border-t border-[#ECECEC] scroll-mt-20">
         <div className="max-w-5xl mx-auto px-5 sm:px-6 lg:px-8">
           <div className="max-w-2xl mb-12 md:mb-14">
             <p className="eyebrow mb-4">Curriculum</p>
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#111111] leading-[1.15] tracking-[-0.01em]">
-              {course.modules.length} modules. {totalLessons} lessons. {totalQuizzes} quizzes.
+              {course.modules.length} modules. {videoLessons} video lessons. {totalQuizzes} quizzes.
             </h2>
             <span className="editorial-rule mt-5" aria-hidden="true" />
           </div>
@@ -276,7 +277,7 @@ export default async function CourseLandingPage({ params }: CoursePageProps) {
                       Module {mi + 1}
                     </span>
                     <span className="text-[11px] tracking-[0.06em] text-[#888888] uppercase">
-                      {module.lessons.length} lessons
+                      {module.lessons.length} items
                     </span>
                     {moduleMinutes > 0 && (
                       <span className="text-[11px] tracking-[0.06em] text-[#888888] tabular-nums">
@@ -366,11 +367,11 @@ export default async function CourseLandingPage({ params }: CoursePageProps) {
           <div className="max-w-2xl mb-12 md:mb-14">
             <p className="eyebrow mb-4">How it works</p>
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#111111] leading-[1.15] tracking-[-0.01em]">
-              Four steps, at your own pace.
+              Five steps, at your own pace.
             </h2>
             <span className="editorial-rule mt-5" aria-hidden="true" />
           </div>
-          <ol className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+          <ol className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 lg:gap-8">
             {course.landing.howItWorks.map((step, i) => (
               <li
                 key={step.title}

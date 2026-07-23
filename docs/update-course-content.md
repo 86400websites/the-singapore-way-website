@@ -4,9 +4,16 @@ How to change titles, modules, lessons, quizzes, and the certificate after
 launch — safely, without exposing answer keys, and without breaking the
 runtime.
 
-The current course is a **sample** designed to make the experience reviewable
-end-to-end. Swapping in your real course is a routine content edit: the
-schema, RLS posture, and RPC surface do not need to change.
+The course is the **final approved S13 content**: 5 modules, 16 required
+YouTube video lessons, 5 required quizzes (25 questions), certificate on
+completion. Routine content edits do not require schema, RLS, or RPC
+changes. A structural replacement of the whole course (like S13 itself) is
+done via a numbered migration modelled on
+[`supabase/sql/0006_course_final_content.sql`](../supabase/sql/0006_course_final_content.sql)
+— and only after checking this course's `lesson_progress` / `quiz_attempts`
+/ `certificates` counts: with real learner history, do NOT delete-and-rebuild
+(0006's Path A); reconcile kept lessons by slug via UPDATE so their UUIDs —
+and therefore learner progress — survive.
 
 ---
 
@@ -16,7 +23,9 @@ Two sources of truth, and you should update both:
 
 1. **Supabase** — the authoritative production source. Schema lives in
    `supabase/sql/0001_*` through `0005_*`. Content lives in
-   `supabase/sql/seed-the-singapore-way.sql`.
+   `supabase/sql/seed-the-singapore-way.sql` (fresh projects) and
+   `supabase/sql/0006_course_final_content.sql` (the S13 content replacement
+   for already-seeded projects) — keep their insert bodies identical.
 2. **Local typed data** — `src/data/course.ts` and `src/lib/course/types.ts`.
    Used as a fallback when Supabase is not configured (dev environments) and
    as the source of *marketing landing copy* (`landing.*`), which is not
@@ -119,66 +128,26 @@ not slug, so progress survives renames — but a URL using the old slug 404s).
 
 | `content_type` | Player behaviour |
 | --- | --- |
-| `video` (the default for the sample course's teaching lessons) | Shows the polished "Video coming soon" placeholder when `video_url` is null. Plays the URL when set. Lesson `content`, if present, renders as **Lesson notes** under the placeholder. |
+| `video` (all 16 teaching lessons) | `LessonBody` parses `video_url` with [`src/lib/course/youtube.ts`](../src/lib/course/youtube.ts) (accepted shapes: `https://youtu.be/<id>`, `https://www.youtube.com/watch?v=<id>`, `/embed/<id>`; the 11-char ID is validated) and renders a privacy-enhanced `youtube-nocookie.com` iframe — no autoplay, fullscreen enabled. A null or unparseable URL shows the honest "Video unavailable" fallback. Lesson `content`, if present, renders as **Lesson notes** under the player. |
 | `quiz` | Renders the QuizRunner. `content` is ignored. Use only for lessons that genuinely have questions in `quiz_questions`. |
-| `text` | Renders the paragraphs in `content` directly. Reserved for written-only lessons. The sample seed does not use this; quizzes and videos cover the current MVP. |
+| `text` | Renders the paragraphs in `content` directly. Reserved for written-only lessons. The course does not currently use this. |
 
-### Replace a "Video coming soon" placeholder with a real video URL
+### Change a lesson's video
 
-The sample seed leaves every teaching lesson with `video_url = null` so the
-placeholder is visible. To swap in a real video for one lesson:
+Every teaching lesson already carries its approved tracker URL. To swap the
+video for one lesson (also update `src/data/course.ts` and the seed/0006):
 
 ```sql
 update public.course_lessons
-set video_url = 'https://your-cdn.example.com/lessons/welcome.mp4'
-where slug = 'welcome';
+set video_url = 'https://youtu.be/XXXXXXXXXXX'
+where slug = 'start-here';
 ```
 
-The current `LessonBody` shows a "Video player will render here." stub when
-`video_url` is set — wiring a real `<video>` or HLS player into that branch
-is a small UI follow-up. (No security boundary changes are needed: the URL is
-already returned only by `get_signed_in_lesson_body`, which is sign-in
-gated.)
-
-To swap in real videos for **every** teaching lesson at once:
-
-```sql
-update public.course_lessons l
-set video_url = case l.slug
-  when 'welcome'              then 'https://your-cdn.example.com/welcome.mp4'
-  when 'method-not-miracle'   then 'https://your-cdn.example.com/method.mp4'
-  when 'long-term-thinking'   then 'https://your-cdn.example.com/long-term.mp4'
-  when 'trust-and-governance' then 'https://your-cdn.example.com/trust.mp4'
-  when 'systems-thinking'     then 'https://your-cdn.example.com/systems.mp4'
-  when 'borrow-the-root'      then 'https://your-cdn.example.com/root.mp4'
-  when 'adaptation-playbook'  then 'https://your-cdn.example.com/playbook.mp4'
-  when 'build-your-case'      then 'https://your-cdn.example.com/case.mp4'
-  when 'final-reflection'     then 'https://your-cdn.example.com/reflection.mp4'
-end
-from public.courses c
-where l.course_id = c.id
-  and c.slug = 'the-singapore-way'
-  and l.content_type = 'video';
-```
-
-Quiz lessons are not touched by this UPDATE (the `content_type = 'video'`
-filter keeps them safe).
-
-### Repair an already-seeded DB so every teaching lesson is a video lesson
-
-If you applied an older seed where some teaching lessons were still
-`content_type = 'text'`, run this once. Quizzes are explicitly excluded:
-
-```sql
-update public.course_lessons l
-set
-  content_type = 'video',
-  video_url    = null
-from public.courses c
-where l.course_id = c.id
-  and c.slug = 'the-singapore-way'
-  and l.content_type <> 'quiz';
-```
+The player accepts YouTube URLs only (`youtu.be/<id>`, `watch?v=<id>`,
+`/embed/<id>`); anything else renders the "Video unavailable" fallback
+rather than an embed. No security boundary changes are needed for video
+swaps: the URL is returned only by `get_signed_in_lesson_body`, which is
+sign-in gated, and the CSP allows framing only `www.youtube-nocookie.com`.
 
 Then verify the lesson-type counts:
 
@@ -190,8 +159,8 @@ where c.slug = 'the-singapore-way'
 group by l.content_type
 order by l.content_type;
 -- expect:
---   quiz  | 3
---   video | 9
+--   quiz  | 5
+--   video | 16
 ```
 
 ### Add a lesson
@@ -249,7 +218,7 @@ insert into public.quiz_questions
   (course_id, lesson_id, question, choices, correct_choice, explanation, position)
 values (
   (select id from public.courses where slug = 'the-singapore-way'),
-  (select id from public.course_lessons where slug = 'foundations-quiz'),
+  (select id from public.course_lessons where slug = 'purpose-constraints-pragmatism-quiz'),
   'Your question text',
   '["Choice A", "Choice B", "Choice C", "Choice D"]'::jsonb,
   1,                            -- ← zero-indexed: 0 = A, 1 = B, 2 = C, 3 = D
@@ -263,7 +232,7 @@ values (
 ```sql
 update public.quiz_questions
 set correct_choice = 2
-where lesson_id = (select id from public.course_lessons where slug = 'foundations-quiz')
+where lesson_id = (select id from public.course_lessons where slug = 'purpose-constraints-pragmatism-quiz')
   and position = 3;
 ```
 
@@ -305,17 +274,26 @@ If `git grep` shows anything more than the three documentation comments in
 
 The certificate UI is in
 [`src/components/course/CertificateView.tsx`](../src/components/course/CertificateView.tsx).
-It renders:
+It renders (A4-landscape print target; print styles live at the end of
+[`src/styles/globals.css`](../src/styles/globals.css)):
 
 - Site logo (`/assets/logo/logo-red.png`).
-- "Certificate of Completion" eyebrow.
-- Learner display name (from `auth.users.raw_user_meta_data.full_name`, or
-  "Learner" on the own-cert page / "Verified learner" on the public verify
-  page when no full name is set).
-- Course title.
-- "Date issued".
-- "Certificate code" (the certificate UUID — also the public verify URL).
-- A "Verified" badge on the public verify variant.
+- "Certificate of Completion" heading and "This certificate is presented to".
+- Learner display name (from `auth.users.raw_user_meta_data.full_name`).
+  With a blank or generic stored name the certificate is not displayed at
+  all: the own-cert page shows the name-required step instead, and the
+  public verify URL renders the not-found state (0008). The "Learner" /
+  "Verified learner" fallbacks remain in code purely as defense-in-depth.
+- Course title with the supporting line "15 guiding principles for building
+  systems that work".
+- Typographic signature block — "Maher Kaddoura / Author and Instructor"
+  (deliberately typographic; never an imitation of a real handwritten
+  signature).
+- "Date issued" and "Certificate code" (the certificate UUID — also the
+  public verify URL).
+- Own variant: the verification URL in readable text + "Print or save as
+  PDF" button ([`PrintCertificateButton`](../src/components/course/PrintCertificateButton.tsx)).
+- Public verify variant: a "Verified certificate" badge.
 
 **To swap the logo:** drop a new file into
 `public/assets/logo/logo-red.png`. Keep the same dimensions and the same
@@ -324,18 +302,30 @@ filename — code references it as a static path.
 **To change the eyebrow / heading / labels:** edit
 `CertificateView.tsx` directly. Re-run `pnpm run build` after.
 
-**To change the display-name fallback:** the public fallback is hard-coded
-in `get_public_certificate()` inside
-[`0005_course_mvp_open_access_sample.sql`](../supabase/sql/0005_course_mvp_open_access_sample.sql).
-Change the `'Verified learner'` literal there and re-apply the file. The
-owner-side fallback is in
+**Public display of generic-name certificates:** since
+[`0008_certificate_public_name_gate.sql`](../supabase/sql/0008_certificate_public_name_gate.sql),
+`get_public_certificate()` returns **no row** while the certificate owner's
+stored full name is blank or a generic fallback — the public URL shows the
+not-found state until the learner saves a real name. The `'Verified
+learner'` coalesce literal (defense-in-depth only) now lives in 0008's
+function body; the owner-side fallback is in
 [`getLearnerDisplayName`](../src/lib/course/queries.ts) and currently
 returns `'Learner'`.
 
-**To require a real display name before issuing a certificate:** ask the
-learner for their full name on the certificate page (small client form that
-calls `supabase.auth.updateUser({ data: { full_name } })`), then re-render.
-The current MVP does not do this; it is the recommended Sprint-11 polish.
+**Learner full name (gate):** implemented in S13. A certificate is only
+issued and displayed once the learner's account carries a meaningful full
+name. Enforcement is layered: authoritatively inside the
+`issue_certificate()` RPC (gate introduced in 0007; live body in
+[`0008_certificate_public_name_gate.sql`](../supabase/sql/0008_certificate_public_name_gate.sql)
+— raises `Full name required` before returning any certificate, new or
+existing, when `raw_user_meta_data ->> 'full_name'` is blank or a generic
+fallback), and in the own-certificate page, which shows
+[`CertificateNameForm`](../src/components/course/CertificateNameForm.tsx)
+(calling the `updateLearnerName` Server Action in
+[`src/lib/course/actions.ts`](../src/lib/course/actions.ts) — the learner
+updates only their own auth record through their own session, validated and
+length-capped server-side) and suppresses the certificate and print action
+until a meaningful name is saved.
 
 ---
 

@@ -1,4 +1,5 @@
 import type { CourseLessonPreview } from '@/lib/course/types'
+import { parseYouTubeId, youTubeEmbedUrl } from '@/lib/course/youtube'
 
 type LessonBodyProps = {
   lesson: CourseLessonPreview
@@ -13,8 +14,7 @@ export default function LessonBody({ lesson }: LessonBodyProps) {
           A short check on what you just learned.
         </h3>
         <p className="prose-body mb-6">
-          {lesson.description ??
-            'This lesson is a multiple-choice quiz. The quiz interface is being prepared and will be available here soon.'}
+          {lesson.description ?? 'This lesson is a multiple-choice quiz.'}
         </p>
         <p className="text-[13px] text-[#888888]">
           Quizzes are multiple-choice with an 80% pass bar. You will have unlimited retries.
@@ -24,11 +24,20 @@ export default function LessonBody({ lesson }: LessonBodyProps) {
   }
 
   if (lesson.contentType === 'video') {
+    const videoId = lesson.videoUrl ? parseYouTubeId(lesson.videoUrl) : null
     return (
       <div className="space-y-6">
         <div className="aspect-video w-full rounded-2xl overflow-hidden border border-[#222222] bg-[radial-gradient(circle_at_30%_30%,#222222_0%,#111111_60%)] flex items-center justify-center text-white relative">
-          {lesson.videoUrl ? (
-            <p className="text-sm text-[#BBBBBB]">Video player will render here.</p>
+          {videoId ? (
+            <iframe
+              src={youTubeEmbedUrl(videoId)}
+              title={`${lesson.title} — video lesson`}
+              className="absolute inset-0 h-full w-full"
+              loading="lazy"
+              allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+              referrerPolicy="strict-origin-when-cross-origin"
+            />
           ) : (
             <div className="flex flex-col items-center gap-4 text-center px-6">
               <span
@@ -40,11 +49,10 @@ export default function LessonBody({ lesson }: LessonBodyProps) {
                 </svg>
               </span>
               <p className="text-[15px] font-bold tracking-[0.02em] text-white">
-                Video coming soon
+                Video unavailable. Please report this lesson so we can restore it.
               </p>
               <p className="text-[13px] text-[#BBBBBB] max-w-sm leading-[1.6]">
-                The full video lesson will appear here. The notes below cover the same
-                ground in the meantime.
+                The lesson notes below cover the same ground.
               </p>
             </div>
           )}

@@ -2,7 +2,9 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
 
+import CertificateNameForm from '@/components/course/CertificateNameForm'
 import CertificateView from '@/components/course/CertificateView'
+import PrintCertificateButton from '@/components/course/PrintCertificateButton'
 import {
   checkCourseAccess,
   computeProgress,
@@ -10,6 +12,7 @@ import {
   getCourseForPlayer,
   getLearnerDisplayName,
   getOwnCertificate,
+  hasMeaningfulLearnerName,
   isCourseComplete,
   issueCertificate,
 } from '@/lib/course/queries'
@@ -59,18 +62,25 @@ export default async function CertificatePage({ params }: CertificatePageProps) 
   const progress = computeProgress(course, completed)
   const complete = isCourseComplete(course, completed)
 
+  // Full-name gate: the certificate is only issued and displayed once the
+  // learner's account carries a meaningful full name. The authoritative
+  // enforcement lives inside the issue_certificate() RPC (0007); this check
+  // decides which UI state to render.
+  const nameOk = hasMeaningfulLearnerName(access.user)
+
   // Try to read an existing certificate first.
   let cert = await getOwnCertificate(access.courseId, access.user.id)
 
-  // If complete but no certificate yet, issue one. The RPC re-verifies
-  // completion server-side and is idempotent.
+  // If complete, named, and no certificate yet, issue one. The RPC
+  // re-verifies completion and the name server-side and is idempotent.
   let issueError: string | null = null
-  if (!cert && complete) {
+  if (!cert && complete && nameOk) {
     const result = await issueCertificate(access.courseId)
     if (result.status === 'issued') {
       cert = { id: result.id, issuedAt: result.issuedAt }
-    } else if (result.status === 'incomplete') {
-      // Race: progress changed between check and call. Treat as incomplete.
+    } else if (result.status === 'incomplete' || result.status === 'name_required') {
+      // Race: progress or the stored name changed between check and call.
+      // The corresponding pending state below covers both.
     } else {
       issueError = (() => {
         switch (result.status) {
@@ -87,11 +97,23 @@ export default async function CertificatePage({ params }: CertificatePageProps) 
     }
   }
 
+  // Course complete (or a certificate already exists) but no meaningful name:
+  // collect the name first. The certificate — even a pre-existing one — is
+  // deliberately not displayed or printable in this state.
+  if (!nameOk && (complete || cert)) {
+    return (
+      <NameRequiredState
+        courseTitle={course.title}
+        courseSlug={course.slug}
+      />
+    )
+  }
+
   if (cert) {
     return (
-      <section className="bg-[#fbf5f2]">
+      <section className="print-cert-section bg-[#fbf5f2]">
         <div className="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8 py-12 md:py-16 lg:py-20">
-          <header className="mb-8 md:mb-10 text-center">
+          <header className="no-print mb-8 md:mb-10 text-center">
             <p className="eyebrow mb-3">Certificate earned</p>
             <h1 className="text-3xl md:text-4xl font-bold text-[#111111] leading-[1.15] tracking-[-0.01em]">
               Well done.
@@ -110,7 +132,8 @@ export default async function CertificatePage({ params }: CertificatePageProps) 
             variant="own"
           />
 
-          <div className="mt-10 flex flex-wrap gap-3 justify-center">
+          <div className="no-print mt-10 flex flex-wrap gap-3 justify-center">
+            <PrintCertificateButton />
             <Link href={`/courses/${course.slug}`} className="btn-pill-outline">
               Back to course
             </Link>
@@ -130,6 +153,42 @@ export default async function CertificatePage({ params }: CertificatePageProps) 
       percent={progress.percent}
       issueError={issueError}
     />
+  )
+}
+
+function NameRequiredState({
+  courseTitle,
+  courseSlug,
+}: {
+  courseTitle: string
+  courseSlug: string
+}) {
+  return (
+    <section className="bg-[#fbf5f2] min-h-[calc(100vh-70px)] flex items-center">
+      <div className="max-w-2xl mx-auto px-5 sm:px-6 lg:px-8 py-16 md:py-24 w-full">
+        <div className="card-editorial p-10 md:p-14 text-center">
+          <p className="eyebrow mb-4">One last step</p>
+          <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#111111] leading-[1.15] tracking-[-0.01em] mb-5">
+            Add your name to receive your certificate.
+          </h1>
+          <span className="editorial-rule mx-auto mb-7" aria-hidden="true" />
+          <p className="lede mb-8 max-w-xl mx-auto">
+            You have completed <strong>{courseTitle}</strong>. Your certificate
+            is issued in your full name, which also appears on its public
+            verification page — add it below and the certificate will be ready
+            immediately.
+          </p>
+          <div className="text-left">
+            <CertificateNameForm />
+          </div>
+          <div className="flex flex-wrap gap-3 justify-center">
+            <Link href={`/courses/${courseSlug}`} className="btn-pill-outline">
+              Back to course
+            </Link>
+          </div>
+        </div>
+      </div>
+    </section>
   )
 }
 
