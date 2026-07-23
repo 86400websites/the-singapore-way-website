@@ -63,6 +63,19 @@ is superseded by 0005.
 `0005` is idempotent and self-repairs. Just run `0005` and then the seed.
 You do not need to revert 0004 first.
 
+### 2b-bis. Project seeded BEFORE S13 (old 4-module sample course)
+
+The seed is insert-only — re-running it on an existing course is a no-op.
+To replace the sample content with the final S13 course, run
+[`supabase/sql/0006_course_final_content.sql`](../supabase/sql/0006_course_final_content.sql)
+once. Before running it, do the read-only preflight (counts of
+`lesson_progress`, `quiz_attempts`, `certificates` for the course): 0006 is
+**Path A** — it deletes this course's progress and attempts (certificates
+are preserved) — and is only safe when that history is disposable test data.
+The owner confirmed exactly that on 2026-07-23 (17 / 5 / 1). Verification
+queries are appended as comments at the end of the 0006 file; expected
+results: 16 video / 5 quiz / 21 required lessons, 25 questions.
+
 ### 2c. What NOT to run
 
 - **Do not** run any file under `supabase/sql/*.down.sql` unless you are
@@ -88,10 +101,10 @@ set role anon;
 select count(*) from public.courses where slug = 'the-singapore-way';
 -- expect: 1
 
--- Public curriculum projection works. 12 lessons, no content/video_url
--- columns in the result.
+-- Public curriculum projection works. 21 lessons (16 video + 5 quiz), no
+-- content/video_url columns in the result.
 select count(*) from public.get_published_curriculum('the-singapore-way');
--- expect: 12
+-- expect: 21
 
 -- The raw lessons table is NOT readable. Either zero rows or a policy error.
 select count(*) from public.course_lessons;

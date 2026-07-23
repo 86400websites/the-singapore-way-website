@@ -2,7 +2,9 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
 
+import CertificateNameForm from '@/components/course/CertificateNameForm'
 import CertificateView from '@/components/course/CertificateView'
+import PrintCertificateButton from '@/components/course/PrintCertificateButton'
 import {
   checkCourseAccess,
   computeProgress,
@@ -88,10 +90,19 @@ export default async function CertificatePage({ params }: CertificatePageProps) 
   }
 
   if (cert) {
+    // The certificate is issued regardless, but when the account has no
+    // full name yet we ask for one so the certificate (and its public
+    // verification page) shows a real name instead of the generic fallback.
+    const storedName =
+      typeof access.user.user_metadata?.full_name === 'string'
+        ? access.user.user_metadata.full_name.trim()
+        : ''
+    const nameMissing = storedName.length === 0
+
     return (
-      <section className="bg-[#fbf5f2]">
+      <section className="print-cert-section bg-[#fbf5f2]">
         <div className="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8 py-12 md:py-16 lg:py-20">
-          <header className="mb-8 md:mb-10 text-center">
+          <header className="no-print mb-8 md:mb-10 text-center">
             <p className="eyebrow mb-3">Certificate earned</p>
             <h1 className="text-3xl md:text-4xl font-bold text-[#111111] leading-[1.15] tracking-[-0.01em]">
               Well done.
@@ -102,6 +113,8 @@ export default async function CertificatePage({ params }: CertificatePageProps) 
             </p>
           </header>
 
+          {nameMissing && <CertificateNameForm />}
+
           <CertificateView
             certificateId={cert.id}
             courseTitle={course.title}
@@ -110,7 +123,8 @@ export default async function CertificatePage({ params }: CertificatePageProps) 
             variant="own"
           />
 
-          <div className="mt-10 flex flex-wrap gap-3 justify-center">
+          <div className="no-print mt-10 flex flex-wrap gap-3 justify-center">
+            <PrintCertificateButton />
             <Link href={`/courses/${course.slug}`} className="btn-pill-outline">
               Back to course
             </Link>

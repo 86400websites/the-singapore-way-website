@@ -129,3 +129,69 @@ export async function submitQuizAttempt(
     correct: result.correct,
   }
 }
+
+// =============================================================================
+// Learner name (certificate)
+// =============================================================================
+
+export type UpdateLearnerNameResult =
+  | { status: 'success' }
+  | { status: 'unauthorized' }
+  | { status: 'not_configured' }
+  | { status: 'invalid_input'; message: string }
+  | { status: 'error' }
+
+const LEARNER_NAME_MAX_LENGTH = 80
+
+/**
+ * Set the signed-in learner's display name (user_metadata.full_name), used on
+ * their certificate and its public verification page.
+ *
+ * The learner updates only their own auth record through their own session —
+ * no privileged key is involved and nothing beyond full_name is written.
+ */
+export async function updateLearnerName(
+  fullName: string,
+): Promise<UpdateLearnerNameResult> {
+  if (!isSupabaseConfigured()) {
+    return { status: 'not_configured' }
+  }
+
+  if (typeof fullName !== 'string') {
+    return { status: 'invalid_input', message: 'Please enter your name.' }
+  }
+
+  // Strip control characters and collapse runs of whitespace so the stored
+  // name renders predictably on the certificate and in print.
+  const cleaned = fullName
+    .replace(/[\u0000-\u001F\u007F]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+
+  if (!cleaned) {
+    return { status: 'invalid_input', message: 'Please enter your name.' }
+  }
+  if (cleaned.length > LEARNER_NAME_MAX_LENGTH) {
+    return {
+      status: 'invalid_input',
+      message: `Please keep your name under ${LEARNER_NAME_MAX_LENGTH} characters.`,
+    }
+  }
+
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) {
+    return { status: 'unauthorized' }
+  }
+
+  const { error } = await supabase.auth.updateUser({
+    data: { full_name: cleaned },
+  })
+  if (error) {
+    return { status: 'error' }
+  }
+
+  return { status: 'success' }
+}

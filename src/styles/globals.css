@@ -183,3 +183,46 @@
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C8102E] focus-visible:ring-offset-2 focus-visible:ring-offset-white;
   }
 }
+
+/* Certificate print styles (S13): print only the certificate, on one A4
+   landscape page. The sticky site header, footer, and anything marked
+   .no-print are removed from the print flow; the certificate keeps its
+   red/black accents via print-color-adjust. */
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 10mm;
+  }
+
+  header,
+  footer,
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: #ffffff !important;
+  }
+
+  .print-cert-section {
+    background: #ffffff !important;
+  }
+
+  .print-cert-section > div {
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .print-cert {
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    break-inside: avoid;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .print-cert-inner {
+    padding: 10mm 14mm !important;
+  }
+}

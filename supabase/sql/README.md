@@ -65,14 +65,22 @@ Run, one file at a time, top to bottom:
    fallback. Idempotent — safe to re-run, including on a project where 0004
    partially applied.
 6. [`seed-the-singapore-way.sql`](./seed-the-singapore-way.sql) — the single
-   bundled sample course: 4 modules, 9 video-placeholder teaching lessons
-   (`content_type = 'video'`, `video_url = null` so the player shows the
-   "Video coming soon" card with lesson notes underneath), 3 quiz lessons
-   of 5 questions each, 80% pass threshold. Idempotent on the
-   `the-singapore-way` slug.
+   bundled course, final S13 content: 5 modules, 16 required video lessons
+   with the approved tracker YouTube URLs, 5 quiz lessons of 5 questions
+   each, 80% pass threshold. Idempotent on the `the-singapore-way` slug —
+   it inserts only when the course does not exist yet.
+7. [`0006_course_final_content.sql`](./0006_course_final_content.sql) —
+   **only for projects seeded before S13** (i.e. with the old 4-module
+   sample course). Replaces the sample content with the final course inside
+   one transaction, scoped to the `the-singapore-way` course. Destructive
+   for that course's `lesson_progress` and `quiz_attempts` (Path A of the
+   S13 runbook — owner-confirmed test data); certificates are preserved.
+   A fresh project seeded at step 6 must NOT run this file — the seed
+   already contains the final content.
 
-After step 6, the course is queryable as anon (curriculum metadata only)
-and as any signed-in user (full player + quizzes + progress + certificate).
+After the seed (or 0006 on an older project), the course is queryable as
+anon (curriculum metadata only) and as any signed-in user (full player +
+quizzes + progress + certificate).
 
 ---
 
@@ -80,18 +88,23 @@ and as any signed-in user (full player + quizzes + progress + certificate).
 
 Down files are destructive. Only run when explicitly rolling back.
 
-1. Drop the seed (optional):
+1. If 0006 was applied:
+   [`0006_course_final_content.down.sql`](./0006_course_final_content.down.sql)
+   — restores the pre-S13 SAMPLE course content shape. It cannot restore
+   learner history deleted by 0006, and it destroys any progress earned on
+   the final course. Prefer a forward fix once real learners exist.
+2. Drop the seed (optional):
    ```sql
    delete from public.courses where slug = 'the-singapore-way';
    ```
-2. [`0005_course_mvp_open_access_sample.down.sql`](./0005_course_mvp_open_access_sample.down.sql)
+3. [`0005_course_mvp_open_access_sample.down.sql`](./0005_course_mvp_open_access_sample.down.sql)
    — drops the sign-in-only RPCs. Does NOT recreate the unsafe policies
    from 0002. If you need the pre-0005 RLS posture (which Codex flagged as
    broken), re-apply `0002_course_mvp_rls.sql` then
    `0003_course_mvp_functions.sql`.
-3. [`0003_course_mvp_functions.down.sql`](./0003_course_mvp_functions.down.sql)
-4. [`0002_course_mvp_rls.down.sql`](./0002_course_mvp_rls.down.sql)
-5. [`0001_course_mvp_schema.down.sql`](./0001_course_mvp_schema.down.sql)
+4. [`0003_course_mvp_functions.down.sql`](./0003_course_mvp_functions.down.sql)
+5. [`0002_course_mvp_rls.down.sql`](./0002_course_mvp_rls.down.sql)
+6. [`0001_course_mvp_schema.down.sql`](./0001_course_mvp_schema.down.sql)
 
 Files marked `.down.sql` are exclusively rollback tools. **Do not paste a
 `.down.sql` file into the SQL editor unless you are rolling back.**
@@ -105,16 +118,21 @@ verification projection) lives in
 [`docs/course-setup-and-launch-checklist.md`](../../docs/course-setup-and-launch-checklist.md)
 §3.
 
-Minimum quick check after applying 0005 + seed:
+Minimum quick check after applying 0005 + the seed (or 0006):
 
 ```sql
 -- As anon:
 set role anon;
-select count(*) from public.get_published_curriculum('the-singapore-way');  -- 12
+select count(*) from public.get_published_curriculum('the-singapore-way');  -- 21
 select count(*) from public.course_lessons;                                 -- 0 (no policy)
 select count(*) from public.quiz_questions;                                 -- 0 (no policy)
 reset role;
 ```
+
+Post-0006 content verification queries (16 video / 5 quiz / 21 required, 25
+questions, per-lesson URL mapping, certificate preservation) are appended as
+comments at the end of
+[`0006_course_final_content.sql`](./0006_course_final_content.sql).
 
 If any of those return unexpected counts, stop and re-apply 0005.
 
@@ -153,5 +171,7 @@ granted `execute` on.
 | `0004_course_mvp_security_hardening.down.sql` | **Do not run.** |
 | `0005_course_mvp_open_access_sample.sql` | Sign-in-only model + 0004 repair + position keyword fix. Up. |
 | `0005_course_mvp_open_access_sample.down.sql` | Drops the sign-in RPCs. Rollback. |
-| `seed-the-singapore-way.sql` | Idempotent sample course seed. Up. |
+| `0006_course_final_content.sql` | S13: replaces the sample content with the final course (5 modules / 16 videos / 5 quizzes / 25 questions). Destructive for this course's progress + attempts (Path A); preserves certificates. Up. |
+| `0006_course_final_content.down.sql` | Restores the pre-S13 sample content shape. Cannot restore deleted learner history. Destructive rollback. |
+| `seed-the-singapore-way.sql` | Idempotent final-course seed (content identical to the 0006 rebuild body). Up. |
 | `README.md` | This file. |
