@@ -193,6 +193,7 @@ Approved launch copy is the baseline. Later editorial changes follow this workfl
 - Visual rules: [`./DESIGN.md`](./DESIGN.md)
 - Security gate: [`./SECURITY-CHECKLIST.md`](./SECURITY-CHECKLIST.md)
 - Provider profile: [`./SUPABASE-VERCEL-SETUP.md`](./SUPABASE-VERCEL-SETUP.md) — selected for this project
+- MCP governance: [`./SUPABASE-MCP-SAFETY.md`](./SUPABASE-MCP-SAFETY.md) — how agents may use the read-only Supabase MCP
 - Project-specific companions: [`./ENV-VARS-SAFETY.md`](./ENV-VARS-SAFETY.md), [`./THREAT-MODEL.md`](./THREAT-MODEL.md), [`./course-setup-and-launch-checklist.md`](./course-setup-and-launch-checklist.md) (live operator runbook), [`./update-course-content.md`](./update-course-content.md), [`./book-course-mvp-plan.md`](./book-course-mvp-plan.md) (historical Sprint 0 record), [`../supabase/sql/README.md`](../supabase/sql/README.md)
 
 Any authorized architecture change updates this file in the same PR.
