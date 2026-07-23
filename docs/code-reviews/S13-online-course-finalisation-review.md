@@ -161,4 +161,14 @@ Files changed in this fix round: `docs/course-setup-and-launch-checklist.md`,
 `docs/update-course-content.md`, `supabase/sql/README.md`, `docs/TECH-ARCHITECTURE.md`,
 `docs/PROJECT-STATUS.md`, this record. Docs-only; no code, config, SQL, or runtime change.
 
-## Round 4 — pending
+## Closure note (2026-07-23)
+
+No round-4 brief was submitted. After round 3 — in which the reviewer confirmed every code
+and documentation finding from rounds 1–3 as fixed and the sole remaining Blocking item was
+the not-yet-existing PR/Preview/CI evidence — the owner opened **PR #15**, let CI run, and
+**merged at their own discretion** (merge commit `0ee5527`, 2026-07-23; reviewed-head fixes
+`a845484` included). **No APPROVE verdict exists for this sprint**; the owner's merge is the
+accepting act for that deviation, recorded in the sprint record
+([`../sprint-prompts/S13-online-course-finalisation.md`](../sprint-prompts/S13-online-course-finalisation.md))
+together with the compensating evidence (CI on the PR, MCP-verified migrations 0006–0008,
+post-merge Production smoke via `/close`).

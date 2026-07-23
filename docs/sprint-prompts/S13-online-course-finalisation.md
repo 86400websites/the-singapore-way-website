@@ -82,9 +82,7 @@ this record.
 
 ---
 
-## Sprint record — status (2026-07-23, in progress)
-
-**Shipped so far on `claude/s13-online-course-finalisation`:**
+## Shipped commits (branch `claude/s13-online-course-finalisation`, merged as PR #15)
 
 - `20e2e6a` — read-only Supabase MCP (`.mcp.json`, HTTP+OAuth, `read_only=true`, project-scoped) +
   `docs/SUPABASE-MCP-SAFETY.md` (adapted governance: single read-only connection; owner ships all SQL).
@@ -95,21 +93,82 @@ this record.
   quizzes/four modules" copy removed; `src/lib/course/youtube.ts` strict URL→ID parser;
   `LessonBody` real `youtube-nocookie` iframe (no autoplay, honest "Video unavailable" fallback);
   CSP `frame-src` +1 origin only. 16/16 URLs validated, no duplicates.
-- (uncommitted at time of writing) Phase 4: `updateLearnerName` server action (self-service
+- `b41c657` — Phases 3–5: `updateLearnerName` server action (self-service
   `user_metadata.full_name`, validated/capped, no privileged key), `CertificateNameForm`,
   `PrintCertificateButton`, approved certificate redesign (presented-to line, supporting line,
   typographic "Maher Kaddoura / Author and Instructor" signature, readable verification URL,
-  "Verified certificate" badge), `@media print` A4-landscape styles. Phase 3+5 package: `0006`
-  Path A migration + `.down.sql` + seed rewritten from the same body; docs updated (SQL README,
-  update-course-content, launch checklist, TECH-ARCHITECTURE, trackers).
+  "Verified certificate" badge), `@media print` A4-landscape styles; `0006` Path A migration +
+  `.down.sql` + seed rewritten programmatically from the same insert body; docs (SQL README,
+  update-course-content, launch checklist, TECH-ARCHITECTURE, trackers, this record).
+- `c7f93c0` — Codex round-1 fixes: `0007` (certificate cleanup — removes certs not backed by
+  current-curriculum completion — + server-side full-name gate in `issue_certificate`);
+  `name_required` handling + `hasMeaningfulLearnerName()`; certificate page gates the name BEFORE
+  issuance/display (NameRequiredState); runbook sweep to final slugs/counts.
+- `a845484` (reviewed head at merge) — Codex round-3 doc fixes: all remaining 0008-superseded
+  fallback descriptions removed; trackers reconciled. (`37c96ce`, round-2 fixes, sits between:
+  `0008` — name gate before the existing-cert return + public verification returns no row for
+  blank/generic-name owners; name form rejects generic values.)
 
-**Copy deviations flagged for owner sign-off:** two pack strings were phase-conditional and would be
-stale at merge ("Print or save the certificate as PDF after the certificate design phase is complete";
-FAQ "will be print-friendly") — shipped in present tense instead. Everything else is verbatim.
+---
 
-**Checks:** typecheck / lint / build pass after every phase; drift check all-pass; answer-key grep
-clean. See PROJECT-STATUS §6.
+## Sprint record — completion (2026-07-23)
 
-**Remaining:** owner reviews/commits Phase 4+5 diff → authorized push → PR + Vercel Preview → owner
-applies 0006 → MCP read-only verification → full pack-08 QA → Codex review → owner merge →
-Production smoke → finalise this record via `/sprint-prompt save`.
+**Outcome: shipped.** Merged to `main` via **PR #15** (merge commit `0ee5527`, 2026-07-23 20:36 +0530);
+branch deleted. The live course is the complete approved product: 5 modules / 16 tracker-mapped
+YouTube video lessons / 5 quizzes (25 questions, 80% pass, server-graded, keys DB-only) /
+21 required items; privacy-enhanced player behind a one-origin CSP addition; certificate with
+layered full-name gate (issue + public display), print/save-as-PDF, approved A4-landscape design
+with typographic signature; public verification hides blank/generic-name credentials.
+
+**Database:** migrations `0006` (Path A content rebuild — owner-approved after the read-only
+preflight showed only disposable test data), `0007`, and `0008` hand-applied by the owner and
+verified via the read-only Supabase MCP (curriculum counts, per-quiz answer-key checksums,
+URL mapping, function gates, 0 non-displayable certificates). The sole certificate in the DB is
+backed by full completion of the final curriculum. The `supabase-prod-readonly` MCP + governance
+doc (`docs/SUPABASE-MCP-SAFETY.md`) shipped in the same PR; its write-refusal was verified live.
+
+**Checks:** typecheck / lint / build passed after every phase and every fix round; scripted
+three-way drift check (course.ts ↔ 0006 ↔ seed) all-pass; `git grep correct_choice src` = the
+3 documentation comments throughout; `.env.local` ignored/untracked; no dependency changes.
+
+**Independent review (PR #15): three Codex rounds, findings-only.**
+- Round 1 (`b41c657`) — REQUEST CHANGES: 3 Blocking + 1 Should-fix (sample-era certificate
+  presenting as final-course credential; name gate not enforced before issuance/display;
+  PR/Preview evidence; stale runbooks). Fixed in `c7f93c0` (incl. `0007`).
+- Round 2 (`c7f93c0`) — REQUEST CHANGES: 2 Blocking + 2 Should-fix (public display of
+  generic-name certificates; evidence; form validation; residual runbooks). Fixed in `37c96ce`
+  (incl. `0008`).
+- Round 3 (`37c96ce`) — REQUEST CHANGES: 1 Blocking (release evidence) + 1 Should-fix (residual
+  0008-superseded doc lines). Doc fixes landed in `a845484`; every code/doc finding across all
+  rounds was verified fixed by the reviewer's own disposition sections.
+- Full record: [`../code-reviews/S13-online-course-finalisation-review.md`](../code-reviews/S13-online-course-finalisation-review.md).
+
+**Deviations:**
+- **Merged without a recorded APPROVE.** Rounds 1–3 each returned REQUEST CHANGES; rounds 2–3
+  confirmed all prior code findings fixed, and round 3's only Blocking item was the missing
+  PR/Preview/CI evidence (the PR had not been opened yet). The owner opened PR #15 and merged at
+  their own discretion without submitting a round-4 brief; no APPROVE verdict exists in the
+  review record. Compensating evidence: CI on the PR, migrations MCP-verified, and the
+  post-merge Production smoke (see `/close` record). Deviation accepted by the owner (their
+  merge is the accepting act); noted here so the exit-gate history is honest.
+- Two approved-copy strings shipped in present tense (print bullet + FAQ 8) because the pack's
+  phase-conditional phrasing would be stale at merge — flagged to the owner in Phase 1.
+- Preview certificates display a localhost verify URL because `NEXT_PUBLIC_SITE_URL` is
+  deliberately unset in the Preview environment (TECH-ARCHITECTURE §6) — known cosmetic
+  limitation until the request-origin hardening sprint.
+
+**Learnings:**
+- Reusing a course row while preserving its certificates silently re-labels old credentials —
+  content rebuilds must always reconcile dependent credentials in the same migration set.
+- A "gate" is only real when the database enforces it on every path (issue, existing-cert
+  return, public read); UI checks are presentation.
+- Independent review kept blocking on release evidence, not code — open the PR early so
+  Preview/CI evidence exists before requesting review.
+- The read-only MCP earned its keep: every migration was verified minutes after apply with
+  boolean/count-only queries.
+
+**Follow-ups (backlog candidates):**
+- Request-origin hardening → real-domain migration (D-1) — also fixes Preview/OG URL cosmetics.
+- Owner: set a meaningful `full_name` reminder is moot (0 non-displayable certs), but the
+  Supabase-project split (D-2) and automated tests (D-3) remain open.
+- Production smoke evidence recorded via `/close` (same date).
