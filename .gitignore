@@ -12,6 +12,12 @@ zipFile.zip
 # Development reference screenshots
 attached_assets/
 
+# Browser QA evidence (screenshots, print-to-PDF output) — never committed
+qa-evidence/
+
+# Playwright MCP working directory (snapshots, console logs, scratch screenshots)
+.playwright-mcp/
+
 # Environment variables
 .env
 .env.local
