@@ -217,12 +217,16 @@
   .print-cert {
     box-shadow: none !important;
     border-radius: 0 !important;
+    background: #FAF9F6 !important;
+    /* Size the ornamental corner fans for paper, independent of the screen
+       breakpoint that sets --cert-corner in the component. */
+    --cert-corner: 20mm;
     break-inside: avoid;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
 
   .print-cert-inner {
-    padding: 10mm 14mm !important;
+    padding: 8mm 16mm !important;
   }
 }

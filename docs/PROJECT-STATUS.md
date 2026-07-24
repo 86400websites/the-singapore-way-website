@@ -7,11 +7,11 @@ The living tracker for **The Singapore Way**. Any fresh session — AI or human 
 | Item | Value |
 |---|---|
 | Current stage | Post-launch |
-| Active sprint | *(none — S13 merged; promote the next sprint from the backlog)* |
-| Current branch | `main` (S13 branch merged and deleted) |
-| Next action | 1. Commit this post-merge bookkeeping on a tiny `docs/` branch (per §11) and merge it. 2. Promote the next sprint from the backlog (lead candidate: `request-origin.ts` hardening → real-domain migration, D-1). — *Done:* S13 merged (PR #15, `0ee5527`, 2026-07-23) with migrations `0006`–`0008` applied and MCP-verified; Production smoke passed post-merge (see §6 and the `/close` record in the S13 sprint record). |
+| Active sprint | **S14 — Certificate template + verify-link fix** (Ready for Review; PR to open) |
+| Current branch | `claude/s14-certificate-template` (from `main` @ `913f6f9`) |
+| Next action | 1. Open the S14 PR; capture the Preview Part-2 evidence (certificate at 320/768/1440 on both `/certificates/[id]` and the gated cert page; print-to-PDF link-click on the Preview URL — note Preview shows a localhost verify URL by design). 2. Independent review → owner merge → Production smoke (real print-to-PDF click-through on production). 3. After S14, promote the next backlog sprint (lead candidate: `request-origin.ts` hardening → real-domain migration, D-1). — *Done:* S13 merged (PR #15, 2026-07-23); S13 close-docs merged (PR #16, `913f6f9`). |
 | Preview / Production | Vercel Preview per PR / https://the-singapore-way-website.vercel.app on Vercel (custom domain `thesingaporeway.com` pending — backlog) |
-| Last updated | 2026-07-23 — **S13 merged (PR #15)**: complete 16-video course, 5 server-graded quizzes, gated printable certificate; migrations 0006–0008 applied + MCP-verified; read-only Supabase MCP wired. Post-merge bookkeeping + Production smoke recorded via `/sprint-prompt save` + `/close`. — *Prior:* 2026-07-23 — S12 merged (PR #14) |
+| Last updated | 2026-07-24 — **S14 in review**: rebuilt the completion certificate to the new approved ornamental template and fixed the print-to-PDF verify-link truncation (URL is now a real `<a>`, so the printed PDF embeds a full-URL link annotation; kept one line in print). Added the browser-tools verification layer to the repo (`docs/BROWSER-TOOLS.md`, `.claude/skills/browser-qa/`, gitignore for `qa-evidence/` + `.playwright-mcp/`). Link fix proven via headless print-to-PDF (`/URI` annotation carries the complete UUID URL). — *Prior:* 2026-07-23 — S13 merged (PR #15) |
 
 ### How to resume in a fresh AI session
 
@@ -34,6 +34,7 @@ Status legend: Not Started · In Progress · Blocked (say why) · Ready for Revi
 | S11 — SOP docs pack migration | Done | `claude/s11-sop-docs-pack` | #13 | 2026-07-23 | Codex APPROVE at `fef6f63` (3 rounds); merged + Production smoke passed. Records: [`sprint-prompts/S11-sop-docs-pack.md`](./sprint-prompts/S11-sop-docs-pack.md), [`code-reviews/S11-sop-docs-pack-review.md`](./code-reviews/S11-sop-docs-pack-review.md) |
 | S12 — Agent skills (`/close`, `/sprint-prompt`) | Done | `claude/s12-agent-skills` | #14 | 2026-07-23 | Codex APPROVE at `f9a90e1` (round 2; round 1 was REQUEST CHANGES — 4 blocking + 1 should-fix, fixed). Records: [`sprint-prompts/S12-agent-skills.md`](./sprint-prompts/S12-agent-skills.md), [`code-reviews/S12-agent-skills-review.md`](./code-reviews/S12-agent-skills-review.md) |
 | S13 — Online Course Finalisation | Done | `claude/s13-online-course-finalisation` | #15 | 2026-07-23 | Final 16-video course + 5 quizzes (25 questions) + gated printable certificate; migrations 0006–0008 owner-applied + MCP-verified. Three Codex rounds — all findings fixed; **merged by owner without a recorded APPROVE** (deviation + compensating evidence in the sprint record). Records: [`sprint-prompts/S13-online-course-finalisation.md`](./sprint-prompts/S13-online-course-finalisation.md), [`code-reviews/S13-online-course-finalisation-review.md`](./code-reviews/S13-online-course-finalisation-review.md) |
+| S14 — Certificate template + verify-link fix | Ready for Review | `claude/s14-certificate-template` | *(to open)* | — | New ornamental certificate template (both `own` + `verify` variants) and the print-to-PDF verify-link truncation fix (real `<a>` → full-URL PDF link annotation, one line in print). Also adds the browser-tools verification layer (`docs/BROWSER-TOOLS.md`, `browser-qa` skill, gitignore). No course/DB/route/auth changes. Local typecheck/lint/build pass; link fix proven via headless print-to-PDF; Preview QA pending |
 
 Retired sprints stay in the table, struck through, with the date, reason, and where the scope moved (backlog).
 
@@ -58,11 +59,11 @@ Retired sprints stay in the table, struck through, with the date, reason, and wh
 
 | Check | Last run | Result | Notes |
 |---|---|---|---|
-| typecheck | 2026-07-23 | pass | `pnpm run typecheck` on the S13 branch (after each phase) |
-| lint | 2026-07-23 | pass | `pnpm run lint` on the S13 branch (after each phase) |
-| tests | 2026-07-23 | N/A | No test script; verification = typecheck + lint + build + gitleaks CI + Preview QA (decision D-3 tracks adding tests). S13 adds a scripted three-way content drift check (course.ts ↔ 0006 ↔ seed — all pass). |
-| build | 2026-07-23 | pass | `pnpm run build` on the S13 branch (after each phase) |
-| deployed Preview | — | pending | S13 PR not yet opened; full Preview QA per the S13 pack (`08_QA_STRESS_TEST_AND_SIGNOFF`) pending push authorization |
+| typecheck | 2026-07-24 | pass | `pnpm run typecheck` on the S14 branch |
+| lint | 2026-07-24 | pass | `pnpm run lint` on the S14 branch |
+| tests | 2026-07-24 | N/A | No test script; verification = typecheck + lint + build + gitleaks CI + Preview QA (decision D-3 tracks adding tests). S14 additionally proved the verify-link fix via headless print-to-PDF (`/URI` annotation carries the full UUID URL). |
+| build | 2026-07-24 | pass | `pnpm run build` on the S14 branch |
+| deployed Preview | — | pending | S14 PR not yet opened; capture certificate visuals at 320/768/1440 + print-to-PDF link-click on the Preview per `browser-qa` skill / `docs/BROWSER-TOOLS.md` |
 
 ## 7. Locked decisions (do not reopen)
 
